@@ -973,13 +973,13 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       <div className={`grid grid-cols-1 ${isFullscreen ? 'fixed inset-0 z-50 p-4 bg-slate-950' : 'lg:grid-cols-3'} gap-6`}>
 
         {/* Real Leaflet Map Container - Completely Unblocked */}
-        <div className={`${isFullscreen ? 'h-full' : 'lg:col-span-2'} relative rounded-3xl border overflow-hidden shadow-2xl ${isDarkMode ? 'border-white/15 bg-slate-950' : 'border-slate-300 bg-slate-900'
+        <div className={`${isFullscreen ? 'h-full' : 'lg:col-span-2 self-start h-[calc(100dvh-200px)] min-h-[460px] sm:h-[620px] lg:h-[740px]'} relative rounded-3xl border overflow-hidden shadow-2xl ${isDarkMode ? 'border-white/15 bg-slate-950' : 'border-slate-300 bg-slate-900'
           }`}>
 
           {/* Leaflet DOM Node */}
           <div
             ref={mapContainerRef}
-            className={`w-full ${isFullscreen ? 'h-full' : 'h-[calc(100dvh-200px)] min-h-[460px] sm:h-[620px] lg:h-[740px]'} z-0`}
+            className="w-full h-full z-0"
           />
 
           {/* Floating Map Header Overlay (Sleek & Non-intrusive in top-left) */}
@@ -1520,7 +1520,12 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
         {/* Right Column: Hiking Route Dossier / Pin Details & Distance Desk (Desktop View) */}
         {!isFullscreen && (
-          <div className="hidden lg:block space-y-6">
+          <div
+            role="region"
+            aria-label="Map location details and route calculator"
+            tabIndex={0}
+            className="hidden lg:block lg:max-h-[740px] lg:overflow-y-auto lg:overscroll-contain space-y-6 custom-scrollbar"
+          >
 
             {/* Active Trail Dossier Card */}
             {selectedTrail && (
