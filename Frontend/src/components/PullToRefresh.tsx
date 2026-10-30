@@ -1,5 +1,5 @@
-import { CheckCircle2, RotateCw } from 'lucide-react';
-import React, { useCallback, useRef, useState } from 'react';
+import { CheckCircle2, RotateCw } from "lucide-react";
+import React, { useCallback, useRef, useState } from "react";
 
 interface PullToRefreshProps {
   onRefresh: () => Promise<void> | void;
@@ -8,12 +8,12 @@ interface PullToRefreshProps {
 }
 
 const PULL_THRESHOLD = 65; // px required to trigger refresh
-const MAX_PULL = 85;       // maximum elastic distance in px
+const MAX_PULL = 85; // maximum elastic distance in px
 
 export const PullToRefresh: React.FC<PullToRefreshProps> = ({
   onRefresh,
   children,
-  disabled = false
+  disabled = false,
 }) => {
   const [isPulling, setIsPulling] = useState(false);
   const [pullDistance, setPullDistance] = useState<number>(0);
@@ -35,10 +35,12 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
 
     if (isScrolledToTop()) {
       startY.current = e.touches[0].clientY;
-      isPullingRef.current = true; setIsPulling(true);
+      isPullingRef.current = true;
+      setIsPulling(true);
       setHasVibrated(false);
     } else {
-      isPullingRef.current = false; setIsPulling(false);
+      isPullingRef.current = false;
+      setIsPulling(false);
     }
   };
 
@@ -57,7 +59,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
 
       // Light haptic trigger when crossing threshold
       if (dampedDistance >= PULL_THRESHOLD && !hasVibrated) {
-        if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+        if (typeof window !== "undefined" && "vibrate" in navigator) {
           try {
             navigator.vibrate(15);
           } catch {
@@ -68,14 +70,16 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
       }
     } else {
       setPullDistance(0);
-      isPullingRef.current = false; setIsPulling(false);
+      isPullingRef.current = false;
+      setIsPulling(false);
     }
   };
 
   const handleTouchEnd = async () => {
     if (!isPullingRef.current || disabled || isRefreshing) return;
 
-    isPullingRef.current = false; setIsPulling(false);
+    isPullingRef.current = false;
+    setIsPulling(false);
 
     if (pullDistance >= PULL_THRESHOLD) {
       // Lock spinner at threshold height while refreshing
@@ -103,7 +107,8 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
 
   // Reset pull distance if user scrolls away or cancels
   const handleTouchCancel = () => {
-    isPullingRef.current = false; setIsPulling(false);
+    isPullingRef.current = false;
+    setIsPulling(false);
     if (!isRefreshing) {
       setPullDistance(0);
     }
@@ -120,33 +125,36 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchCancel}
-      className="relative w-full"
-    >
+      className="relative w-full">
       {/* Elastic Circular Indicator Floating Anchor */}
       <div
         className="pointer-events-none fixed left-1/2 -translate-x-1/2 z-40 transition-transform duration-200 ease-out"
         style={{
-          top: '72px', // positioned right beneath the sticky mobile header
+          top: "72px", // positioned right beneath the sticky mobile header
           transform: `translate(-50%, ${pullDistance}px)`,
           opacity: pullDistance > 8 || isRefreshing ? 1 : 0,
-          transition: isPulling ? 'none' : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease-out'
-        }}
-      >
+          transition: isPulling
+            ? "none"
+            : "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease-out",
+        }}>
         <div className="flex flex-col items-center gap-1.5">
           <div
-            className={`w-11 h-11 rounded-full flex items-center justify-center shadow-2xl backdrop-blur-xl border transition-all duration-200 ${isTriggerReady || isRefreshing
-                ? 'bg-gradient-to-tr from-teal-500 to-emerald-600 text-white border-teal-300/40 shadow-teal-500/30 scale-105'
-                : 'bg-white/95 dark:bg-slate-800/95 text-teal-600 dark:text-teal-400 border-slate-200 dark:border-white/15'
-              }`}
-          >
+            className={`w-11 h-11 rounded-full flex items-center justify-center shadow-2xl backdrop-blur-xl border transition-all duration-200 ${
+              isTriggerReady || isRefreshing
+                ? "bg-gradient-to-tr from-teal-500 to-emerald-600 text-white border-teal-300/40 shadow-teal-500/30 scale-105"
+                : "bg-white/95 dark:bg-slate-800/95 text-teal-600 dark:text-teal-400 border-slate-200 dark:border-white/15"
+            }`}>
             {isSuccess ? (
               <CheckCircle2 className="w-5 h-5 text-white animate-bounce" />
             ) : (
               <RotateCw
-                className={`w-5 h-5 transition-transform ${isRefreshing ? 'animate-spin' : ''
-                  }`}
+                className={`w-5 h-5 transition-transform ${
+                  isRefreshing ? "animate-spin" : ""
+                }`}
                 style={{
-                  transform: isRefreshing ? undefined : `rotate(${rotationDegrees}deg)`
+                  transform: isRefreshing
+                    ? undefined
+                    : `rotate(${rotationDegrees}deg)`,
                 }}
               />
             )}
@@ -156,10 +164,10 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
           {pullDistance > 20 && (
             <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-900/80 dark:bg-slate-800/90 text-white shadow-md backdrop-blur-md animate-fade-in border border-white/10">
               {isRefreshing
-                ? 'Refreshing saved island content...'
+                ? "Refreshing saved island content..."
                 : isTriggerReady
-                  ? 'Release to reload'
-                  : 'Pull down to refresh'}
+                  ? "Release to reload"
+                  : "Pull down to refresh"}
             </span>
           )}
         </div>
@@ -168,10 +176,14 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
       {/* Main Content Area with Subtle Elastic Downward Shift */}
       <div
         style={{
-          transform: pullDistance > 0 ? `translateY(${Math.min(pullDistance * 0.4, 28)}px)` : undefined,
-          transition: isPulling ? 'none' : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-        }}
-      >
+          transform:
+            pullDistance > 0
+              ? `translateY(${Math.min(pullDistance * 0.4, 28)}px)`
+              : undefined,
+          transition: isPulling
+            ? "none"
+            : "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+        }}>
         {children}
       </div>
     </div>

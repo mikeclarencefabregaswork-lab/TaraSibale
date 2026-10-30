@@ -17,9 +17,15 @@ export default defineConfig({
       ],
       // Retain Vite's secret-file denies alongside project-private directories.
       deny: [
-        ".env", ".env.*", "*.{crt,pem,key,p12,pfx,cer,der}",
-        ".npmrc", ".yarnrc.yml", "**/.git/**",
-        "**/.local-postgres/**", "**/Backend/**", "**/.superpowers/**",
+        ".env",
+        ".env.*",
+        "*.{crt,pem,key,p12,pfx,cer,der}",
+        ".npmrc",
+        ".yarnrc.yml",
+        "**/.git/**",
+        "**/.local-postgres/**",
+        "**/Backend/**",
+        "**/.superpowers/**",
       ],
     },
     proxy: {

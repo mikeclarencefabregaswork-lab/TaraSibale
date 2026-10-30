@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
 import { api } from "../src/api.ts";
-import { getToasts, dismissToast } from '../src/toastStore.ts';
+import { getToasts, dismissToast } from "../src/toastStore.ts";
 
 const originalFetch = globalThis.fetch;
 afterEach(() => {
   globalThis.fetch = originalFetch;
-  getToasts().forEach(item => dismissToast(item.id));
+  getToasts().forEach((item) => dismissToast(item.id));
 });
 
 test("a rejected mutation exposes the server error instead of returning success", async () => {
@@ -18,7 +18,10 @@ test("a rejected mutation exposes the server error instead of returning success"
     api("/api/bookings", { accommodationId: "stay-1" }),
     /Sign in required/,
   );
-  assert.deepEqual(getToasts().map(item => ({ message: item.message, kind: item.kind })), [{ message: 'Sign in required', kind: 'error' }]);
+  assert.deepEqual(
+    getToasts().map((item) => ({ message: item.message, kind: item.kind })),
+    [{ message: "Sign in required", kind: "error" }],
+  );
 });
 
 test("successful mutations preserve the server response and use the session cookie", async () => {
@@ -53,11 +56,14 @@ test("a non-JSON outage still produces a useful failure", async () => {
   await assert.rejects(api("/api/catalog"), /Request failed \(503\)/);
 });
 
-test('private autosaves carry the initiating account identity alongside the session cookie', async () => {
+test("private autosaves carry the initiating account identity alongside the session cookie", async () => {
   globalThis.fetch = async (_url, options) => {
-    assert.equal(options?.credentials, 'same-origin');
-    assert.equal(new Headers(options?.headers).get('X-TaraSibale-User-Id'), 'account-a');
-    return new Response(JSON.stringify({status:'ok'}));
+    assert.equal(options?.credentials, "same-origin");
+    assert.equal(
+      new Headers(options?.headers).get("X-TaraSibale-User-Id"),
+      "account-a",
+    );
+    return new Response(JSON.stringify({ status: "ok" }));
   };
-  await api('/api/user-state', {documents: []}, 'PUT', 'account-a');
+  await api("/api/user-state", { documents: [] }, "PUT", "account-a");
 });

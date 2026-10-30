@@ -28,7 +28,6 @@ import {
   type SavedState,
 } from "./userState";
 
-
 import { DEFAULT_SYSTEM_PERMISSIONS } from "./data/adminDefaults";
 import {
   Accommodation,
@@ -56,27 +55,39 @@ const InteractiveMap = lazy(() =>
 );
 
 const CloudVaultCalendar = lazy(() =>
-  import("./components/CloudVaultCalendar").then((module) => ({ default: module.CloudVaultCalendar })),
+  import("./components/CloudVaultCalendar").then((module) => ({
+    default: module.CloudVaultCalendar,
+  })),
 );
 
 const CulturalGuide = lazy(() =>
-  import("./components/CulturalGuide").then((module) => ({ default: module.CulturalGuide })),
+  import("./components/CulturalGuide").then((module) => ({
+    default: module.CulturalGuide,
+  })),
 );
 
 const GroupMessaging = lazy(() =>
-  import("./components/GroupMessaging").then((module) => ({ default: module.GroupMessaging })),
+  import("./components/GroupMessaging").then((module) => ({
+    default: module.GroupMessaging,
+  })),
 );
 
 const ItineraryPlanner = lazy(() =>
-  import("./components/ItineraryPlanner").then((module) => ({ default: module.ItineraryPlanner })),
+  import("./components/ItineraryPlanner").then((module) => ({
+    default: module.ItineraryPlanner,
+  })),
 );
 
 const SocialFeed = lazy(() =>
-  import("./components/SocialFeed").then((module) => ({ default: module.SocialFeed })),
+  import("./components/SocialFeed").then((module) => ({
+    default: module.SocialFeed,
+  })),
 );
 
 const TravelInfoSection = lazy(() =>
-  import("./components/TravelInfoSection").then((module) => ({ default: module.TravelInfoSection })),
+  import("./components/TravelInfoSection").then((module) => ({
+    default: module.TravelInfoSection,
+  })),
 );
 
 const VALID_TABS = [
@@ -170,10 +181,20 @@ export default function App() {
   const [isLoadingContent, setIsLoadingContent] = useState<boolean>(true);
 
   useEffect(() => {
-    const online = () => { setIsOffline(false); toast.info("Connection restored. You can try syncing again."); };
-    const offline = () => { setIsOffline(true); toast.info("You are offline. Server actions may be unavailable."); };
-    window.addEventListener('online', online); window.addEventListener('offline', offline);
-    return () => { window.removeEventListener('online', online); window.removeEventListener('offline', offline); };
+    const online = () => {
+      setIsOffline(false);
+      toast.info("Connection restored. You can try syncing again.");
+    };
+    const offline = () => {
+      setIsOffline(true);
+      toast.info("You are offline. Server actions may be unavailable.");
+    };
+    window.addEventListener("online", online);
+    window.addEventListener("offline", offline);
+    return () => {
+      window.removeEventListener("online", online);
+      window.removeEventListener("offline", offline);
+    };
   }, []);
 
   // Sync dark class with document element and localStorage
@@ -232,7 +253,10 @@ export default function App() {
     currentUser?.id,
     stateReady,
     savedState,
-    (message) => { setApiError(message); toast.error(message); },
+    (message) => {
+      setApiError(message);
+      toast.error(message);
+    },
   );
   const notifications = savedState.notifications;
   const updateNotifications: React.Dispatch<
@@ -405,7 +429,9 @@ export default function App() {
       ),
     }));
     setDismissedFerryAlert(ferryConflictKey);
-    toast.info("Ferry updated in your itinerary. Changes will save automatically.");
+    toast.info(
+      "Ferry updated in your itinerary. Changes will save automatically.",
+    );
   };
   const findFerryAlert = () => {
     let conflict: ActiveFerryAlert | null = null;
@@ -490,7 +516,9 @@ export default function App() {
         "The account changed. Sign in again to view this reservation.",
       );
     setUserBookings((old) => [saved, ...old]);
-    toast.success(`Reservation ${saved.status.toLowerCase()}: ${saved.accommodationName}`);
+    toast.success(
+      `Reservation ${saved.status.toLowerCase()}: ${saved.accommodationName}`,
+    );
     updateNotifications((old) => [
       {
         id: `booking-${saved.id}`,
@@ -553,7 +581,13 @@ export default function App() {
         <div className="hidden dark:block fixed top-[40%] right-[-5%] w-[400px] h-[400px] bg-purple-600/15 rounded-full blur-[110px] pointer-events-none z-0" />
 
         <ToastViewport />
-        <FerryAlertBanner alert={activeFerryAlert} onDismiss={() => setDismissedFerryAlert(ferryConflictKey)} onSwapFerry={handleSwapItineraryFerry} onViewItinerary={() => setActiveTab('itinerary')} isDarkMode={isDarkMode} />
+        <FerryAlertBanner
+          alert={activeFerryAlert}
+          onDismiss={() => setDismissedFerryAlert(ferryConflictKey)}
+          onSwapFerry={handleSwapItineraryFerry}
+          onViewItinerary={() => setActiveTab("itinerary")}
+          isDarkMode={isDarkMode}
+        />
 
         {/* Main Content Wrapper */}
         <div className="relative z-10">
@@ -594,212 +628,238 @@ export default function App() {
 
           {/* Dynamic Content Refresh Sync Toast */}
 
-
           {/* Pull-to-refresh mobile wrapper for dynamic content */}
           <PullToRefresh onRefresh={handlePullToRefresh}>
             {/* Main Container - Centered max-w-7xl for high readability and balanced margins on wide displays */}
             <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 xl:px-10 pt-6">
               <div key={activeTab} className="page-transition">
-              <Suspense
-                fallback={<PageSkeleton tab={activeTab} />}>
-                {!['auth', 'login', 'signup'].includes(activeTab) && !apiError && ((!stateReady) || (isLoadingContent && !attractions.length && !accommodations.length)) ? <PageSkeleton tab={activeTab} /> : !stateReady && apiError && !['auth', 'login', 'signup'].includes(activeTab) ? <div role="status" className="p-8 rounded-3xl bg-white dark:bg-slate-900 space-y-4"><p>Your account content could not be loaded.</p><button onClick={() => window.location.reload()} className="rounded-xl px-4 py-2 bg-teal-500 text-slate-950 font-bold">Retry loading page</button></div> : <div className="page-ready">
-                {/* Render Tab Content */}
-                {activeTab === "explore" && (
-                  <div className="space-y-10">
-                    <Hero
-                      setActiveTab={setActiveTab}
-                      onOpenAiChat={() => setIsAiChatOpen(true)}
-                      isDarkMode={isDarkMode}
-                    />
+                <Suspense fallback={<PageSkeleton tab={activeTab} />}>
+                  {!["auth", "login", "signup"].includes(activeTab) &&
+                  !apiError &&
+                  (!stateReady ||
+                    (isLoadingContent &&
+                      !attractions.length &&
+                      !accommodations.length)) ? (
+                    <PageSkeleton tab={activeTab} />
+                  ) : !stateReady &&
+                    apiError &&
+                    !["auth", "login", "signup"].includes(activeTab) ? (
+                    <div
+                      role="status"
+                      className="p-8 rounded-3xl bg-white dark:bg-slate-900 space-y-4">
+                      <p>Your account content could not be loaded.</p>
+                      <button
+                        onClick={() => window.location.reload()}
+                        className="rounded-xl px-4 py-2 bg-teal-500 text-slate-950 font-bold">
+                        Retry loading page
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="page-ready">
+                      {/* Render Tab Content */}
+                      {activeTab === "explore" && (
+                        <div className="space-y-10">
+                          <Hero
+                            setActiveTab={setActiveTab}
+                            onOpenAiChat={() => setIsAiChatOpen(true)}
+                            isDarkMode={isDarkMode}
+                          />
 
-                    <AttractionsSection
-                      attractions={attractions}
-                      isDarkMode={isDarkMode}
-                      onOpenReviewModal={handleOpenReviewForAttraction}
-                      searchQuery={searchQuery}
-                      isLoading={isLoadingContent}
-                    />
+                          <AttractionsSection
+                            attractions={attractions}
+                            isDarkMode={isDarkMode}
+                            onOpenReviewModal={handleOpenReviewForAttraction}
+                            searchQuery={searchQuery}
+                            isLoading={isLoadingContent}
+                          />
 
-                    <BookingSection
-                      accommodations={accommodations}
-                      isDarkMode={isDarkMode}
-                      key={currentUser?.id || "guest"}
-                      onAddBooking={handleAddBooking}
-                      userBookings={userBookings}
-                      isLoading={isLoadingContent}
-                    />
+                          <BookingSection
+                            accommodations={accommodations}
+                            isDarkMode={isDarkMode}
+                            key={currentUser?.id || "guest"}
+                            onAddBooking={handleAddBooking}
+                            userBookings={userBookings}
+                            isLoading={isLoadingContent}
+                          />
 
-                    <ReviewSystem
-                      key={`${currentUser?.id || "guest"}-${preSelectedReviewTarget || "reviews"}`}
-                      reviews={reviews}
-                      attractions={attractions}
-                      accommodations={accommodations}
-                      isDarkMode={isDarkMode}
-                      onAddReview={handleAddReview}
-                      onUpdateReview={(updated) => {
-                        if (currentUserId.current === currentUser?.id)
-                          setReviews((old) =>
-                            old.map((review) =>
-                              review.id === updated.id ? updated : review,
-                            ),
-                          );
-                      }}
-                      preSelectedTargetId={preSelectedReviewTarget}
-                    />
-                  </div>
-                )}
+                          <ReviewSystem
+                            key={`${currentUser?.id || "guest"}-${preSelectedReviewTarget || "reviews"}`}
+                            reviews={reviews}
+                            attractions={attractions}
+                            accommodations={accommodations}
+                            isDarkMode={isDarkMode}
+                            onAddReview={handleAddReview}
+                            onUpdateReview={(updated) => {
+                              if (currentUserId.current === currentUser?.id)
+                                setReviews((old) =>
+                                  old.map((review) =>
+                                    review.id === updated.id ? updated : review,
+                                  ),
+                                );
+                            }}
+                            preSelectedTargetId={preSelectedReviewTarget}
+                          />
+                        </div>
+                      )}
 
-                {activeTab === "itinerary" &&
-                  stateReady &&
-                  !isLoadingContent && (
-                    <ItineraryPlanner
-                      key={currentUser?.id || "guest"}
-                      attractions={attractions}
-                      ferryRoutes={ferryRoutes}
-                      accommodations={accommodations}
-                      isDarkMode={isDarkMode}
-                      onSwapFerry={handleSwapItineraryFerry}
-                    />
+                      {activeTab === "itinerary" &&
+                        stateReady &&
+                        !isLoadingContent && (
+                          <ItineraryPlanner
+                            key={currentUser?.id || "guest"}
+                            attractions={attractions}
+                            ferryRoutes={ferryRoutes}
+                            accommodations={accommodations}
+                            isDarkMode={isDarkMode}
+                            onSwapFerry={handleSwapItineraryFerry}
+                          />
+                        )}
+
+                      {activeTab === "map" && (
+                        <InteractiveMap
+                          hikingTrails={hikingTrails}
+                          attractions={attractions}
+                          accommodations={accommodations}
+                          isDarkMode={isDarkMode}
+                          onSelectAttraction={(att) => {
+                            handleOpenReviewForAttraction(att.id);
+                          }}
+                          onSelectAccommodation={() => {
+                            setActiveTab("stay");
+                          }}
+                          isOffline={isOffline}
+                        />
+                      )}
+
+                      {activeTab === "stay" && (
+                        <BookingSection
+                          accommodations={accommodations}
+                          isDarkMode={isDarkMode}
+                          key={currentUser?.id || "guest"}
+                          onAddBooking={handleAddBooking}
+                          userBookings={userBookings}
+                          isLoading={isLoadingContent}
+                        />
+                      )}
+
+                      {activeTab === "guide" && (
+                        <CulturalGuide
+                          cultureItems={cultureItems}
+                          isDarkMode={isDarkMode}
+                        />
+                      )}
+
+                      {activeTab === "travel" && stateReady && (
+                        <TravelInfoSection
+                          ferryRoutes={ferryRoutes}
+                          lastUpdated={lastRefreshedAt || undefined}
+                          isDarkMode={isDarkMode}
+                        />
+                      )}
+
+                      {activeTab === "group" && stateReady && (
+                        <GroupMessaging
+                          messages={groupMessages}
+                          isDarkMode={isDarkMode}
+                          onSendMessage={handleSendGroupMessage}
+                        />
+                      )}
+
+                      {activeTab === "documents" && stateReady && (
+                        <CloudVaultCalendar
+                          isDarkMode={isDarkMode}
+                          bookings={userBookings}
+                        />
+                      )}
+
+                      {activeTab === "social" && (
+                        <SocialFeed
+                          key={currentUser?.id || "guest"}
+                          posts={socialPosts}
+                          isDarkMode={isDarkMode}
+                          onAddPost={handleAddPost}
+                          onUpdatePost={(updated) => {
+                            if (currentUserId.current === currentUser?.id)
+                              setSocialPosts((old) =>
+                                old.map((post) =>
+                                  post.id === updated.id ? updated : post,
+                                ),
+                              );
+                          }}
+                        />
+                      )}
+
+                      {activeTab === "reviews" && (
+                        <ReviewSystem
+                          key={`${currentUser?.id || "guest"}-${preSelectedReviewTarget || "reviews"}`}
+                          reviews={reviews}
+                          attractions={attractions}
+                          accommodations={accommodations}
+                          isDarkMode={isDarkMode}
+                          onAddReview={handleAddReview}
+                          onUpdateReview={(updated) => {
+                            if (currentUserId.current === currentUser?.id)
+                              setReviews((old) =>
+                                old.map((review) =>
+                                  review.id === updated.id ? updated : review,
+                                ),
+                              );
+                          }}
+                          preSelectedTargetId={preSelectedReviewTarget}
+                        />
+                      )}
+
+                      {/* Dedicated Admin Dashboard Tab */}
+                      {activeTab === "admin" && (
+                        <AdminPage
+                          isDarkMode={isDarkMode}
+                          currentUser={currentUser}
+                          attractions={attractions}
+                          onUpdateAttractions={(items) =>
+                            updateCatalog({ attractions: items })
+                          }
+                          accommodations={accommodations}
+                          onUpdateAccommodations={(items) =>
+                            updateCatalog({ accommodations: items })
+                          }
+                          verificationApplicants={verificationApplicants}
+                          onUpdateVerificationApplicants={async (items) => {
+                            await api("/api/admin/verifications", items, "PUT");
+                            setVerificationApplicants(items);
+                          }}
+                          systemPermissions={systemPermissions}
+                          onUpdateSystemPermissions={async (permissions) => {
+                            await api(
+                              "/api/admin/permissions",
+                              permissions,
+                              "PUT",
+                            );
+                            setSystemPermissions(permissions);
+                          }}
+                          onLoginAsAdmin={() => setActiveTab("login")}
+                          setActiveTab={setActiveTab}
+                        />
+                      )}
+
+                      {/* Dedicated Full-Page Auth and Profile View */}
+                      {(activeTab === "auth" ||
+                        activeTab === "login" ||
+                        activeTab === "signup") && (
+                        <AuthPage
+                          key={activeTab}
+                          initialMode={
+                            activeTab === "signup" ? "signup" : "login"
+                          }
+                          isDarkMode={isDarkMode}
+                          currentUser={currentUser}
+                          onLoginSuccess={handleLoginSuccess}
+                          onLogout={handleLogout}
+                          setActiveTab={setActiveTab}
+                        />
+                      )}
+                    </div>
                   )}
-
-                {activeTab === "map" && (
-                  <InteractiveMap
-                    hikingTrails={hikingTrails}
-                    attractions={attractions}
-                    accommodations={accommodations}
-                    isDarkMode={isDarkMode}
-                    onSelectAttraction={(att) => {
-                      handleOpenReviewForAttraction(att.id);
-                    }}
-                    onSelectAccommodation={() => {
-                      setActiveTab("stay");
-                    }}
-                    isOffline={isOffline}
-                  />
-                )}
-
-                {activeTab === "stay" && (
-                  <BookingSection
-                    accommodations={accommodations}
-                    isDarkMode={isDarkMode}
-                    key={currentUser?.id || "guest"}
-                    onAddBooking={handleAddBooking}
-                    userBookings={userBookings}
-                    isLoading={isLoadingContent}
-                  />
-                )}
-
-                {activeTab === "guide" && (
-                  <CulturalGuide
-                    cultureItems={cultureItems}
-                    isDarkMode={isDarkMode}
-                  />
-                )}
-
-                {activeTab === "travel" && stateReady && (
-                  <TravelInfoSection
-                    ferryRoutes={ferryRoutes}
-                    lastUpdated={lastRefreshedAt || undefined}
-                    isDarkMode={isDarkMode}
-                  />
-                )}
-
-                {activeTab === "group" && stateReady && (
-                  <GroupMessaging
-                    messages={groupMessages}
-                    isDarkMode={isDarkMode}
-                    onSendMessage={handleSendGroupMessage}
-                  />
-                )}
-
-                {activeTab === "documents" && stateReady && (
-                  <CloudVaultCalendar
-                    isDarkMode={isDarkMode}
-                    bookings={userBookings}
-                  />
-                )}
-
-                {activeTab === "social" && (
-                  <SocialFeed
-                    key={currentUser?.id || "guest"}
-                    posts={socialPosts}
-                    isDarkMode={isDarkMode}
-                    onAddPost={handleAddPost}
-                    onUpdatePost={(updated) => {
-                      if (currentUserId.current === currentUser?.id)
-                        setSocialPosts((old) =>
-                          old.map((post) =>
-                            post.id === updated.id ? updated : post,
-                          ),
-                        );
-                    }}
-                  />
-                )}
-
-                {activeTab === "reviews" && (
-                  <ReviewSystem
-                    key={`${currentUser?.id || "guest"}-${preSelectedReviewTarget || "reviews"}`}
-                    reviews={reviews}
-                    attractions={attractions}
-                    accommodations={accommodations}
-                    isDarkMode={isDarkMode}
-                    onAddReview={handleAddReview}
-                    onUpdateReview={(updated) => {
-                      if (currentUserId.current === currentUser?.id)
-                        setReviews((old) =>
-                          old.map((review) =>
-                            review.id === updated.id ? updated : review,
-                          ),
-                        );
-                    }}
-                    preSelectedTargetId={preSelectedReviewTarget}
-                  />
-                )}
-
-                {/* Dedicated Admin Dashboard Tab */}
-                {activeTab === "admin" && (
-                  <AdminPage
-                    isDarkMode={isDarkMode}
-                    currentUser={currentUser}
-                    attractions={attractions}
-                    onUpdateAttractions={(items) =>
-                      updateCatalog({ attractions: items })
-                    }
-                    accommodations={accommodations}
-                    onUpdateAccommodations={(items) =>
-                      updateCatalog({ accommodations: items })
-                    }
-                    verificationApplicants={verificationApplicants}
-                    onUpdateVerificationApplicants={async (items) => {
-                      await api("/api/admin/verifications", items, "PUT");
-                      setVerificationApplicants(items);
-                    }}
-                    systemPermissions={systemPermissions}
-                    onUpdateSystemPermissions={async (permissions) => {
-                      await api("/api/admin/permissions", permissions, "PUT");
-                      setSystemPermissions(permissions);
-                    }}
-                    onLoginAsAdmin={() => setActiveTab("login")}
-                    setActiveTab={setActiveTab}
-                  />
-                )}
-
-                {/* Dedicated Full-Page Auth and Profile View */}
-                {(activeTab === "auth" ||
-                  activeTab === "login" ||
-                  activeTab === "signup") && (
-                  <AuthPage
-                    key={activeTab}
-                    initialMode={activeTab === "signup" ? "signup" : "login"}
-                    isDarkMode={isDarkMode}
-                    currentUser={currentUser}
-                    onLoginSuccess={handleLoginSuccess}
-                    onLogout={handleLogout}
-                    setActiveTab={setActiveTab}
-                  />
-                )}
-                </div>}
-              </Suspense>
+                </Suspense>
               </div>
             </main>
           </PullToRefresh>

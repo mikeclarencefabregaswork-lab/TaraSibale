@@ -7,7 +7,7 @@
 
 /* Modern Leaflet custom styles */
 .leaflet-popup-content-wrapper {
-  background: rgba(11,45,64, 0.95) !important;
+  background: rgba(11, 45, 64, 0.95) !important;
   backdrop-filter: blur(12px) !important;
   color: #f4fbfc !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
@@ -18,7 +18,7 @@
 }
 
 .leaflet-popup-tip {
-  background: rgba(11,45,64, 0.95) !important;
+  background: rgba(11, 45, 64, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
@@ -40,7 +40,7 @@
 }
 
 .leaflet-control-zoom a {
-  background-color: rgba(11,45,64, 0.85) !important;
+  background-color: rgba(11, 45, 64, 0.85) !important;
   backdrop-filter: blur(8px) !important;
   color: #2ec4b6 !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -61,7 +61,7 @@
   }
 
   .glass-panel-dark {
-    background: rgba(11,45,64, 0.7);
+    background: rgba(11, 45, 64, 0.7);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -75,7 +75,7 @@
   }
 
   .glass-glow {
-    box-shadow: 0 0 25px -5px rgba(46,196,182, 0.25);
+    box-shadow: 0 0 25px -5px rgba(46, 196, 182, 0.25);
   }
 }
 

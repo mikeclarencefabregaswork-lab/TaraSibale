@@ -1,9 +1,15 @@
-export type CategoryType = 'all' | 'beach' | 'landmark' | 'culture' | 'viewpoint' | 'sanctuary';
+export type CategoryType =
+  | "all"
+  | "beach"
+  | "landmark"
+  | "culture"
+  | "viewpoint"
+  | "sanctuary";
 
 export interface Attraction {
   id: string;
   name: string;
-  category: 'beach' | 'landmark' | 'culture' | 'viewpoint' | 'sanctuary';
+  category: "beach" | "landmark" | "culture" | "viewpoint" | "sanctuary";
   image: string;
   gallery?: string[];
   description: string;
@@ -17,20 +23,29 @@ export interface Attraction {
   bestTime: string;
   audioGuideText?: string;
   isPopular?: boolean;
-  coordinateStatus?: 'mapped' | 'unconfirmed';
+  coordinateStatus?: "mapped" | "unconfirmed";
   coordinateSource?: string;
   verifiedAt?: string;
   sources?: { title: string; url: string }[];
-  photoCredit?: { name: string; url: string; caption: string; usage: 'local-preview' | 'open-license' };
+  photoCredit?: {
+    name: string;
+    url: string;
+    caption: string;
+    usage: "local-preview" | "open-license";
+  };
   isArchived?: boolean;
 }
 
-export type AvailabilityStatus = 'AVAILABLE' | 'FEW_ROOMS' | 'FULLY_BOOKED' | 'MAINTENANCE';
+export type AvailabilityStatus =
+  | "AVAILABLE"
+  | "FEW_ROOMS"
+  | "FULLY_BOOKED"
+  | "MAINTENANCE";
 
 export interface Accommodation {
   id: string;
   name: string;
-  type: 'resort' | 'homestay' | 'cottage' | 'inn';
+  type: "resort" | "homestay" | "cottage" | "inn";
   image: string;
   gallery?: string[];
   pricePerNight: number | null;
@@ -48,7 +63,7 @@ export interface Accommodation {
   availableRoomsCount?: number;
   hostName?: string;
   isVerifiedPartner?: boolean;
-  bookingMode?: 'online' | 'reference-only';
+  bookingMode?: "online" | "reference-only";
   evidenceLabel?: string;
   verificationNote?: string;
   verifiedAt?: string;
@@ -77,7 +92,7 @@ export interface FerryRoute {
   arrivalTime: string;
   fare: string;
   frequency: string;
-  status: 'SCHEDULED' | 'BOARDING' | 'CANCELLED_SEA' | 'ON_TIME' | 'DELAYED';
+  status: "SCHEDULED" | "BOARDING" | "CANCELLED_SEA" | "ON_TIME" | "DELAYED";
   notes: string;
   advisoryReason?: string;
   delayDuration?: string;
@@ -114,7 +129,15 @@ export interface TrailWaypoint {
   lng: number;
   elevationMeters?: number;
   description: string;
-  type: 'start' | 'viewpoint' | 'rest_stop' | 'water_source' | 'summit' | 'ruins' | 'cave' | 'end';
+  type:
+    | "start"
+    | "viewpoint"
+    | "rest_stop"
+    | "water_source"
+    | "summit"
+    | "ruins"
+    | "cave"
+    | "end";
 }
 
 export interface ElevationPoint {
@@ -126,20 +149,23 @@ export interface ElevationPoint {
 export interface HikingTrail {
   id: string;
   name: string;
-  category: 'summit' | 'coastal' | 'heritage' | 'eco_forest' | 'cave';
-  difficulty: 'Easy' | 'Moderate' | 'Challenging' | 'Expert';
+  category: "summit" | "coastal" | "heritage" | "eco_forest" | "cave";
+  difficulty: "Easy" | "Moderate" | "Challenging" | "Expert";
   difficultyColor: string;
   distanceKm: number;
   elevationGainMeters: number;
   peakElevationMeters: number;
   estimatedDuration: string;
-  trailType: 'Loop' | 'Out & Back' | 'Point to Point';
+  trailType: "Loop" | "Out & Back" | "Point to Point";
   barangay: string;
   description: string;
   terrainType: string;
   recommendedGuide: boolean;
   waterAvailability: string;
-  signalCoverage: 'Good (LTE)' | 'Spotty (3G/2G)' | 'No Signal (Offline GPS Required)';
+  signalCoverage:
+    | "Good (LTE)"
+    | "Spotty (3G/2G)"
+    | "No Signal (Offline GPS Required)";
   safetyAdvisory: string;
   coordinates: [number, number][]; // [lat, lng] points for path polyline
   mapSvgPath?: string; // stylized SVG coords (x, y inside 600x400 map viewBox)
@@ -153,7 +179,7 @@ export interface HikingTrail {
 export interface TravelDocument {
   id: string;
   title: string;
-  category: 'ticket' | 'id' | 'permit' | 'voucher';
+  category: "ticket" | "id" | "permit" | "voucher";
   fileUrl?: string;
   fileData?: string;
   uploadDate: string;
@@ -178,14 +204,20 @@ export interface SocialPost {
 export interface CultureItem {
   id: string;
   title: string;
-  category: 'dish' | 'tradition' | 'phrase' | 'event';
+  category: "dish" | "tradition" | "phrase" | "event";
   image?: string;
   description: string;
   detailText: string;
   asiPhrase?: string;
   englishTranslation?: string;
   pronunciation?: string;
-  photoCredit?: { name: string; url: string; license: string; licenseUrl: string; caption: string };
+  photoCredit?: {
+    name: string;
+    url: string;
+    license: string;
+    licenseUrl: string;
+    caption: string;
+  };
   dateLabel?: string;
   evidenceLabel?: string;
   scheduleNote?: string;
@@ -205,7 +237,7 @@ export interface BookingRecord {
   guestsCount: number;
   roomType: string;
   totalAmount: number;
-  status: 'CONFIRMED' | 'PENDING' | 'CANCELLED';
+  status: "CONFIRMED" | "PENDING" | "CANCELLED";
   createdAt: string;
 }
 
@@ -221,7 +253,7 @@ export interface UserProfile {
   name: string;
   shortName: string;
   email: string;
-  role: 'traveler' | 'resident' | 'guide' | 'host' | 'admin';
+  role: "traveler" | "resident" | "guide" | "host" | "admin";
   avatar?: string;
   initials: string;
   badge: string;
@@ -238,13 +270,13 @@ export interface VerificationApplicant {
   fullName: string;
   email: string;
   phone: string;
-  appliedRole: 'host' | 'guide' | 'resident';
+  appliedRole: "host" | "guide" | "resident";
   businessOrTitleName: string;
   barangay: string;
   accreditationNumber?: string;
   documentType: string;
   documentSummary: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  status: "PENDING" | "APPROVED" | "REJECTED";
   submittedAt: string;
   reviewedAt?: string;
   notes?: string;
@@ -266,18 +298,25 @@ export interface SystemPermissions {
   maintenanceMode: boolean;
 }
 
-export type NotificationCategory = 'general' | 'personal';
+export type NotificationCategory = "general" | "personal";
 
 export interface AppNotification {
   id: string;
   category: NotificationCategory;
-  type: 'weather' | 'ferry' | 'advisory' | 'booking' | 'chat' | 'vault' | 'system';
+  type:
+    | "weather"
+    | "ferry"
+    | "advisory"
+    | "booking"
+    | "chat"
+    | "vault"
+    | "system";
   title: string;
   message: string;
   timestamp: string;
   read: boolean;
   actionTab?: string;
-  priority?: 'high' | 'normal' | 'low';
+  priority?: "high" | "normal" | "low";
   senderAvatar?: string;
   badgeText?: string;
 }
@@ -304,4 +343,3 @@ export interface ItineraryDay {
   dateLabel?: string;
   items: ItineraryItem[];
 }
-

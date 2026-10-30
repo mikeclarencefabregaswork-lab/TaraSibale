@@ -105,10 +105,25 @@
 }
 
 @layer base {
-  html { background: var(--color-shell); }
-  html.dark { background: var(--color-slate-950); color-scheme: dark; }
-  body { margin: 0; }
-  ::selection { background: var(--color-coast); color: var(--color-slate-950); }
-  :focus-visible { outline: 2px solid var(--color-teal-600); outline-offset: 3px; }
-  .dark :focus-visible { outline-color: var(--color-coast); }
+  html {
+    background: var(--color-shell);
+  }
+  html.dark {
+    background: var(--color-slate-950);
+    color-scheme: dark;
+  }
+  body {
+    margin: 0;
+  }
+  ::selection {
+    background: var(--color-coast);
+    color: var(--color-slate-950);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-teal-600);
+    outline-offset: 3px;
+  }
+  .dark :focus-visible {
+    outline-color: var(--color-coast);
+  }
 }

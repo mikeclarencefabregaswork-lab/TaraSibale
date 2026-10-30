@@ -1,52 +1,118 @@
 @keyframes page-arrive {
-  from { opacity: 0; translate: 0 10px; }
-  to { opacity: 1; translate: none; }
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+  to {
+    opacity: 1;
+    translate: none;
+  }
 }
 @keyframes surface-arrive {
-  from { opacity: 0; scale: .98; }
-  to { opacity: 1; scale: 1; }
+  from {
+    opacity: 0;
+    scale: 0.98;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
 }
 @keyframes toast-arrive {
-  from { opacity: 0; translate: 18px 0; }
-  to { opacity: 1; translate: 0 0; }
+  from {
+    opacity: 0;
+    translate: 18px 0;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
 @keyframes skeleton-shimmer {
-  from { background-position: 180% 0; }
-  to { background-position: -80% 0; }
+  from {
+    background-position: 180% 0;
+  }
+  to {
+    background-position: -80% 0;
+  }
 }
-.page-transition { animation: page-arrive 280ms ease-out backwards; }
-.toast-card { animation: toast-arrive 220ms ease-out both; }
-.animate-fade-in { animation: page-arrive 240ms ease-out backwards; }
-.animate-slideDown { animation: page-arrive 220ms ease-out backwards; }
-.animate-slide-in-right { animation: toast-arrive 220ms ease-out both; }
-.animate-scale-in { animation: surface-arrive 200ms ease-out both; }
-.animate-in, .animate-fadeIn, .page-ready { animation: page-arrive 220ms ease-out backwards; }
+.page-transition {
+  animation: page-arrive 280ms ease-out backwards;
+}
+.toast-card {
+  animation: toast-arrive 220ms ease-out both;
+}
+.animate-fade-in {
+  animation: page-arrive 240ms ease-out backwards;
+}
+.animate-slideDown {
+  animation: page-arrive 220ms ease-out backwards;
+}
+.animate-slide-in-right {
+  animation: toast-arrive 220ms ease-out both;
+}
+.animate-scale-in {
+  animation: surface-arrive 200ms ease-out both;
+}
+.animate-in,
+.animate-fadeIn,
+.page-ready {
+  animation: page-arrive 220ms ease-out backwards;
+}
 .app-motion :where(button, a, input, select, textarea) {
-  transition-property: color, background-color, border-color, box-shadow, opacity, scale;
+  transition-property:
+    color, background-color, border-color, box-shadow, opacity, scale;
   transition-duration: 160ms;
   transition-timing-function: ease-out;
 }
 @media (hover: hover) and (pointer: fine) {
-  .app-motion :where(button:not(:disabled), a):hover { filter: brightness(1.04); }
-  .app-motion main :where(.group.rounded-3xl):hover { translate: 0 -2px; }
+  .app-motion :where(button:not(:disabled), a):hover {
+    filter: brightness(1.04);
+  }
+  .app-motion main :where(.group.rounded-3xl):hover {
+    translate: 0 -2px;
+  }
 }
-.app-motion button:not(:disabled):active { scale: .97; }
-.app-motion button:disabled { cursor: not-allowed; }
-.app-motion button[aria-busy="true"] { cursor: progress; }
-.app-motion main :where(.group.rounded-3xl) { transition: translate 180ms ease-out, box-shadow 180ms ease-out; }
-.app-motion :where([role="dialog"], .fixed.inset-0 > .relative.rounded-3xl) { animation: surface-arrive 200ms ease-out both; }
+.app-motion button:not(:disabled):active {
+  scale: 0.97;
+}
+.app-motion button:disabled {
+  cursor: not-allowed;
+}
+.app-motion button[aria-busy="true"] {
+  cursor: progress;
+}
+.app-motion main :where(.group.rounded-3xl) {
+  transition:
+    translate 180ms ease-out,
+    box-shadow 180ms ease-out;
+}
+.app-motion :where([role="dialog"], .fixed.inset-0 > .relative.rounded-3xl) {
+  animation: surface-arrive 200ms ease-out both;
+}
 .skeleton-shimmer {
-  background-image: linear-gradient(100deg, transparent 25%, var(--color-teal-200) 50%, transparent 75%);
+  background-image: linear-gradient(
+    100deg,
+    transparent 25%,
+    var(--color-teal-200) 50%,
+    transparent 75%
+  );
   background-size: 220% 100%;
   animation: skeleton-shimmer 1.7s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
+    transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .app-motion button:not(:disabled):active { scale: 1; }
-  .app-motion main :where(.group.rounded-3xl):hover { translate: none; }
+  .app-motion button:not(:disabled):active {
+    scale: 1;
+  }
+  .app-motion main :where(.group.rounded-3xl):hover {
+    translate: none;
+  }
 }

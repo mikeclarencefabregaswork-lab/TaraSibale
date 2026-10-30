@@ -1,5 +1,14 @@
-import { Calendar, Compass, Map, Navigation, ShieldCheck, Sparkles, Sun, Waves } from 'lucide-react';
-import React from 'react';
+import {
+  Calendar,
+  Compass,
+  Map,
+  Navigation,
+  ShieldCheck,
+  Sparkles,
+  Sun,
+  Waves,
+} from "lucide-react";
+import React from "react";
 
 interface HeroProps {
   setActiveTab: (tab: string) => void;
@@ -14,7 +23,7 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105 opacity-40 mix-blend-overlay"
         style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&auto=format&fit=crop&q=80')`
+          backgroundImage: `url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&auto=format&fit=crop&q=80')`,
         }}
       />
 
@@ -27,7 +36,6 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
 
       {/* Content Container */}
       <div className="relative max-w-7xl mx-auto px-6 py-12 sm:py-20 lg:py-24 flex flex-col items-start justify-between min-h-[460px]">
-
         {/* Top Pills */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-teal-500/20 text-teal-300 border border-teal-500/40 backdrop-blur-md shadow-[0_0_10px_rgba(46,196,182,0.2)]">
@@ -53,40 +61,39 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
             </span>
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-slate-200/90 leading-relaxed font-normal drop-shadow-sm">
-            Welcome to Concepcion on Sibale Island! Experience powdery white beaches like Bachawan, explore coastal formations and island heritage, savor authentic Asi delicacies, and stay in cozy local homestays.
+            Welcome to Concepcion on Sibale Island! Experience powdery white
+            beaches like Bachawan, explore coastal formations and island
+            heritage, savor authentic Asi delicacies, and stay in cozy local
+            homestays.
           </p>
         </div>
 
         {/* CTA Buttons */}
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
           <button
-            onClick={() => setActiveTab('map')}
-            className="min-h-[48px] flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-extrabold text-sm bg-teal-500 hover:bg-teal-400 text-slate-950 shadow-[0_0_20px_rgba(46,196,182,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-          >
+            onClick={() => setActiveTab("map")}
+            className="min-h-[48px] flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-extrabold text-sm bg-teal-500 hover:bg-teal-400 text-slate-950 shadow-[0_0_20px_rgba(46,196,182,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
             <Map className="w-4 h-4 shrink-0" />
             <span>Interactive Island Map</span>
           </button>
 
           <button
-            onClick={() => setActiveTab('itinerary')}
-            className="min-h-[48px] flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 border border-teal-400/30 backdrop-blur-md hover:scale-[1.02] transition-all cursor-pointer"
-          >
+            onClick={() => setActiveTab("itinerary")}
+            className="min-h-[48px] flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 border border-teal-400/30 backdrop-blur-md hover:scale-[1.02] transition-all cursor-pointer">
             <Calendar className="w-4 h-4 text-teal-300 shrink-0" />
             <span>Plan Itinerary</span>
           </button>
 
           <button
-            onClick={() => setActiveTab('stay')}
-            className="min-h-[48px] flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm bg-white/10 hover:bg-white/20 text-slate-100 border border-white/20 backdrop-blur-md hover:scale-[1.02] transition-all cursor-pointer"
-          >
+            onClick={() => setActiveTab("stay")}
+            className="min-h-[48px] flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm bg-white/10 hover:bg-white/20 text-slate-100 border border-white/20 backdrop-blur-md hover:scale-[1.02] transition-all cursor-pointer">
             <Compass className="w-4 h-4 text-cyan-300 shrink-0" />
             <span>Book Homestays</span>
           </button>
 
           <button
             onClick={onOpenAiChat}
-            className="min-h-[48px] w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-200 border border-cyan-400/30 backdrop-blur-md transition-all cursor-pointer"
-          >
+            className="min-h-[48px] w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-200 border border-cyan-400/30 backdrop-blur-md transition-all cursor-pointer">
             <Sparkles className="w-4 h-4 text-cyan-300 shrink-0" />
             <span>Ask Island Travel Guide</span>
           </button>
@@ -99,8 +106,12 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
               <Compass className="w-4 h-4" />
             </div>
             <div>
-              <p className="font-extrabold text-sm text-white">Island Beaches</p>
-              <p className="text-slate-300/80 text-[11px]">Bachawan, Dampali, San Pedro</p>
+              <p className="font-extrabold text-sm text-white">
+                Island Beaches
+              </p>
+              <p className="text-slate-300/80 text-[11px]">
+                Bachawan, Dampali, San Pedro
+              </p>
             </div>
           </div>
 
@@ -109,8 +120,12 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <p className="font-extrabold text-sm text-white">Island Landmarks</p>
-              <p className="text-slate-300/80 text-[11px]">Nature & Cultural Sites</p>
+              <p className="font-extrabold text-sm text-white">
+                Island Landmarks
+              </p>
+              <p className="text-slate-300/80 text-[11px]">
+                Nature & Cultural Sites
+              </p>
             </div>
           </div>
 
@@ -119,8 +134,12 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
               <Navigation className="w-4 h-4" />
             </div>
             <div>
-              <p className="font-extrabold text-sm text-white">Daily Passenger Boat</p>
-              <p className="text-slate-300/80 text-[11px]">Pinamalayan (Mindoro) 1.5h</p>
+              <p className="font-extrabold text-sm text-white">
+                Daily Passenger Boat
+              </p>
+              <p className="text-slate-300/80 text-[11px]">
+                Pinamalayan (Mindoro) 1.5h
+              </p>
             </div>
           </div>
 
@@ -129,12 +148,15 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <p className="font-extrabold text-sm text-white">Offline Accessibility</p>
-              <p className="text-slate-300/80 text-[11px]">Saved trip notes & vouchers</p>
+              <p className="font-extrabold text-sm text-white">
+                Offline Accessibility
+              </p>
+              <p className="text-slate-300/80 text-[11px]">
+                Saved trip notes & vouchers
+              </p>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

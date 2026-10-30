@@ -1,15 +1,51 @@
-import React from 'react';
+import React from "react";
 
 /** Shown only while catalog/account data or a lazy page is actually pending. */
 export const PageSkeleton: React.FC<{ tab: string }> = ({ tab }) => (
-  <div role="status" aria-label="Loading page" aria-busy="true" className="space-y-6 min-h-[60vh]">
-    <span className="sr-only">Loading {tab === 'stay' ? 'accommodations' : tab}…</span>
+  <div
+    role="status"
+    aria-label="Loading page"
+    aria-busy="true"
+    className="space-y-6 min-h-[60vh]">
+    <span className="sr-only">
+      Loading {tab === "stay" ? "accommodations" : tab}…
+    </span>
     <div aria-hidden="true" className="space-y-3">
       <div className="skeleton-shimmer h-8 w-2/3 sm:w-80 rounded-xl bg-slate-200 dark:bg-slate-800" />
       <div className="skeleton-shimmer h-4 w-4/5 sm:w-96 rounded-lg bg-slate-100 dark:bg-slate-800" />
     </div>
-    {tab === 'explore' && <div aria-hidden="true" className="skeleton-shimmer h-80 rounded-3xl bg-slate-200 dark:bg-slate-800" />}
-    {tab === 'map' ? <div aria-hidden="true" className="skeleton-shimmer h-[60vh] rounded-3xl bg-slate-200 dark:bg-slate-800" /> : tab === 'stay' ? <AccommodationsGridSkeleton count={2} /> : tab === 'explore' ? <AttractionsGridSkeleton count={3} /> : <div aria-hidden="true" className="grid gap-5 md:grid-cols-2">{[0,1,2,3].map(index => <div key={index} className="space-y-4 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900 p-6"><div className="skeleton-shimmer h-6 w-1/2 rounded-lg bg-slate-200 dark:bg-slate-800" />{[0,1,2].map(line => <div key={line} className="skeleton-shimmer h-4 rounded-lg bg-slate-100 dark:bg-slate-800" />)}</div>)}</div>}
+    {tab === "explore" && (
+      <div
+        aria-hidden="true"
+        className="skeleton-shimmer h-80 rounded-3xl bg-slate-200 dark:bg-slate-800"
+      />
+    )}
+    {tab === "map" ? (
+      <div
+        aria-hidden="true"
+        className="skeleton-shimmer h-[60vh] rounded-3xl bg-slate-200 dark:bg-slate-800"
+      />
+    ) : tab === "stay" ? (
+      <AccommodationsGridSkeleton count={2} />
+    ) : tab === "explore" ? (
+      <AttractionsGridSkeleton count={3} />
+    ) : (
+      <div aria-hidden="true" className="grid gap-5 md:grid-cols-2">
+        {[0, 1, 2, 3].map((index) => (
+          <div
+            key={index}
+            className="space-y-4 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900 p-6">
+            <div className="skeleton-shimmer h-6 w-1/2 rounded-lg bg-slate-200 dark:bg-slate-800" />
+            {[0, 1, 2].map((line) => (
+              <div
+                key={line}
+                className="skeleton-shimmer h-4 rounded-lg bg-slate-100 dark:bg-slate-800"
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    )}
   </div>
 );
 
@@ -21,8 +57,7 @@ export const AttractionSkeletonCard: React.FC = () => {
   return (
     <div
       aria-hidden="true"
-      className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-slate-900/50 backdrop-blur-xl overflow-hidden flex flex-col justify-between shadow-sm animate-pulse"
-    >
+      className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-slate-900/50 backdrop-blur-xl overflow-hidden flex flex-col justify-between shadow-sm animate-pulse">
       <div>
         {/* Image Placeholder */}
         <div className="relative h-52 w-full bg-slate-200/90 dark:bg-slate-800/80 overflow-hidden">
@@ -81,14 +116,17 @@ export const AttractionSkeletonCard: React.FC = () => {
 /**
  * Grid of Attraction Skeletons
  */
-export const AttractionsGridSkeleton: React.FC<{ count?: number }> = ({ count = 6 }) => {
+export const AttractionsGridSkeleton: React.FC<{ count?: number }> = ({
+  count = 6,
+}) => {
   return (
     <div
       role="status"
       aria-label="Loading attractions..."
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-    >
-      <span className="sr-only">Loading attractions and heritage landmarks...</span>
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <span className="sr-only">
+        Loading attractions and heritage landmarks...
+      </span>
       {Array.from({ length: count }).map((_, index) => (
         <AttractionSkeletonCard key={`attraction-skeleton-${index}`} />
       ))}
@@ -104,8 +142,7 @@ export const AccommodationSkeletonCard: React.FC = () => {
   return (
     <div
       aria-hidden="true"
-      className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-slate-900/50 backdrop-blur-xl overflow-hidden flex flex-col justify-between shadow-sm animate-pulse"
-    >
+      className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-slate-900/50 backdrop-blur-xl overflow-hidden flex flex-col justify-between shadow-sm animate-pulse">
       <div>
         {/* Image Placeholder */}
         <div className="relative h-60 w-full bg-slate-200/90 dark:bg-slate-800/80 overflow-hidden">
@@ -163,13 +200,14 @@ export const AccommodationSkeletonCard: React.FC = () => {
 /**
  * Grid of Accommodation Skeletons
  */
-export const AccommodationsGridSkeleton: React.FC<{ count?: number }> = ({ count = 4 }) => {
+export const AccommodationsGridSkeleton: React.FC<{ count?: number }> = ({
+  count = 4,
+}) => {
   return (
     <div
       role="status"
       aria-label="Loading accommodations..."
-      className="grid grid-cols-1 md:grid-cols-2 gap-6"
-    >
+      className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <span className="sr-only">Loading accommodations and homestays...</span>
       {Array.from({ length: count }).map((_, index) => (
         <AccommodationSkeletonCard key={`accommodation-skeleton-${index}`} />

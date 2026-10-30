@@ -18,7 +18,12 @@
     "bookingMode": "reference-only",
     "evidenceLabel": "Documented in a 2019 travel report · current operation unconfirmed",
     "verificationNote": "Confirm directly with the property or the municipality before making travel plans. No current public contact, room inventory or property photograph was verified.",
-    "sources": [{ "title": "Sibalenhon Backpacker · Sibale Island, a hidden paradise of Romblon · 9 March 2019", "url": "https://sibalenhonbackpacker.wordpress.com/2019/03/09/sibale-island-a-hidden-paradise-of-romblon/" }],
+    "sources": [
+      {
+        "title": "Sibalenhon Backpacker · Sibale Island, a hidden paradise of Romblon · 9 March 2019",
+        "url": "https://sibalenhonbackpacker.wordpress.com/2019/03/09/sibale-island-a-hidden-paradise-of-romblon/"
+      }
+    ],
     "verifiedAt": "2026-10-26"
   },
   {
@@ -40,7 +45,12 @@
     "bookingMode": "reference-only",
     "evidenceLabel": "Documented in a 2019 travel report · current operation unconfirmed",
     "verificationNote": "Confirm directly with the property or the municipality before making travel plans. No current public contact, room inventory or property photograph was verified.",
-    "sources": [{ "title": "Sibalenhon Backpacker · Sibale Island, a hidden paradise of Romblon · 9 March 2019", "url": "https://sibalenhonbackpacker.wordpress.com/2019/03/09/sibale-island-a-hidden-paradise-of-romblon/" }],
+    "sources": [
+      {
+        "title": "Sibalenhon Backpacker · Sibale Island, a hidden paradise of Romblon · 9 March 2019",
+        "url": "https://sibalenhonbackpacker.wordpress.com/2019/03/09/sibale-island-a-hidden-paradise-of-romblon/"
+      }
+    ],
     "verifiedAt": "2026-10-26"
   }
 ]
