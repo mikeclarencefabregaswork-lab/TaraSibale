@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaraSibale - Concepcion, Romblon Tourism</title>
+    <link rel="icon" type="image/png" href="/tarasibale-logo.png" />
+    <link rel="apple-touch-icon" href="/tarasibale-logo.png" />
+    <meta name="description" content="Discover pristine beaches, hiking trails, Spanish watchtowers, local homestays, ferry schedules, offline maps, AI concierge, and group travel tools with TaraSibale." />
+    <meta property="og:title" content="TaraSibale - Concepcion, Romblon Tourism" />
+    <meta property="og:description" content="Discover pristine beaches, hiking trails, Spanish watchtowers, local homestays, ferry schedules, offline maps, AI concierge, and group travel tools with TaraSibale." />
+    <meta property="og:image" content="/tarasibale-logo.png" />
+    <script>
+      (function() {
+        try {
+          var theme = localStorage.getItem('tara_sibale_theme');
+          var isDark = theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

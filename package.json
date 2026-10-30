@@ -1,0 +1,29 @@
+{
+  "name": "tarasibale",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "Frontend",
+    "Backend"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n frontend,backend -c cyan,green \"npm run dev --workspace Frontend\" \"npm run dev --workspace Backend\"",
+    "build": "npm run build --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces --if-present",
+    "test:integration": "npm run test:integration --workspace Backend",
+    "db:migrate": "npm run db:migrate --workspace Backend",
+    "db:seed": "npm run db:seed --workspace Backend",
+    "admin:promote": "npm run admin:promote --workspace Backend --",
+    "db:start": "pg_ctl -D .local-postgres/data -l .local-postgres/server.log start",
+    "db:stop": "pg_ctl -D .local-postgres/data stop -m fast",
+    "db:status": "pg_ctl -D .local-postgres/data status"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}

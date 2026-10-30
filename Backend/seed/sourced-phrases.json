@@ -1,0 +1,87 @@
+[
+  {
+    "id": "culture-phrase-asi-calling-at-a-home",
+    "title": "Calling at a home",
+    "category": "phrase",
+    "asiPhrase": "Tagbalay!",
+    "englishTranslation": "Is anyone home?",
+    "description": "Calling at a home",
+    "detailText": "A call on approaching a house; this is not a general welcome greeting.",
+    "evidenceLabel": "Published Bantoanon–Asi · SIL, 1985 · pp. 4–5, dialogue A1",
+    "sources": [
+      {
+        "title": "Tagmi · Everyday Expressions: A Phrase Book for Bantoanon (Asi)",
+        "url": "https://www.tagmi.net/en/everyday-expressions-phrase-book"
+      }
+    ],
+    "verifiedAt": "2026-10-25"
+  },
+  {
+    "id": "culture-phrase-asi-come-in",
+    "title": "Inviting someone inside",
+    "category": "phrase",
+    "asiPhrase": "Suyor anay.",
+    "englishTranslation": "Come in.",
+    "description": "Inviting someone inside",
+    "detailText": "An invitation from the host to enter.",
+    "evidenceLabel": "Published Bantoanon–Asi · SIL, 1985 · pp. 4–5, dialogue B4",
+    "sources": [
+      {
+        "title": "Tagmi · Everyday Expressions: A Phrase Book for Bantoanon (Asi)",
+        "url": "https://www.tagmi.net/en/everyday-expressions-phrase-book"
+      }
+    ],
+    "verifiedAt": "2026-10-25"
+  },
+  {
+    "id": "culture-phrase-asi-sit-down",
+    "title": "Offering a seat",
+    "category": "phrase",
+    "asiPhrase": "Ingkor.",
+    "englishTranslation": "Sit down.",
+    "description": "Offering a seat",
+    "detailText": "Used by the host when offering a seat to a visitor.",
+    "evidenceLabel": "Published Bantoanon–Asi · SIL, 1985 · pp. 4–5, dialogue B4",
+    "sources": [
+      {
+        "title": "Tagmi · Everyday Expressions: A Phrase Book for Bantoanon (Asi)",
+        "url": "https://www.tagmi.net/en/everyday-expressions-phrase-book"
+      }
+    ],
+    "verifiedAt": "2026-10-25"
+  },
+  {
+    "id": "culture-phrase-asi-thanks",
+    "title": "Giving thanks",
+    "category": "phrase",
+    "asiPhrase": "Salamat",
+    "englishTranslation": "Thank you.",
+    "description": "Giving thanks",
+    "detailText": "The word for thanks appears in the book’s exchanges about a visit and refreshments.",
+    "evidenceLabel": "Published Bantoanon–Asi · SIL, 1985 · pp. 6–7, dialogue B2 and A3",
+    "sources": [
+      {
+        "title": "Tagmi · Everyday Expressions: A Phrase Book for Bantoanon (Asi)",
+        "url": "https://www.tagmi.net/en/everyday-expressions-phrase-book"
+      }
+    ],
+    "verifiedAt": "2026-10-25"
+  },
+  {
+    "id": "culture-phrase-asi-take-care",
+    "title": "Saying goodbye",
+    "category": "phrase",
+    "asiPhrase": "Magrahan ka.",
+    "englishTranslation": "Take care.",
+    "description": "Saying goodbye",
+    "detailText": "A parting expression in the book’s leaving-home dialogue.",
+    "evidenceLabel": "Published Bantoanon–Asi · SIL, 1985 · pp. 6–7, dialogue B6",
+    "sources": [
+      {
+        "title": "Tagmi · Everyday Expressions: A Phrase Book for Bantoanon (Asi)",
+        "url": "https://www.tagmi.net/en/everyday-expressions-phrase-book"
+      }
+    ],
+    "verifiedAt": "2026-10-25"
+  }
+]

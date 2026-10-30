@@ -1,0 +1,57 @@
+[
+  {
+    "id": "culture-event-immaculate-conception",
+    "title": "Feast of the Immaculate Conception",
+    "category": "event",
+    "dateLabel": "December 8 · annual patronal feast",
+    "evidenceLabel": "Feast date corroborated by parish information",
+    "description": "Concepcion (Sibale) celebrates its patronal feast in honor of the Immaculate Conception on December 8.",
+    "detailText": "The parish information and local reporting agree on the feast date. Confirm this year’s Mass times and activity program with the parish or municipality before arranging a visit.",
+    "sources": [
+      {
+        "title": "Romblon News · Sibale fiesta report, 7 December 2017 (updated 2021)",
+        "url": "https://romblonnews.net/2017/12/kapistahan-ng-immaculada-concepcion-ipinagdiriwang-ng-bayan-ng-sibale/"
+      },
+      {
+        "title": "TheOldChurches · Immaculate Conception Parish, Concepcion",
+        "url": "https://www.theoldchurches.com/philippines/romblon/concepcion-romblon/immaculate-conception-church-concepcion-3/"
+      }
+    ],
+    "verifiedAt": "2026-10-25",
+    "scheduleNote": "The current-year event program has not been verified. Confirm details with the parish or local organizers."
+  },
+  {
+    "id": "culture-custom-biniray",
+    "title": "Biniray & Parish Processions",
+    "category": "tradition",
+    "dateLabel": "Part of the patronal fiesta · current dates to confirm",
+    "evidenceLabel": "Documented in local reporting from 2017",
+    "description": "A local account of Sibale’s fiesta describes Masses, processions and a tradition called Biniray.",
+    "detailText": "These are documented elements of the celebration, not a confirmed schedule for the current year. Ask the parish about current arrangements and follow participants’ guidance during religious observances.",
+    "sources": [
+      {
+        "title": "Romblon News · Sibale fiesta report, 7 December 2017 (updated 2021)",
+        "url": "https://romblonnews.net/2017/12/kapistahan-ng-immaculada-concepcion-ipinagdiriwang-ng-bayan-ng-sibale/"
+      }
+    ],
+    "verifiedAt": "2026-10-25",
+    "scheduleNote": "The current-year event program has not been verified. Confirm details with the parish or local organizers."
+  },
+  {
+    "id": "culture-custom-fiesta-hospitality",
+    "title": "Fiesta Hospitality & Community Gatherings",
+    "category": "tradition",
+    "dateLabel": "Around the town fiesta · arrangements vary",
+    "evidenceLabel": "Documented in local reporting from 2017",
+    "description": "Local reporting describes household feasts, baratilyo stalls, sports and community performances during Sibale’s December celebration.",
+    "detailText": "Household hospitality is described in the historical report, not offered here as a guaranteed visitor service. Join private gatherings when invited and respect each host’s arrangements.",
+    "sources": [
+      {
+        "title": "Romblon News · Sibale fiesta report, 7 December 2017 (updated 2021)",
+        "url": "https://romblonnews.net/2017/12/kapistahan-ng-immaculada-concepcion-ipinagdiriwang-ng-bayan-ng-sibale/"
+      }
+    ],
+    "verifiedAt": "2026-10-25",
+    "scheduleNote": "The current-year event program has not been verified. Confirm details with the parish or local organizers."
+  }
+]

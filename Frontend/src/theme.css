@@ -1,0 +1,114 @@
+/* Oceanic travel palette: navy, turquoise, seafoam, sand, and coral.
+ * Existing utility names are retained so every screen shares this palette.
+ * Derived shades provide contrast, hover states, and the dark theme.
+ */
+@theme static {
+  --color-ocean: #073b4c;
+  --color-rosewood: #ff8a75;
+  --color-coast: #2ec4b6;
+  --color-shell: #f4fbfc;
+  --color-dune: #ead8b0;
+
+  --color-white: #ffffff;
+  --color-slate-50: #f4fbfc;
+  --color-slate-100: #e8f3f5;
+  --color-slate-200: #cfe2e7;
+  --color-slate-300: #abcbd3;
+  --color-slate-400: #7da3af;
+  --color-slate-500: #466a79;
+  --color-slate-600: #30576a;
+  --color-slate-700: #174b60;
+  --color-slate-800: #103c50;
+  --color-slate-900: #0b2d40;
+  --color-slate-950: #061e2c;
+
+  --color-teal-50: #effcf9;
+  --color-teal-100: #d3f8ef;
+  --color-teal-200: #aaf0e0;
+  --color-teal-300: #7ce4d2;
+  --color-teal-400: #54d6c5;
+  --color-teal-500: #2ec4b6;
+  --color-teal-600: #087d79;
+  --color-teal-700: #086561;
+  --color-teal-800: #07534f;
+  --color-teal-900: #06433f;
+  --color-teal-950: #032d2d;
+
+  --color-cyan-50: #effaff;
+  --color-cyan-100: #d9f3ff;
+  --color-cyan-200: #b9e9fc;
+  --color-cyan-300: #8ddbf4;
+  --color-cyan-400: #5bcbe9;
+  --color-cyan-500: #22b5d6;
+  --color-cyan-600: #087c9e;
+  --color-cyan-700: #086580;
+  --color-cyan-800: #0b5268;
+  --color-cyan-900: #0b4356;
+  --color-cyan-950: #062d3c;
+
+  --color-amber-50: #fdf9ef;
+  --color-amber-100: #f8efdb;
+  --color-amber-200: #f1e4c5;
+  --color-amber-300: #ead8b0;
+  --color-amber-400: #dfc797;
+  --color-amber-500: #d2b37c;
+  --color-amber-600: #94713a;
+  --color-amber-700: #785b2c;
+  --color-amber-800: #604924;
+  --color-amber-900: #4d3b21;
+  --color-amber-950: #302414;
+
+  --color-sky-50: var(--color-teal-50);
+  --color-sky-100: var(--color-teal-100);
+  --color-sky-200: var(--color-teal-200);
+  --color-sky-300: var(--color-teal-300);
+  --color-sky-400: var(--color-teal-400);
+  --color-sky-500: var(--color-teal-500);
+  --color-sky-600: var(--color-teal-600);
+  --color-sky-700: var(--color-teal-700);
+  --color-sky-800: var(--color-teal-800);
+  --color-sky-900: var(--color-teal-900);
+  --color-sky-950: var(--color-teal-950);
+  --color-blue-50: var(--color-teal-50);
+  --color-blue-100: var(--color-teal-100);
+  --color-blue-200: var(--color-teal-200);
+  --color-blue-300: var(--color-teal-300);
+  --color-blue-400: var(--color-teal-400);
+  --color-blue-500: var(--color-teal-500);
+  --color-blue-600: var(--color-teal-600);
+  --color-blue-700: var(--color-teal-700);
+  --color-blue-800: var(--color-teal-800);
+  --color-blue-900: var(--color-teal-900);
+  --color-blue-950: var(--color-teal-950);
+  --color-indigo-50: #fff5f0;
+  --color-indigo-100: #ffe6dc;
+  --color-indigo-200: #ffcebd;
+  --color-indigo-300: #ffb29a;
+  --color-indigo-400: #ff8a75;
+  --color-indigo-500: #f37762;
+  --color-indigo-600: #b54a38;
+  --color-indigo-700: #963a2b;
+  --color-indigo-800: #7a3025;
+  --color-indigo-900: #63291f;
+  --color-indigo-950: #3d1913;
+  --color-purple-50: #fff5f0;
+  --color-purple-100: #ffe6dc;
+  --color-purple-200: #ffcebd;
+  --color-purple-300: #ffb29a;
+  --color-purple-400: #ff8a75;
+  --color-purple-500: #f37762;
+  --color-purple-600: #b54a38;
+  --color-purple-700: #963a2b;
+  --color-purple-800: #7a3025;
+  --color-purple-900: #63291f;
+  --color-purple-950: #3d1913;
+}
+
+@layer base {
+  html { background: var(--color-shell); }
+  html.dark { background: var(--color-slate-950); color-scheme: dark; }
+  body { margin: 0; }
+  ::selection { background: var(--color-coast); color: var(--color-slate-950); }
+  :focus-visible { outline: 2px solid var(--color-teal-600); outline-offset: 3px; }
+  .dark :focus-visible { outline-color: var(--color-coast); }
+}
