@@ -491,7 +491,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
 
   // Copy text summary to clipboard
   const handleCopySummary = async () => {
-    let summary = `🏝️ SIBALE ISLAND TRIP ITINERARY (${days.length} Days)\n\n`;
+    let summary = `PORTFOLIO SAMPLE — SIBALE ISLAND TRIP ITINERARY (${days.length} Days)\n\n`;
     days.forEach((day) => {
       summary += `📅 ${day.title.toUpperCase()}\n`;
       day.items.forEach((item, idx) => {
@@ -500,7 +500,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
       });
       summary += "\n";
     });
-    summary += `🚢 Port Hotlines: Concepcion Port Tourism (+63 917 555 0192) • Coast Guard Sub-station (+63 998 123 4567)\n`;
+    summary += "PORTFOLIO SAMPLE ONLY. Not verified for navigation, reservations or emergency use.\n";
     summary += `Prepared with Tara Sibale! App\n`;
 
     try {
@@ -525,7 +525,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
               Tara Sibale!
             </h1>
             <p className="text-sm font-semibold text-slate-600">
-              Official Travel Itinerary & Island Navigation Pass
+              Portfolio Sample Itinerary — Not a Travel or Navigation Pass
             </p>
             <p className="text-xs text-slate-500 mt-1">
               Municipality of Concepcion (Maestro de Campo), Romblon,
@@ -537,7 +537,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
               {days.length}-DAY EXPEDITION
             </span>
             <p className="text-xs text-slate-500 mt-2">
-              Emergency Hotline: +63 917 555 0192
+              Emergency Hotline: Contact withheld — demo only
             </p>
           </div>
         </div>
@@ -1233,11 +1233,11 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
               📞 Municipal Assistance
             </h4>
             <p>
-              Concepcion Police Station: +63 998 598 5849
+              Concepcion Police Station: Contact withheld — demo only
               <br />
-              Rural Health Unit (RHU): +63 917 882 1923
+              Rural Health Unit (RHU): Contact withheld — demo only
               <br />
-              Tourism Desk: +63 917 555 0192
+              Tourism Desk: Contact withheld — demo only
             </p>
           </div>
         </div>

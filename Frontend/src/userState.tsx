@@ -1,3 +1,4 @@
+import { portfolioStorageKey } from "./portfolio";
 import { toast } from "./toastStore";
 import {
   createContext,
@@ -99,7 +100,7 @@ export function useUserStatePersistence(
     if (!snapshot.userId) {
       try {
         localStorage.setItem(
-          "tara_sibale_guest_state",
+          portfolioStorageKey,
           JSON.stringify(snapshot.state),
         );
         baseline.current = snapshot.state;
@@ -144,7 +145,7 @@ export function useUserStatePersistence(
       if (!snapshot.userId) {
         try {
           localStorage.setItem(
-            "tara_sibale_guest_state",
+            portfolioStorageKey,
             JSON.stringify(snapshot.state),
           );
         } catch {
@@ -179,7 +180,7 @@ export function useGuestState() {
   return useState<SavedState>(() => {
     try {
       const saved = JSON.parse(
-        localStorage.getItem("tara_sibale_guest_state") || "{}",
+        localStorage.getItem(portfolioStorageKey) || "{}",
       );
       return {
         notifications: Array.isArray(saved.notifications)

@@ -25,6 +25,8 @@ OpenStreetMap positions are community-mapped reference locations, not surveyed a
 
 ## Photo permission and implementation
 
+**Portfolio update, 31 October 2026:** Default portfolio API presentation now withholds these six photographs and galleries, showing an original labeled placeholder instead. The database retains source/permission metadata unchanged. The implementation below describes the earlier local-preview selection, not permission for public distribution.
+
 The user explicitly selected **linked real photographs with credits for local preview**. All six images link directly to the original WordPress-hosted photographs; no copies were downloaded or bundled. Each card links its credit to the source; the detail view includes the original caption context and supporting references. The source captions separately credit HashTravel for Guiwanon and JustGoPH for Poblacion/Quebrada. Other credits identify the source publication, without claiming a photographer attribution it did not state.
 
 No open reuse license was found for these photos. Attribution alone does not establish a license. Obtain the rights holders' permission or replace them with permission-cleared images before public publication. External availability is outside the app's control; cards use a local unavailable-photo fallback on load failure. The linked photos are older reference photography, not a claim about current conditions.

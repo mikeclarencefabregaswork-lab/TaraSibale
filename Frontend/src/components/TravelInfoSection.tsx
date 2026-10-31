@@ -3,7 +3,6 @@ import {
   CheckSquare,
   ChevronRight,
   Clock,
-  PhoneCall,
   ShieldAlert,
   Square,
 } from "lucide-react";
@@ -70,7 +69,7 @@ export const TravelInfoSection: React.FC<TravelInfoSectionProps> = ({
         </div>
         <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 mt-1 font-medium">
           Daily passenger boat timetables, island transport rentals, emergency
-          hotlines, and packing guides.
+          sample schedules and packing guides.
         </p>
       </div>
 
@@ -192,56 +191,12 @@ export const TravelInfoSection: React.FC<TravelInfoSectionProps> = ({
           <div className="flex items-center gap-2">
             <ShieldAlert className="w-5 h-5 text-rose-500 dark:text-rose-400" />
             <h3 className="font-black text-lg text-slate-900 dark:text-white">
-              24/7 Island Emergency Hotlines
+              Emergency contacts withheld
             </h3>
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-300">
-            Keep these emergency numbers saved in your phone during your visit.
+            This portfolio does not provide verified emergency contacts. Obtain current numbers directly from the relevant local authorities before traveling.
           </p>
-
-          <div className="space-y-3">
-            {[
-              {
-                title: "Concepcion MDRRMO Disaster Command",
-                phone: "+63 917 555 7422",
-                desc: "Weather alerts & sea rescue",
-              },
-              {
-                title: "Philippine Coast Guard Substation Sibale",
-                phone: "+63 928 440 1982",
-                desc: "Sea advisories & vessel clearance",
-              },
-              {
-                title: "Concepcion Municipal Police Station",
-                phone: "+63 998 776 5432",
-                desc: "Island security & assistance",
-              },
-              {
-                title: "Concepcion Rural Health Unit (RHU)",
-                phone: "+63 919 887 6543",
-                desc: "Medical clinic & emergency care",
-              },
-            ].map((contact, i) => (
-              <div
-                key={i}
-                className="p-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-white/5 backdrop-blur-md flex items-center justify-between gap-3">
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">
-                    {contact.title}
-                  </h4>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-300">
-                    {contact.desc}
-                  </p>
-                </div>
-                <a
-                  href={`tel:${contact.phone}`}
-                  className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-1.5 shrink-0 shadow-sm border border-rose-500/30 backdrop-blur-md transition-all">
-                  <PhoneCall className="w-3.5 h-3.5" />
-                  <span>Call</span>
-                </a>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>

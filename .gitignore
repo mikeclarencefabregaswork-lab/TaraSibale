@@ -11,3 +11,6 @@ coverage/
 
 # Project-local PostgreSQL data and logs
 .local-postgres/
+
+# Unknown-rights original artwork retained locally, excluded from redistribution
+/docs/rights-review/withheld-assets/

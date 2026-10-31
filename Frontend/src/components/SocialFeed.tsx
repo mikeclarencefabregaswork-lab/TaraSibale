@@ -90,8 +90,7 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 mt-1 font-medium">
-            Real photos and stories tagged #ExploreConcepcion from fellow
-            travelers and locals.
+            Portfolio community-feed interface. Public submissions are disabled.
           </p>
         </div>
 

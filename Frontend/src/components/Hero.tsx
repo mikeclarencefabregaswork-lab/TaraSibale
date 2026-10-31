@@ -19,14 +19,6 @@ interface HeroProps {
 export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
   return (
     <div className="relative overflow-hidden rounded-3xl mb-8 border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-2xl bg-white/10 dark:bg-slate-900/60 text-white">
-      {/* Background Image with Translucent Overlay */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105 opacity-40 mix-blend-overlay"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&auto=format&fit=crop&q=80')`,
-        }}
-      />
-
       {/* Gradient Mask */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#061e2c]/80 via-[#103c50]/70 to-[#073b4c]/60 backdrop-blur-md" />
 
@@ -40,7 +32,7 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
         <div className="flex flex-wrap items-center gap-2 mb-4">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-teal-500/20 text-teal-300 border border-teal-500/40 backdrop-blur-md shadow-[0_0_10px_rgba(46,196,182,0.2)]">
             <Sparkles className="w-3.5 h-3.5 text-teal-400" />
-            TaraSibale • Official Tourism Portal
+            TaraSibale • Portfolio Prototype
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-cyan-200 border border-white/20 backdrop-blur-md">
             <Waves className="w-3.5 h-3.5 text-cyan-300" />
@@ -88,7 +80,7 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
             onClick={() => setActiveTab("stay")}
             className="min-h-[48px] flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm bg-white/10 hover:bg-white/20 text-slate-100 border border-white/20 backdrop-blur-md hover:scale-[1.02] transition-all cursor-pointer">
             <Compass className="w-4 h-4 text-cyan-300 shrink-0" />
-            <span>Book Homestays</span>
+            <span>View Sample Stays</span>
           </button>
 
           <button

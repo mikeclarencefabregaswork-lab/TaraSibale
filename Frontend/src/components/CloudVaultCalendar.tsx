@@ -1,3 +1,5 @@
+import { PORTFOLIO_MODE } from "../portfolio";
+import { PortfolioCollectionNotice } from "./PortfolioNotice";
 import { toast } from "../toastStore";
 import {
   Calendar,
@@ -159,6 +161,8 @@ export const CloudVaultCalendar: React.FC<CloudVaultCalendarProps> = ({
     URL.revokeObjectURL(url);
     toast.info("Calendar download started.");
   };
+
+  if (PORTFOLIO_MODE) return <PortfolioCollectionNotice kind="documents" />;
 
   return (
     <div className="space-y-6">

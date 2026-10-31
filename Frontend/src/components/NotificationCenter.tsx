@@ -394,7 +394,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           <span className="font-semibold text-slate-700 dark:text-slate-300">
             MDRRMO:
           </span>
-          <span className="font-mono text-[10px]">+63 917 555 7422</span>
+          <span className="font-mono text-[10px]">Contact withheld — demo only</span>
         </div>
 
         <button

@@ -11,6 +11,7 @@ import { z, ZodError } from "zod";
 import { hashPassword, verifyPassword } from "./auth.js";
 import * as v from "./validation.js";
 import { createPublishingLimit } from "./publishing.js";
+import { portfolioCatalog } from "./portfolio.js";
 
 interface UserRow {
   id: string;
@@ -94,7 +95,7 @@ async function transaction<T>(
   }
 }
 
-export function createApi(pool: Pool) {
+export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {}) {
   const api = Router();
   api.use(express.json({ limit: "6mb" }));
   api.use((_request, response, next) => {
@@ -122,6 +123,7 @@ export function createApi(pool: Pool) {
     next();
   });
   api.use(async (request, response, next) => {
+    if (options.portfolioMode) { next(); return; }
     const token = tokenFrom(request);
     if (token && /^[0-9a-f]{64}$/.test(token)) {
       const result = await pool.query<UserRow>(
@@ -293,7 +295,7 @@ export function createApi(pool: Pool) {
         "SELECT id,kind,data FROM resources WHERE data->>'isArchived' IS DISTINCT FROM 'true' ORDER BY id",
       ),
       settings(),
-      socialPosts(response.locals.user?.id),
+      options.portfolioMode ? Promise.resolve([]) : socialPosts(response.locals.user?.id),
       pool.query(
         "SELECT target_id,count(*)::int AS count,round(avg((data->>'rating')::numeric),1)::float8 AS rating FROM reviews GROUP BY target_id",
       ),
@@ -318,7 +320,7 @@ export function createApi(pool: Pool) {
           : row.data,
       );
     }
-    response.json({
+    const catalog = {
       attractions: grouped.attraction,
       accommodations: grouped.accommodation,
       ferryRoutes: grouped.ferry,
@@ -326,7 +328,8 @@ export function createApi(pool: Pool) {
       hikingTrails: grouped.trail,
       systemPermissions: permissions,
       socialPosts: posts,
-    });
+    };
+    response.json(options.portfolioMode ? portfolioCatalog(catalog) : catalog);
   });
   const readBookings = async (id: string) =>
     (

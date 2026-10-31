@@ -1,3 +1,4 @@
+import { PORTFOLIO_MODE } from "../portfolio";
 import { Bot, RefreshCw, Send, User, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { api, errorText } from "../api";
@@ -44,7 +45,7 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
     {
       id: "welcome-1",
       sender: "ai",
-      text: "Welcome to Concepcion, Romblon! I am your curated travel guide for Sibale Island. Ask me about ferry timetables, Bachawan Beach, local homestays, or Asi dialect phrases!",
+      text: "Welcome to the TaraSibale portfolio demo. Use sample questions only; this prototype does not provide live travel advice, bookings or emergency assistance.",
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -80,6 +81,10 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
     setIsLoading(true);
 
     try {
+      if (PORTFOLIO_MODE) {
+        setMessages(previous => [...previous, createChatMessage("ai", "Portfolio demonstration: explore the Culture section for sourced phrases and food credits, or try a sample itinerary. Routes, sailing times, prices and contacts are not verified for travel. This demo cannot book services or contact guides. Your sample chat stays in this page’s memory and is not sent to the server.", "portfolio_demo")]);
+        return;
+      }
       const data = await api<{ reply: string; source: string }>("/api/chat", {
         message: prompt,
       });
@@ -113,7 +118,7 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-full bg-white p-0.5 flex items-center justify-center shadow-[0_0_12px_rgba(46,196,182,0.4)] ring-2 ring-teal-400/60 shrink-0 overflow-hidden">
             <img
-              src="/tarasibale-logo.png"
+              src="/portfolio-mark.svg"
               alt="TaraSibale Guide"
               className="w-full h-full object-contain rounded-full"
               referrerPolicy="no-referrer"

@@ -1,3 +1,5 @@
+import { PORTFOLIO_MODE } from "./portfolio";
+import { PortfolioNotice } from "./components/PortfolioNotice";
 import { toast } from "./toastStore";
 import { ToastViewport } from "./components/ToastViewport";
 import { PageSkeleton } from "./components/Skeletons";
@@ -626,6 +628,8 @@ export default function App() {
             setNotifications={updateNotifications}
           />
 
+          {PORTFOLIO_MODE && <PortfolioNotice />}
+
           {/* Dynamic Content Refresh Sync Toast */}
 
           {/* Pull-to-refresh mobile wrapper for dynamic content */}
@@ -871,7 +875,7 @@ export default function App() {
               className={`fixed ${isMobileNavVisible ? "bottom-20" : "bottom-5"} md:bottom-6 right-4 z-40 pl-2.5 pr-4 py-2 rounded-full bg-gradient-to-r from-teal-700 via-teal-600 to-cyan-700 text-white shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer flex items-center gap-2 font-extrabold text-xs border border-white/20 backdrop-blur-md`}>
               <div className="w-7 h-7 rounded-full bg-white p-0.5 shadow-md flex items-center justify-center shrink-0 overflow-hidden">
                 <img
-                  src="/tarasibale-logo.png"
+                  src="/portfolio-mark.svg"
                   alt="TaraSibale Guide"
                   className="w-full h-full object-contain rounded-full"
                   referrerPolicy="no-referrer"

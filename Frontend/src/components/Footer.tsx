@@ -17,7 +17,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-white p-0.5 shadow-[0_0_12px_rgba(46,196,182,0.4)] ring-2 ring-teal-400/60 flex items-center justify-center shrink-0 overflow-hidden">
                 <img
-                  src="/tarasibale-logo.png"
+                  src="/portfolio-mark.svg"
                   alt="TaraSibale Logo"
                   className="w-full h-full object-contain rounded-full"
                   referrerPolicy="no-referrer"
@@ -26,7 +26,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
               <span className="font-black text-lg text-white">TaraSibale</span>
             </div>
             <p className="text-xs leading-relaxed text-slate-300/80">
-              The official digital tourism portal and travel companion for
+              An independent portfolio prototype exploring travel tools for
               Concepcion on Sibale Island (Maestro de Campo), Province of
               Romblon, Philippines.
             </p>
@@ -56,7 +56,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
                 <button
                   onClick={() => setActiveTab("stay")}
                   className="hover:text-teal-300 transition-colors cursor-pointer">
-                  • Local Homestay Booking
+                  • Sample Stays
                 </button>
               </li>
               <li>
@@ -70,7 +70,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
                 <button
                   onClick={() => setActiveTab("auth")}
                   className="hover:text-teal-300 transition-colors cursor-pointer font-bold text-teal-400">
-                  • Login & Sign Up Portal
+                  • About Demo Accounts
                 </button>
               </li>
             </ul>
@@ -83,36 +83,24 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
             </h4>
             <ul className="space-y-1.5 text-slate-300/80">
               <li>• Main Access: Pinamalayan Port (Mindoro)</li>
-              <li>• Island Boat Time: 1.5 Hours</li>
-              <li>• Cell Signal: Best in Poblacion</li>
+              <li>• Travel times: illustrative only</li>
+              <li>• Confirm connectivity locally</li>
               <li>• Currency: Philippine Peso (Bring Cash)</li>
             </ul>
           </div>
 
-          {/* Emergency Hotlines */}
+          {/* Emergency Information */}
           <div className="space-y-2 text-xs">
             <h4 className="font-extrabold text-teal-300 uppercase tracking-wider mb-2">
-              Emergency Hotlines
+              Emergency Information
             </h4>
-            <p className="text-slate-300/80">
-              • MDRRMO Disaster: +63 917 555 7422
-            </p>
-            <p className="text-slate-300/80">
-              • Coast Guard Substation: +63 928 440 1982
-            </p>
-            <p className="text-slate-300/80">
-              • Municipal Police: +63 998 776 5432
-            </p>
-            <p className="text-slate-300/80">
-              • Rural Health Unit: +63 919 887 6543
-            </p>
+            <p className="text-slate-300/80">Emergency contacts are withheld until verified. This prototype is not an emergency service.</p>
           </div>
         </div>
 
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <p>
-            © {year} Municipality of Concepcion, Romblon Tourism. All rights
-            reserved.
+            © {year} TaraSibale portfolio project. Third-party materials retain their respective rights. No municipal affiliation claimed.
           </p>
           <div className="flex items-center gap-1 text-slate-300">
             <span>Crafted with</span>

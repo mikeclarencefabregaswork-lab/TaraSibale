@@ -1,3 +1,5 @@
+import { PORTFOLIO_MODE } from "../portfolio";
+import { PortfolioCollectionNotice } from "./PortfolioNotice";
 import {
   AlertCircle,
   ArrowRight,
@@ -57,6 +59,9 @@ export function AuthModal({
   const [agreedPledge, setAgreedPledge] = useState(true);
 
   if (!isOpen) return null;
+  if (PORTFOLIO_MODE) return <div role="dialog" aria-modal="true" aria-label="Portfolio account information" className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4" onClick={onClose}>
+    <div className="w-full max-w-2xl" onClick={event => event.stopPropagation()}><PortfolioCollectionNotice onContinue={onClose} /></div>
+  </div>;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,7 +136,7 @@ export function AuthModal({
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white p-0.5 shadow-md ring-2 ring-white/70 flex items-center justify-center shrink-0 overflow-hidden">
                 <img
-                  src="/tarasibale-logo.png"
+                  src="/portfolio-mark.svg"
                   alt="TaraSibale Logo"
                   className="w-full h-full object-contain rounded-full"
                   referrerPolicy="no-referrer"

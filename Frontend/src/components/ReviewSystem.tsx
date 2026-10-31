@@ -119,8 +119,7 @@ export const ReviewSystem: React.FC<ReviewSystemProps> = ({
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 mt-1 font-medium">
-            Real feedback from visitors who explored Bachawan Beach, Spanish
-            Watchtower, and local homestays.
+            Portfolio review interface. Public submissions are disabled; no real visitor feedback is claimed.
           </p>
         </div>
 

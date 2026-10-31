@@ -1,3 +1,5 @@
+> **Portfolio prototype (default mode):** Independent demonstration, not an official municipal website. Accounts, uploads, bookings and publishing are blocked server-side; existing database records are preserved. Unknown-rights images use placeholders, and maps use a local schematic grid. No public demo login is required. See [portfolio mode and future launch checklist](docs/portfolio-release-checklist.md) before deploying, transferring assets or enabling real services.
+
 # TaraSibale
 
 The supplied TaraSibale tourism interface is integrated into `Frontend/`, with an Express API in `Backend/` and native PostgreSQL persistence. Docker is not required.

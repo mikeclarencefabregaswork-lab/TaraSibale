@@ -209,7 +209,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="flex items-center gap-2 sm:gap-2.5 cursor-pointer group shrink-0">
               <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white dark:bg-slate-800 p-0.5 shadow-sm dark:shadow-[0_0_15px_rgba(46,196,182,0.4)] ring-2 ring-teal-500/40 group-hover:scale-105 transition-transform shrink-0 flex items-center justify-center overflow-hidden">
                 <img
-                  src="/tarasibale-logo.png"
+                  src="/portfolio-mark.svg"
                   alt="TaraSibale Logo"
                   className="w-full h-full object-contain rounded-full"
                   referrerPolicy="no-referrer"

@@ -1,0 +1,9 @@
+# Portfolio readiness design
+
+The user approved the recommended portfolio approach on 31 October 2026: independent prototype labeling, permission-cleared imagery/placeholders, demo travel information without unverified emergency contacts, sample-only personal-data flows, and a future-buyer rights checklist. Proceed with the existing React/TypeScript/PostgreSQL app. No deployment, credential changes, data deletion or migration.
+
+Use a default-on portfolio mode in frontend/backend. Backend accepts only public catalog/review reads and anonymous session status; reject writes and private reads before session/database lookup. Keep the original application code available for a later, separately reviewed launch. Frontend replaces account/upload collection screens with sample-only notices, isolates portfolio guest storage, labels travel data as examples, disables navigation exports/dispatch, uses a local schematic map background, and withholds images unless included in the documented food allowlist. Remove unsupported municipal ownership/affiliation claims. Preserve old unknown-rights public assets in a non-public archive.
+
+Alternatives considered: labels alone would still permit sensitive submissions and direct API writes; deleting functionality/data would damage the demonstration and future handoff. The approved targeted portfolio approach preserves implementation while closing public collection and permission gaps. Builder choice: use explicit default-on mode with server enforcement; production opt-out is documented as insufficient legal clearance.
+
+Verification: request-level tests prove blocked writes/private reads never query storage, catalog sanitization preserves original objects and clears unapproved images; typecheck/lint/build plus desktop/mobile browser checks verify notices, sample-only collection screens, map behavior and absence of layout overflow. No claim of legal clearance.
