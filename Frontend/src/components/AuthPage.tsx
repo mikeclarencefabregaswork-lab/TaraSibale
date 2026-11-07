@@ -220,7 +220,7 @@ export function AuthPage({
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-extrabold bg-teal-500/15 text-teal-800 dark:text-teal-300 border border-teal-500/30">
           <div className="w-5 h-5 rounded-full bg-white p-0.5 shadow-xs ring-1 ring-teal-500/50 flex items-center justify-center shrink-0 overflow-hidden">
             <img
-              src="/portfolio-mark.svg"
+              src="/tarasibale-logo.jpg"
               alt="TaraSibale Logo"
               className="w-full h-full object-contain rounded-full"
               referrerPolicy="no-referrer"

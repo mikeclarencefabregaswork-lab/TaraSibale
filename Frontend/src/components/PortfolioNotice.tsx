@@ -12,9 +12,9 @@ export function PortfolioNotice() {
           <div className="mt-2 space-y-2 text-xs leading-relaxed">
             <p>Use fictitious information only. Accounts, uploads, bookings and publishing are unavailable in portfolio mode. Personal IDs and travel documents must not be submitted.</p>
             <p>Theme, navigation, sample itineraries and checklists may be saved in this browser. Existing account records are not exposed by portfolio mode. Hosting infrastructure may process connection information; hosting notices must be completed before deployment.</p>
-            <p>Unknown-rights photos are replaced with labeled placeholders. Licensed food photos retain their individual credits. The map background is an original schematic grid, not geographic imagery. Destinations may use community-mapped reference positions credited to <a className="underline" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors (ODbL)</a>.</p>
+            <p>Destination photos and illustrative images retain their available source credits. Map layers use Esri, OpenTopoMap and CARTO imagery with provider attribution on the map. Sample routes are unverified. Reference positions may come from <a className="underline" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors (ODbL)</a>.</p>
             <p>User content must be owned or appropriately licensed, factual and respectful. Public posting is disabled; there is no active booking, guide dispatch or municipal service.</p>
-            <p><a className="underline" href="/THIRD_PARTY_NOTICES.txt" target="_blank" rel="noreferrer">Third-party software notices</a> · Logo is an original text monogram; third-party photographs retain their own rights.</p>
+            <p><a className="underline" href="/THIRD_PARTY_NOTICES.txt" target="_blank" rel="noreferrer">Third-party software notices</a> · TaraSibale project logo; third-party photographs retain their own rights.</p>
             <button type="button" className="rounded-lg border border-current px-3 py-2" onClick={() => {
               for (const key of ["tara_sibale_portfolio_state", "tara_sibale_theme", "tara_sibale_active_tab", "concepcion_offline_map_cached"]) localStorage.removeItem(key);
               setReset(true);

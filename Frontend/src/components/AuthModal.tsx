@@ -136,7 +136,7 @@ export function AuthModal({
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white p-0.5 shadow-md ring-2 ring-white/70 flex items-center justify-center shrink-0 overflow-hidden">
                 <img
-                  src="/portfolio-mark.svg"
+                  src="/tarasibale-logo.jpg"
                   alt="TaraSibale Logo"
                   className="w-full h-full object-contain rounded-full"
                   referrerPolicy="no-referrer"

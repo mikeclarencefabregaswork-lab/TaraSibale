@@ -167,7 +167,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
     <>
       {/* Mobile "More" Slide-up Drawer */}
       {showMoreMenu && (
-        <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end">
+        <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end p-3 sm:p-4">
           {/* Backdrop */}
           <div
             onClick={() => setShowMoreMenu(false)}
@@ -177,7 +177,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
 
           {/* Drawer Sheet */}
           <div
-            className={`relative z-10 w-full rounded-t-3xl border-t shadow-2xl p-5 pb-8 max-h-[80dvh] overflow-y-auto transition-transform ${
+            className={`relative z-10 w-full rounded-3xl border shadow-2xl p-5 pb-8 max-h-[80dvh] overflow-y-auto transition-transform ${
               isDarkMode
                 ? "bg-[#0b2d40] border-white/10 text-white"
                 : "bg-white border-slate-200 text-slate-900"

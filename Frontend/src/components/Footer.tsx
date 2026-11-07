@@ -17,7 +17,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-white p-0.5 shadow-[0_0_12px_rgba(46,196,182,0.4)] ring-2 ring-teal-400/60 flex items-center justify-center shrink-0 overflow-hidden">
                 <img
-                  src="/portfolio-mark.svg"
+                  src="/tarasibale-logo.jpg"
                   alt="TaraSibale Logo"
                   className="w-full h-full object-contain rounded-full"
                   referrerPolicy="no-referrer"

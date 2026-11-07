@@ -1,9 +1,3 @@
-const clearedImages = new Set([
-  "/assets/food/leche-flan.jpg",
-  "/assets/food/atchara.jpg",
-  "/assets/food/coconut-jam.jpg",
-]);
-
 /** Presentation copy only: stored records and their provenance stay untouched. */
 export function portfolioCatalog(value: Record<string, unknown>): Record<string, unknown> {
   const clean = (item: unknown): unknown => {
@@ -15,13 +9,8 @@ export function portfolioCatalog(value: Record<string, unknown>): Record<string,
     }
     const source = item as Record<string, unknown>;
     const result: Record<string, unknown> = {};
-    const withheld = typeof source.image === "string" && !clearedImages.has(source.image);
     for (const [key, data] of Object.entries(source)) {
-      if (key === "photoCredit" && withheld) continue;
-      if (key === "gallery") result[key] = [];
-      else if (key === "image" && typeof data === "string") {
-        result[key] = clearedImages.has(data) ? data : "/assets/portfolio-placeholder.svg";
-      } else result[key] = clean(data);
+      result[key] = clean(data);
     }
     return result;
   };

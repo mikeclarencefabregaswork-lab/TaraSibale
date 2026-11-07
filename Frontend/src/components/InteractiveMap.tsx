@@ -161,16 +161,6 @@ const MAP_STYLES: Record<TileStyleKey, TileStyleConfig> = {
   },
 };
 
-if (PORTFOLIO_MODE) {
-  for (const style of Object.values(MAP_STYLES)) {
-    style.name = `${style.badge} Preview`;
-    style.badge = `${style.badge} Preview`;
-    style.tagline = "Schematic demo background, not geographic imagery";
-    style.description = "Portfolio layout preview using a local grid. No satellite, terrain or street imagery is loaded.";
-    style.features = ["Schematic grid", "Sample markers", "Not for navigation"];
-  }
-}
-
 export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   attractions,
   hikingTrails,
@@ -188,6 +178,8 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   const trailsLayerGroupRef = useRef<L.LayerGroup | null>(null);
   const simulationMarkerRef = useRef<L.Marker | null>(null);
   const layerControlRef = useRef<HTMLDivElement>(null);
+  const layerControlToggleRef = useRef<HTMLButtonElement>(null);
+  const floatingLayerControlToggleRef = useRef<HTMLButtonElement>(null);
 
   // Map Tile Style State
   const [activeTileStyle, setActiveTileStyle] =
@@ -300,8 +292,12 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         layerControlRef.current &&
         !layerControlRef.current.contains(event.target as Node)
       ) {
-        const toggleBtn = document.getElementById("map-layer-control-toggle");
-        if (toggleBtn && toggleBtn.contains(event.target as Node)) return;
+        if (
+          layerControlToggleRef.current?.contains(event.target as Node) ||
+          floatingLayerControlToggleRef.current?.contains(event.target as Node)
+        ) {
+          return;
+        }
         setIsLayerControlOpen(false);
       }
     };
@@ -521,8 +517,8 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
       // Create base tile layer
       const config = MAP_STYLES.satellite;
-      const tileLayer = L.tileLayer(PORTFOLIO_MODE ? "/assets/demo-map-tile.svg" : config.url, {
-        attribution: PORTFOLIO_MODE ? 'Schematic demo grid | Reference positions: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors (ODbL)</a>' : config.attribution,
+      const tileLayer = L.tileLayer(config.url, {
+        attribution: config.attribution,
         maxZoom: config.maxZoom,
         subdomains: config.subdomains || "abc",
       }).addTo(map);
@@ -567,8 +563,8 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
     }
 
     const config = MAP_STYLES[activeTileStyle];
-    const newTileLayer = L.tileLayer(PORTFOLIO_MODE ? "/assets/demo-map-tile.svg" : config.url, {
-      attribution: PORTFOLIO_MODE ? 'Schematic demo grid | Reference positions: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors (ODbL)</a>' : config.attribution,
+    const newTileLayer = L.tileLayer(config.url, {
+      attribution: config.attribution,
       maxZoom: config.maxZoom,
       subdomains: config.subdomains || "abc",
     }).addTo(map);
@@ -1025,14 +1021,14 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               </span>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-300">
-              Schematic portfolio map with unverified sample routes. Not for navigation. Try map controls and sample route animations.
+              Explore satellite, terrain and street maps with unverified sample routes. Not for navigation. Try map controls and sample route animations.
             </p>
           </div>
 
           {/* Quick Action Buttons */}
           <div className="flex items-center gap-2 flex-wrap">
             {/* Tile Switcher Pills */}
-            <div className="flex items-center p-1 rounded-2xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10">
+            <div className="flex flex-wrap items-center p-1 rounded-2xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10">
               {(
                 ["satellite", "topo", "terrain", "street"] as TileStyleKey[]
               ).map((style) => (
@@ -1062,7 +1058,9 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             {/* Layer Control Switch Drawer Toggle Button */}
             <button
               id="map-layer-control-toggle"
-              onClick={() => setIsLayerControlOpen(!isLayerControlOpen)}
+              ref={layerControlToggleRef}
+              aria-expanded={isLayerControlOpen}
+              onClick={() => setIsLayerControlOpen((open) => !open)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
                 isLayerControlOpen
                   ? "bg-teal-500 text-slate-950 border-teal-400 font-black shadow-md"
@@ -1185,7 +1183,9 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           <div className="absolute top-3 sm:top-4 right-14 z-20 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
             {/* Layer Control Switch Button */}
             <button
-              onClick={() => setIsLayerControlOpen(!isLayerControlOpen)}
+              ref={floatingLayerControlToggleRef}
+              aria-expanded={isLayerControlOpen}
+              onClick={() => setIsLayerControlOpen((open) => !open)}
               className={`min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-xl backdrop-blur-md border cursor-pointer ${
                 isLayerControlOpen
                   ? "bg-teal-500 text-slate-950 border-teal-300 ring-2 ring-teal-400/50"
@@ -1555,7 +1555,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             <div className="text-[10px] font-mono text-teal-300">
               {isOffline
                 ? "Saved Coordinates · Tiles Need Internet"
-                : "Schematic Demo Grid"}
+                : MAP_STYLES[activeTileStyle].name}
             </div>
           </div>
 

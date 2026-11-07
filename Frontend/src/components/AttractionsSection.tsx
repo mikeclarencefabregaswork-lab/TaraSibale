@@ -1,6 +1,8 @@
 import { toast } from "../toastStore";
 import {
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Compass,
   Eye,
   Heart,
@@ -12,7 +14,7 @@ import {
   VolumeX,
   X,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Attraction } from "../types";
 import { AttractionsGridSkeleton } from "./Skeletons";
 
@@ -36,6 +38,59 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
     useState<Attraction | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const filterDrag = useRef<{ startX: number; scrollLeft: number } | null>(null);
+  const didDragFilters = useRef(false);
+  const filterRowRef = useRef<HTMLDivElement>(null);
+  const [filterScroll, setFilterScroll] = useState({ left: false, right: false });
+
+  useEffect(() => {
+    const row = filterRowRef.current;
+    if (!row) return;
+    const updateScroll = () => {
+      const left = row.scrollLeft > 1;
+      const right = row.scrollWidth - row.clientWidth - row.scrollLeft > 1;
+      setFilterScroll((previous) =>
+        previous.left === left && previous.right === right
+          ? previous
+          : { left, right },
+      );
+    };
+    const observer = new ResizeObserver(updateScroll);
+    observer.observe(row);
+    row.addEventListener("scroll", updateScroll, { passive: true });
+    updateScroll();
+    return () => {
+      observer.disconnect();
+      row.removeEventListener("scroll", updateScroll);
+    };
+  }, [attractions]);
+
+  const scrollFilters = (direction: number) => {
+    const row = filterRowRef.current;
+    if (row) row.scrollBy({ left: direction * row.clientWidth * 0.8, behavior: "smooth" });
+  };
+
+  const handleFilterPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    didDragFilters.current = false;
+    filterDrag.current = null;
+    const row = event.currentTarget;
+    // Touch keeps native scrolling; mouse previews also support dragging.
+    if (
+      event.pointerType !== "mouse" ||
+      event.button !== 0 ||
+      row.scrollWidth <= row.clientWidth
+    ) return;
+    filterDrag.current = { startX: event.clientX, scrollLeft: row.scrollLeft };
+  };
+
+  const handleFilterPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!filterDrag.current || event.buttons !== 1) return;
+    const distance = event.clientX - filterDrag.current.startX;
+    if (!didDragFilters.current && Math.abs(distance) < 5) return;
+    didDragFilters.current = true;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    event.currentTarget.scrollLeft = filterDrag.current.scrollLeft - distance;
+  };
 
   const toggleFavorite = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -97,37 +152,82 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
           </div>
           <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 mt-1 font-medium">
             Explore documented beaches, coastal formations, and cultural sites
-            on Sibale Island, with source links and permission-safe portfolio placeholders.
+            on Sibale Island, with source links and photo credits.
           </p>
         </div>
 
         {/* Category Pill Filters */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1.5 scrollbar-none sm:flex-wrap max-w-full">
-          {[
-            { id: "all", label: "All Places" },
-            { id: "beach", label: "White Beaches 🏖️" },
-            { id: "landmark", label: "Island Landmarks 🏛️" },
-            { id: "culture", label: "Cultural Sites" },
-            { id: "sanctuary", label: "Marine Sanctuaries 🤿" },
-            { id: "viewpoint", label: "Summits & Views 🏔️" },
-          ]
-            .filter(
-              (cat) =>
-                cat.id === "all" ||
-                attractions.some((item) => item.category === cat.id),
-            )
-            .map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`min-h-[40px] px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all cursor-pointer backdrop-blur-md whitespace-nowrap shrink-0 ${
-                  selectedCategory === cat.id
-                    ? "bg-teal-500 text-slate-950 shadow-[0_0_15px_rgba(46,196,182,0.4)]"
-                    : "bg-slate-200/80 hover:bg-slate-300/80 text-slate-800 border border-slate-300 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white dark:border-white/15"
-                }`}>
-                {cat.label}
-              </button>
-            ))}
+        <div className="relative min-w-0 max-w-full">
+          <div
+            ref={filterRowRef}
+            className="flex items-center gap-2 overflow-x-auto pb-1.5 scrollbar-none sm:flex-wrap max-w-full select-none"
+            onPointerDown={handleFilterPointerDown}
+            onPointerMove={handleFilterPointerMove}
+            onPointerUp={() => {
+              filterDrag.current = null;
+            }}
+            onLostPointerCapture={() => {
+              filterDrag.current = null;
+            }}
+            onPointerCancel={() => {
+              filterDrag.current = null;
+              didDragFilters.current = false;
+            }}
+            onPointerLeave={() => {
+              if (!didDragFilters.current) filterDrag.current = null;
+            }}
+            onClickCapture={(event) => {
+              if (didDragFilters.current && event.detail > 0) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              didDragFilters.current = false;
+            }}>
+            {[
+              { id: "all", label: "All Places" },
+              { id: "beach", label: "White Beaches 🏖️" },
+              { id: "landmark", label: "Island Landmarks 🏛️" },
+              { id: "culture", label: "Cultural Sites" },
+              { id: "sanctuary", label: "Marine Sanctuaries 🤿" },
+              { id: "viewpoint", label: "Summits & Views 🏔️" },
+            ]
+              .filter(
+                (cat) =>
+                  cat.id === "all" ||
+                  attractions.some((item) => item.category === cat.id),
+              )
+              .map((cat) => (
+                <button
+                  key={cat.id}
+                  aria-pressed={selectedCategory === cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`min-h-[40px] px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all cursor-pointer backdrop-blur-md whitespace-nowrap shrink-0 ${
+                    selectedCategory === cat.id
+                      ? "bg-teal-500 text-slate-950 shadow-[0_0_15px_rgba(46,196,182,0.4)]"
+                      : "bg-slate-200/80 hover:bg-slate-300/80 text-slate-800 border border-slate-300 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white dark:border-white/15"
+                  }`}>
+                  {cat.label}
+                </button>
+              ))}
+          </div>
+          {filterScroll.left && (
+            <button
+              type="button"
+              aria-label="Scroll filters left"
+              onClick={() => scrollFilters(-1)}
+              className="absolute left-0 top-0 z-10 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-slate-200 bg-white text-teal-700 shadow-md cursor-pointer dark:border-white/15 dark:bg-slate-900 dark:text-teal-300">
+              <ChevronLeft className="w-5 h-5" aria-hidden="true" />
+            </button>
+          )}
+          {filterScroll.right && (
+            <button
+              type="button"
+              aria-label="Scroll filters right"
+              onClick={() => scrollFilters(1)}
+              className="absolute right-0 top-0 z-10 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-slate-200 bg-white text-teal-700 shadow-md cursor-pointer dark:border-white/15 dark:bg-slate-900 dark:text-teal-300">
+              <ChevronRight className="w-5 h-5" aria-hidden="true" />
+            </button>
+          )}
         </div>
       </div>
 

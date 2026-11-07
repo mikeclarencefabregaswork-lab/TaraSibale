@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
-import { mkdir, writeFile, unlink } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile, unlink } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 import { createServer } from "vite";
@@ -18,8 +20,11 @@ test("Vite serves the frontend but denies sibling database and backend files", a
     { recursive: true },
   );
   await writeFile(probe, "Harmless filesystem isolation regression probe.");
+  // A test server must not invalidate the running app's optimized dependencies.
+  const cacheDir = await mkdtemp(join(tmpdir(), "tarasibale-vite-test-"));
   const server = await createServer({
     root: frontend,
+    cacheDir,
     configFile: fileURLToPath(new URL("../vite.config.ts", import.meta.url)),
     server: {
       host: "127.0.0.1",
@@ -49,6 +54,7 @@ test("Vite serves the frontend but denies sibling database and backend files", a
     assert.equal((await fetch(base + "/src/main.tsx")).status, 200);
   } finally {
     await server.close();
+    await rm(cacheDir, { recursive: true, force: true });
     await unlink(probe);
   }
 });

@@ -118,7 +118,7 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-full bg-white p-0.5 flex items-center justify-center shadow-[0_0_12px_rgba(46,196,182,0.4)] ring-2 ring-teal-400/60 shrink-0 overflow-hidden">
             <img
-              src="/portfolio-mark.svg"
+              src="/tarasibale-logo.jpg"
               alt="TaraSibale Guide"
               className="w-full h-full object-contain rounded-full"
               referrerPolicy="no-referrer"

@@ -14,7 +14,7 @@ import {
   User,
   X,
 } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AppNotification, NotificationCategory, UserProfile } from "../types";
 
 interface NotificationCenterProps {
@@ -41,25 +41,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] =
     useState<NotificationCategory>("general");
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        onClose();
-      }
-    };
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen, onClose]);
+  // Header owns outside-click dismissal for both the panel and its trigger.
 
   // Escape key closes modal
   useEffect(() => {
@@ -160,7 +142,6 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
   return (
     <div
-      ref={dropdownRef}
       className={`fixed left-3 right-3 top-20 mx-auto z-50 w-auto max-w-[440px] max-h-[calc(100dvh-7rem)] flex flex-col sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2.5 sm:w-[420px] sm:max-h-[calc(100dvh-9rem)] rounded-3xl border shadow-2xl backdrop-blur-2xl transition-all duration-200 isolate select-none overflow-hidden ${
         isDarkMode
           ? "bg-[#0b2d40]/98 border-slate-700/80 text-slate-100 shadow-[0_25px_60px_rgba(0,0,0,0.85)]"

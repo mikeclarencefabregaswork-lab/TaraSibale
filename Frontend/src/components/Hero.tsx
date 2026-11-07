@@ -19,8 +19,14 @@ interface HeroProps {
 export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
   return (
     <div className="relative overflow-hidden rounded-3xl mb-8 border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-2xl bg-white/10 dark:bg-slate-900/60 text-white">
+      <img
+        src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&auto=format&fit=crop&q=80"
+        alt="Illustrative tropical beach"
+        referrerPolicy="no-referrer"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
       {/* Gradient Mask */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#061e2c]/80 via-[#103c50]/70 to-[#073b4c]/60 backdrop-blur-md" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#061e2c]/85 via-[#103c50]/60 to-[#073b4c]/25" />
 
       {/* Decorative Glowing Blur Blobs */}
       <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 bg-teal-500/25 rounded-full blur-3xl pointer-events-none" />

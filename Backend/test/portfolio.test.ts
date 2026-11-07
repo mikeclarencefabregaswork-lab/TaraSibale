@@ -27,19 +27,20 @@ test("portfolio boundary blocks collection and private reads before querying sto
   }
 });
 
-test("portfolio catalog withholds unknown photos, galleries, contacts and public contributions without changing stored data", () => {
+test("portfolio catalog preserves photos, galleries and credits while withholding contacts and public contributions without changing stored data", () => {
   const source = { attractions: [{ image: "https://example.com/photo.jpg", gallery: ["https://example.com/other.jpg"], photoCredit: { usage: "local-preview" } }], hikingTrails: [{ name: "Island trek", image: "https://example.com/trail.jpg" }], cultureItems: [{ image: "/assets/food/coconut-jam.jpg", photoCredit: { license: "CC BY-SA 4.0" } }], socialPosts: [{ name: "Private contributor" }], ferryRoutes: [{ name: "Example boat", phone: "+63 917 555 7422" }] };
   const original = structuredClone(source);
   const result = portfolioCatalog(source) as typeof source;
   assert.deepEqual(source, original);
-  assert.equal(result.attractions[0]!.image, "/assets/portfolio-placeholder.svg");
-  assert.deepEqual(result.attractions[0]!.gallery, []);
-  assert.equal(result.attractions[0]!.photoCredit, undefined);
+  assert.equal(result.attractions[0]!.image, source.attractions[0]!.image);
+  assert.deepEqual(result.attractions[0]!.gallery, source.attractions[0]!.gallery);
+  assert.deepEqual(result.attractions[0]!.photoCredit, source.attractions[0]!.photoCredit);
+  assert.equal(result.hikingTrails[0]!.image, source.hikingTrails[0]!.image);
   assert.equal(result.cultureItems[0]!.image, "/assets/food/coconut-jam.jpg");
   assert.equal(result.cultureItems[0]!.photoCredit.license, "CC BY-SA 4.0");
   assert.deepEqual(result.socialPosts, []);
   assert.match(result.hikingTrails[0]!.name, /^Sample:/);
-  assert.doesNotMatch(JSON.stringify(result), /\+63|example\.com/);
+  assert.doesNotMatch(JSON.stringify(result), /\+63/);
 });
 
 test("portfolio catalog ignores pre-existing session cookies and never reads public contributions", async () => {
@@ -57,7 +58,7 @@ test("portfolio catalog ignores pre-existing session cookies and never reads pub
     assert.equal(response.status, 200);
     const catalog = await response.json();
     assert.equal(catalog.portfolioMode, true);
-    assert.equal(catalog.attractions[0].image, "/assets/portfolio-placeholder.svg");
+    assert.equal(catalog.attractions[0].image, "https://example.com/uncleared.jpg");
     assert.deepEqual(catalog.socialPosts, []);
     assert.equal(queries.length, 3);
     assert.ok(queries.every(sql => !/sessions|social_posts|user_state|bookings/.test(sql)));
