@@ -1136,7 +1136,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           </div>
 
           {/* Quick Search on Map Markers */}
-          <div className="relative min-w-[200px] max-w-xs">
+          <div className="relative w-full min-w-0 sm:w-auto sm:min-w-[200px] sm:max-w-xs">
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
