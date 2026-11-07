@@ -1,0 +1,274 @@
+{
+  "files": {
+    "Backend/src/api.ts": {
+      "summary": "Builds the PostgreSQL-backed router for accounts, public catalog and contributions, private saved state, bookings, administration, and curated concierge replies. Full-mode identity comes from server-resolved sessions, booking totals and inventory come from stored listings, and write paths validate inputs before persistence. The app-level portfolio boundary normally permits only a sanitized catalog and anonymous public placeholders; this router also skips session and social-post reads in portfolio mode. Weather remains explicitly unavailable and concierge responses do not call a live AI provider.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Backend/src/app.ts": {
+      "summary": "Creates an Express application with separate liveness and database-readiness endpoints, optional database-backed routes, and a JSON 404 fallback. Portfolio mode defaults on unless explicitly disabled by options or PORTFOLIO_MODE=false; its boundary blocks private reads and mutations before they reach API storage. Health endpoints remain outside that boundary.",
+      "guide": "TaraSibale - Modes and Access"
+    },
+    "Backend/src/auth.ts": {
+      "summary": "Encodes passwords using a random salt and a fixed scrypt configuration, then checks stored encodings before comparing derived keys in constant time. These utilities handle password hashing only; session ownership and cookies are managed by the API router. Malformed stored hashes fail verification rather than authenticating.",
+      "guide": "TaraSibale - Modes and Access"
+    },
+    "Backend/src/db.ts": {
+      "summary": "Constructs the shared PostgreSQL pool from DATABASE_URL and fails early when configuration is missing. Connection, query, and statement timeouts bound database waits, while a small pool limits concurrent connections. The exported readiness probe performs a minimal query and idle-connection logging avoids connection details.",
+      "guide": "TaraSibale - Database"
+    },
+    "Backend/src/portfolio.ts": {
+      "summary": "Transforms a catalog into portfolio presentation data without mutating its stored source. It withholds unapproved images and their credits, clears galleries and social posts, masks matching Philippine phone strings, and labels trails and ferries as samples. Only three explicitly cleared local food images remain visible.",
+      "guide": "TaraSibale - Modes and Access"
+    },
+    "Backend/src/publishing.ts": {
+      "summary": "Creates the shared publishing limiter used by reviews, group messages, and social posts. Its quota is keyed by the authenticated account stored in response locals, so callers must run authentication first. Multiple append routes share one account quota within a router instance.",
+      "guide": "TaraSibale - Modes and Access"
+    },
+    "Backend/src/server.ts": {
+      "summary": "Starts the app on the configured host and validated TCP port using the shared pool and readiness probe. Listen failures close the pool, while SIGINT and SIGTERM stop accepting connections and then drain PostgreSQL connections. A guarded shutdown with a ten-second timeout prevents duplicate shutdown work and indefinite exit waits.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Backend/src/validation.ts": {
+      "summary": "Defines runtime Zod contracts for account requests, contributions, booking dates, private state, administrator edits, and verification applications. These contracts bound request sizes and strip unspecified object fields; database checks provide an additional persistence boundary. Reference-only lodging may retain unknown values, while bookable lodging must supply operational details and vault files must meet MIME, canonical-base64, and decoded-size checks.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Backend/scripts/migrate.ts": {
+      "summary": "Discovers numbered SQL files, skips migration names already recorded, and applies pending migrations with their history entries in one transaction. A transaction-scoped advisory lock is shared with seeding and seed validation to serialize schema/data setup. Applied files are historical artifacts; schema or data changes belong in a new migration.",
+      "guide": "TaraSibale - Database"
+    },
+    "Backend/scripts/promote-admin.ts": {
+      "summary": "Promotes exactly one existing account selected by a case-insensitive email match and marks it verified. It does not create users or expose an administrator signup route, so account creation must happen first in full mode. The script closes its pool and reports failures through the process exit code.",
+      "guide": "TaraSibale - Modes and Access"
+    },
+    "Backend/scripts/seed.ts": {
+      "summary": "Reads the catalog fixture and inserts resources, permission defaults, and the default travel community under the schema advisory lock. ON CONFLICT DO NOTHING preserves existing records and administrator changes instead of refreshing them from fixtures. Seeding is transactional and complements numbered data migrations rather than replacing them.",
+      "guide": "TaraSibale - Database"
+    },
+    "Backend/scripts/validate-seed.ts": {
+      "summary": "Exercises every catalog fixture against actual resource-table checks inside a transaction that is always rolled back. It also attempts four malformed trail-coordinate shapes using savepoints and requires PostgreSQL check-constraint rejection. This validates database compatibility without retaining validation rows or resetting existing data.",
+      "guide": "TaraSibale - Development"
+    },
+    "Backend/migrations/001_initial.sql": {
+      "summary": "Creates the initial relational schema for accounts, sessions, typed catalog resources, settings, reviews, bookings, community features, verifications, and per-user saved state. JSON helpers and CHECK constraints keep important JSON identifiers and shapes aligned with relational ownership, while foreign keys define deletion behavior. This is the starting contract: migration 002 corrects trail-coordinate checking and migration 008 later permits unknown lodging facts for reference-only records.",
+      "guide": "TaraSibale - Database"
+    },
+    "Backend/migrations/002_strict_trail_coordinates.sql": {
+      "summary": "Replaces the resource-kind CHECK to evaluate each trail coordinate pair with strict JSONPath rather than lax implicit unwrapping. The change targets malformed pair lengths and retains the other resource branches of the then-current contract. Migration 008 subsequently replaces this same named constraint while preserving the strict trail rule.",
+      "guide": "TaraSibale - Database"
+    },
+    "Backend/migrations/003_unavailable_catalog_photo.sql": {
+      "summary": "Replaces one known broken imported image URL with the local unavailable-photo asset wherever that exact fixture URL remains in resource JSON. The targeted replacement preserves unrelated content and different administrator-selected images. It is a historical data repair rather than a general remote-image health check.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Backend/migrations/004_sourced_sibale_attractions.sql": {
+      "summary": "Archives six former attraction IDs so historical reviews retain their original targets, then upserts sourced Sibale attraction records. New records carry evidence links, photo provenance, verification dates, and explicit coordinate certainty rather than silently relabeling old demo places. Source-captioned local-preview photographs remain subject to the portfolio presentation filter.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Backend/migrations/005_attraction_visitor_copy.sql": {
+      "summary": "Patches descriptions, highlights, fee labels, and best-time labels for the sourced attraction IDs introduced earlier. It merges visitor-facing copy into existing resource data so identity, coordinates, evidence, and image provenance stay intact. Current access and fees remain locally confirmable rather than promised live facts.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Backend/migrations/006_sourced_fiestas_and_customs.sql": {
+      "summary": "Archives the former demo event and inserts sourced patronal-feast and custom records as culture resources. The entries distinguish the established December 8 feast from historical reports of Biniray, processions, and hospitality. Current-year programs and private invitations remain unverified and are described accordingly.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Backend/migrations/007_sourced_asi_phrasebook.sql": {
+      "summary": "Archives unsupported demo phrases and publishes five contextual Asi expressions drawn from a cited Bantoanon phrasebook. Each culture record carries its use case, English translation, source, and page/dialogue evidence. The descriptions avoid treating a call at a home as a general welcome greeting.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Backend/migrations/008_sourced_accommodations.sql": {
+      "summary": "Extends the resource constraint so price, capacity, and coordinates may be JSON null specifically for reference-only accommodations. It archives four demo stays and upserts two historically documented lodgings with explicit uncertainty, empty room inventories, and source evidence. The booking API independently refuses reference-only reservations; these records do not establish current operation or availability.",
+      "guide": "TaraSibale - Database"
+    },
+    "Backend/migrations/009_sourced_island_foods.sql": {
+      "summary": "Archives unsupported demo dishes and publishes three culture food entries grounded in a December 2025 agriculture report. Local-production evidence is kept separate from current vendor availability and from representative food-photo credits. The three local image assets are also the portfolio catalog image allowlist.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Backend/test/app.test.ts": {
+      "summary": "Runs the minimal app on temporary loopback ports to verify liveness, readiness, and unknown-route responses. Assertions prove that liveness survives a failing database probe and readiness returns a generic 503 without disclosing the probe error. No database pool is required for these application-shell tests.",
+      "guide": "TaraSibale - Development"
+    },
+    "Backend/test/auth.test.ts": {
+      "summary": "Checks that repeated hashing of one password produces different salted encodings and never includes the password text. It verifies correct-password success, wrong-password failure, and rejection of malformed stored hashes. Session expiry and cookie behavior are covered by API integration rather than these utility tests.",
+      "guide": "TaraSibale - Development"
+    },
+    "Backend/test/portfolio.test.ts": {
+      "summary": "Verifies the portfolio API boundary blocks account, publishing, booking, and private-state operations before querying storage. Catalog assertions cover immutable source data, image and credit withholding, phone masking, cleared food assets, sample labels, anonymous sessions, and exclusion of social-post reads. An explicit local opt-out test confirms that full-mode signup validation is still reachable.",
+      "guide": "TaraSibale - Development"
+    },
+    "Backend/test/publishing.test.ts": {
+      "summary": "Exercises the limiter in a small HTTP app with test-resolved account IDs. Thirty publications succeed for one account, the next receives 429, and another account from the same connection context retains its own quota. The test header is fixture plumbing, while production identity is supplied by session middleware.",
+      "guide": "TaraSibale - Development"
+    },
+    "Backend/test/validation.test.ts": {
+      "summary": "Exercises vault-file validation at the decoded one-MiB boundary for PDF, PNG, JPEG, and WebP data URLs. Assertions accept exactly the maximum content size and reject both one additional decoded byte and malformed base64. This focuses on file validation rather than full private-state persistence.",
+      "guide": "TaraSibale - Development"
+    },
+    "Backend/test/api.integration.ts": {
+      "summary": "Creates an isolated PostgreSQL schema, applies every migration, seeds fixtures, and explicitly disables portfolio mode only for the test app. Subtests verify account/session access, cross-account state isolation and stale-tab protection, server authorship, permissions, catalog provenance and archive retention, reference-only stays, publishing quotas, and session revocation. Booking assertions cover server-calculated pricing, concurrent oversell prevention, adjacent multi-room occupancy, and invalid requests. The schema is dropped in cleanup; portfolio restrictions are independently tested by the unit suite.",
+      "guide": "TaraSibale - Development"
+    }
+  },
+  "symbols": {
+    "Backend/src/api.ts::UserRow": "Represents the database account row used after session resolution, including role, verification status, creation date, and password hash. Public responses pass through profile so password material is not returned.",
+    "Backend/src/api.ts::ApiError": "Carries an intentional HTTP status with a client-facing message for domain failures such as missing authentication, disabled features, and unavailable inventory. Router error handling distinguishes these failures from database outages.",
+    "Backend/src/api.ts::.constructor()": "Initializes an ApiError with the intended response status while retaining standard Error message behavior. The central handler returns this message only for this explicit error type.",
+    "Backend/src/api.ts::createApi()": "Composes the full API with JSON limits, no-store responses, cross-site mutation checks, session resolution, authenticated ownership, and administrator routes. Booking mutations lock a listing while checking per-night occupancy, and private saved-state writes use the resolved account plus an optional stale-tab identity check. Portfolio options additionally suppress session resolution and public-post reads, with broader blocking performed by createApp.",
+    "Backend/src/api.ts::feature()": "Loads current permission settings and rejects a requested capability when disabled or when maintenance mode is active. It returns the same parsed settings for additional verified-guide and verified-host checks.",
+    "Backend/src/api.ts::issueSession()": "Creates a random session token but persists only its SHA-256 digest, replacing a valid incoming session and removing expired rows in a transaction. Cookies are HttpOnly, SameSite=Lax, scoped to /api, and Secure in production; remembered sessions use thirty days instead of one.",
+    "Backend/src/api.ts::settings()": "Reads the permissions setting and validates its complete shape before use. Missing settings fall back to the router defaults, while malformed persisted settings do not silently become trusted policy.",
+    "Backend/src/api.ts::socialPosts()": "Loads the newest two hundred social records and derives like counts plus the requesting account’s like state from social_likes. Counts and userLiked are recomputed instead of trusting stale JSON snapshot values.",
+    "Backend/src/api.ts::digest()": "Hashes raw session-cookie tokens with SHA-256 for database lookup and revocation. The raw random bearer token remains in the cookie rather than being persisted in the sessions table.",
+    "Backend/src/api.ts::profile()": "Projects a database user into the frontend profile, deriving initials, short name, badge, and joined-month text. Roles and verification reflect server data, and the returned object excludes password_hash.",
+    "Backend/src/api.ts::userFrom()": "Retrieves the account row previously placed in response locals by session middleware. Call sites depend on requireUser running first, and administrator checks use this server-owned role.",
+    "Backend/src/api.ts::tokenFrom()": "Extracts the named session cookie from the Cookie header without treating another cookie as identity. Its callers separately require a sixty-four-character hexadecimal token before database operations.",
+    "Backend/src/api.ts::transaction()": "Acquires one pool client for BEGIN, the supplied action, and COMMIT, rolling back on failure and always releasing the client. Booking, signup, session rotation, private-state updates, and administrator edits use this shared atomicity boundary.",
+    "Backend/src/api.ts::defaults": "Supplies all permission flags when no permissions setting exists, enabling core features while keeping verified-only restrictions and maintenance off. These values do not bypass the separate portfolio boundary.",
+    "Backend/src/app.ts::createApp()": "Assembles health endpoints and the optional API router with portfolio mode enabled by default. The portfolio boundary allows catalog reads and anonymous auth/review placeholders, rejecting other API requests before session or private-data lookup.",
+    "Backend/src/auth.ts::derive()": "Wraps asynchronous scrypt with fixed cost and memory parameters to derive a sixty-four-byte key. Both hashing and verification share this implementation so stored encodings remain comparable.",
+    "Backend/src/auth.ts::hashPassword()": "Generates a new sixteen-byte random salt for each password and serializes the scrypt marker, salt, and derived key. It is used for real account creation and the login path’s dummy hash.",
+    "Backend/src/auth.ts::verifyPassword()": "Rejects unsupported or malformed hash encodings before deriving a candidate key. Valid encodings are compared with timingSafeEqual so plaintext equality is never the authentication mechanism.",
+    "Backend/src/db.ts::pool": "Owns shared database connections with a maximum of ten and three-second connection, query, and statement timeouts. Server and scripts are responsible for closing it during shutdown or completion.",
+    "Backend/src/db.ts::checkDatabase()": "Issues SELECT 1 through the shared pool as the readiness probe. The app translates failures into a generic unavailable response rather than exposing database configuration.",
+    "Backend/src/portfolio.ts::clearedImages": "Lists the three local food photographs permitted in portfolio catalog responses. All other image strings are replaced and associated photo credits are withheld by the recursive presentation transform.",
+    "Backend/src/portfolio.ts::portfolioCatalog()": "Recursively copies catalog data while withholding uncleared imagery, galleries, matching Philippine phone numbers, and social contributions. It preserves stored source records and evidence, labels travel fixtures as samples, and marks the response portfolioMode=true.",
+    "Backend/src/publishing.ts::createPublishingLimit()": "Allows thirty append requests per minute per authenticated account, with a shared quota across review, chat-message, and social-post creation. It must run after requireUser because the key comes from response.locals.user rather than a client-supplied identity header.",
+    "Backend/src/server.ts::shutdown()": "Guards against repeated signal handling, closes the HTTP server, and then ends the pool. A ten-second unref’d deadline forces exit if graceful draining cannot finish.",
+    "Backend/src/server.ts::port": "Converts PORT or the default 3001 into a number and rejects noninteger or out-of-range values before listening. Host selection is separate and defaults to loopback.",
+    "Backend/src/server.ts::server": "Holds the listening HTTP server created with the shared PostgreSQL pool and readiness check. Its listen-error and close hooks coordinate connection cleanup.",
+    "Backend/scripts/seed.ts::SeedCatalog": "Describes the fixture container as typed resource envelopes and a boolean permission map. It is a TypeScript assertion for the parsed file, while actual resource persistence is checked by PostgreSQL constraints.",
+    "Backend/scripts/seed.ts::catalog": "Contains the parsed baseline seed fixture consumed by insert-only setup. Existing resource IDs and permission settings win conflicts so running the script again preserves stored changes.",
+    "Backend/scripts/validate-seed.ts::Resource": "Describes the id, kind, and JSON data envelope for resources exercised by the database validation script. Temporary IDs replace fixture IDs so checks can run without overwriting published rows.",
+    "Backend/scripts/validate-seed.ts::catalog": "Supplies every fixture resource for temporary insertion into the live schema’s resource contract. It also provides a trail template for deliberately invalid coordinate cases; all validation writes are rolled back.",
+    "Backend/scripts/promote-admin.ts::email": "Selects the existing account to promote from the sole CLI argument after trimming. The SQL comparison is case-insensitive and success requires exactly one matched account.",
+    "Backend/src/validation.ts::text()": "Builds trimmed nonempty bounded-string schemas reused throughout request validation. Callers choose limits appropriate to names, IDs, comments, and other domain fields.",
+    "Backend/src/validation.ts::email": "Validates email syntax and maximum length, then lowercases it for consistent account lookup. Case-insensitive database uniqueness independently prevents duplicate account addresses.",
+    "Backend/src/validation.ts::role": "Restricts self-selected account roles to traveler, resident, guide, or host. Administrator privileges are intentionally absent from the signup contract.",
+    "Backend/src/validation.ts::signup": "Requires a bounded name, normalized email, and eight-to-128-character password, defaulting to traveler. It does not accept admin as a role or client-selected verification status.",
+    "Backend/src/validation.ts::login": "Validates normalized email, a nonempty bounded password, and an optional boolean rememberMe flag. Authentication and session duration are applied by the API after parsing.",
+    "Backend/src/validation.ts::review": "Accepts a target ID, integer rating from one to five, nonempty comment, and at most ten bounded tags. Authorship and record identity are assigned by the authenticated server route.",
+    "Backend/src/validation.ts::date": "Provides ISO calendar-date validation shared by booking and saved-state metadata. Chronological booking rules are added by booking rather than this primitive.",
+    "Backend/src/validation.ts::booking": "Validates reservation details and requires checkout after check-in with check-in no earlier than today in Asia/Manila. Listing existence, supported rooms, capacity, maximum nights, current inventory, and price remain server-side checks.",
+    "Backend/src/validation.ts::message": "Validates bounded group-message text and optional latitude/longitude pin, defaulting the destination to group-101. Membership, sender identity, and verified-guide policy are checked in the route.",
+    "Backend/src/validation.ts::url": "Accepts HTTP or HTTPS URLs plus the exact local unavailable-photo placeholder. It is reused for image and evidence-related fields and does not authorize arbitrary local asset paths.",
+    "Backend/src/validation.ts::post": "Validates a caption, supported image URL, and location label for community publishing. The API derives author, handle, identity, timestamps, and counters from authenticated context.",
+    "Backend/src/validation.ts::documentData": "Accepts canonical base64 data URLs only for PDF, PNG, JPEG, or WebP, with at most one MiB decoded content. The re-encoding check rejects malformed encodings that Buffer might otherwise tolerate.",
+    "Backend/src/validation.ts::jsonItem": "Requires a bounded ID while retaining additional fields for flexible notification and itinerary items. It does not impose a full schema on each item’s presentation payload.",
+    "Backend/src/validation.ts::userState": "Defines optional partial updates for notifications, documents, itinerary, and checklists, with collection limits and a four-million-character aggregate encoded vault limit. Documents have typed metadata and optional bounded file content; account ownership and stale-tab checks are handled by the route.",
+    "Backend/src/validation.ts::permissions": "Requires every supported feature, verification-policy, login-policy, and maintenance flag as a boolean. Parsing gives server feature checks a complete settings object rather than relying on truthiness of arbitrary JSON.",
+    "Backend/src/validation.ts::coordinate": "Validates a numeric latitude/longitude object against geographic ranges. Accommodation records may use this object or explicit null according to their booking mode.",
+    "Backend/src/validation.ts::base": "Shares resource identity, name, image, description, gallery, rating, and review-count validation between attractions and lodgings. Catalog reads later replace attraction/lodging rating aggregates with persisted review statistics.",
+    "Backend/src/validation.ts::attraction": "Extends shared catalog fields with category, location, geographic pin, highlights, visitor labels, optional certainty/evidence, photo credit, and archive metadata. Coordinate status permits the UI to distinguish an unconfirmed pin even though numeric coordinates remain required.",
+    "Backend/src/validation.ts::accommodation": "Validates stay details with nullable price, capacity, and coordinates for reference-only listings. Other booking modes require nonnull operational values, nonempty rooms, and contact information before administrator catalog edits can persist them.",
+    "Backend/src/validation.ts::ferry": "Validates bounded reference-route labels, fares, notes, and one of the supported status values. These administrator-editable records do not establish a live maritime data feed.",
+    "Backend/src/validation.ts::catalogUpdate": "Allows optional bounded replacement collections for attractions, accommodations, and ferries. The administrator route checks duplicate IDs, rejects cross-kind reuse, and deletes omitted active records for each supplied kind within one transaction.",
+    "Backend/src/validation.ts::verification": "Validates administrator-reviewed application details and status for host, guide, or resident applicants. Account existence, role compatibility, and preservation of promoted administrator identity are enforced separately during persistence.",
+    "Backend/migrations/001_initial.sql::users": "Owns persistent account identity, password hashes, role, and verification status. Self-service signup can create only non-admin roles, while session reads retrieve current role data instead of trusting client claims.",
+    "Backend/migrations/001_initial.sql::users_email_lower_unique": "Enforces case-insensitive email uniqueness independently of API normalization. Duplicate signups become database uniqueness errors mapped to a conflict response.",
+    "Backend/migrations/001_initial.sql::sessions": "Owns hashed session tokens linked to users and expiration times, with user deletion cascading to sessions. The API never stores the raw cookie token in this table.",
+    "Backend/migrations/001_initial.sql::sessions_user_id_idx": "Indexes account ownership of sessions, supporting account-linked access and foreign-key cleanup. Authentication itself looks up the token_hash primary key.",
+    "Backend/migrations/001_initial.sql::sessions_expires_at_idx": "Supports expiration-oriented session maintenance. Session issuance removes expired rows, and authentication rejects expired records even before cleanup.",
+    "Backend/migrations/001_initial.sql::jsonb_has_strings()": "Checks that each required JSON key has a string value and coalesces absent keys to false. This prevents a missing field from passing a resource or contribution CHECK through SQL NULL behavior.",
+    "Backend/migrations/001_initial.sql::jsonb_string_array()": "Checks that a JSON value is an array containing only strings, with missing or invalid values failing. Resource highlights, amenities, room types, galleries, and review tags reuse it.",
+    "Backend/migrations/001_initial.sql::resources": "Owns typed catalog records under stable IDs, pairing relational kind with domain JSON. Referential links keep historical reviews and bookings attached to their original records, so later migrations archive unsupported demo IDs instead of repurposing them. Its kind-specific CHECK evolves in migrations 002 and 008, including nullable unknown accommodation facts only for reference-only listings.",
+    "Backend/migrations/001_initial.sql::resources_kind_idx": "Supports selecting or managing resources by kind, as used by catalog grouping and administrator replacement logic. Stable resource IDs still provide the cross-feature reference identity.",
+    "Backend/migrations/001_initial.sql::settings": "Stores JSON settings keyed by name, with the permissions entry required to contain all known boolean flags. Server feature gates parse that persisted object before applying maintenance or capability policy.",
+    "Backend/migrations/001_initial.sql::reviews": "Owns authenticated review contributions tied to catalog resources and users, with matching relational/JSON target identity and integer ratings. Resource deletion is restricted to preserve referenced history, while deleting a user removes that user’s reviews.",
+    "Backend/migrations/001_initial.sql::review_votes": "Records one helpful vote per review/account pair through its composite primary key. Repeated helpful requests are idempotent, and either owning entity’s deletion removes its votes.",
+    "Backend/migrations/001_initial.sql::bookings": "Owns account reservations with typed dates, amount, status, and a matching JSON snapshot. A composite foreign key restricts targets to accommodation resources and preserves referenced catalog history. The API additionally locks the listing and counts occupied rooms per night before insertion.",
+    "Backend/migrations/001_initial.sql::bookings_inventory_idx": "Indexes accommodation/date intervals only for confirmed or pending reservations, matching the inventory query’s occupying statuses. Cancelled bookings do not consume that occupancy set.",
+    "Backend/migrations/001_initial.sql::bookings_user_created_idx": "Supports retrieving an account’s newest reservations without mixing ownership. The API scopes booking reads to the authenticated user rather than a supplied account ID.",
+    "Backend/migrations/001_initial.sql::travel_groups": "Owns named chat communities referenced by membership and message rows. Seeding creates group-101 and signup joins it when present.",
+    "Backend/migrations/001_initial.sql::group_members": "Defines which accounts belong to each travel group, with one membership per group/account pair. Chat reads join through membership and message creation verifies membership before insertion.",
+    "Backend/migrations/001_initial.sql::group_members_user_id_idx": "Supports locating an account’s group memberships for scoped message reads and user-linked cleanup. The group/account primary key separately prevents duplicate membership.",
+    "Backend/migrations/001_initial.sql::messages": "Owns group contributions with relational sender/group links and a matching JSON group ID. Text is bounded and nonempty at the database boundary, while the API supplies trusted sender names, guide badges, and timestamps.",
+    "Backend/migrations/001_initial.sql::social_posts": "Owns community-post JSON and creation order; its account link becomes null on user deletion so published posts can remain. Like totals are derived from social_likes rather than trusted from the stored presentation snapshot.",
+    "Backend/migrations/001_initial.sql::social_likes": "Stores one social-post/account like per composite primary key. The API toggles this relation while locking the post, then recomputes total likes and the caller’s state.",
+    "Backend/migrations/001_initial.sql::verifications": "Owns application/review JSON with optional account linkage and constrained applied roles and decision status. User deletion preserves the application with a null link, while the API prevents historical decisions from revoking a separately promoted administrator identity.",
+    "Backend/migrations/001_initial.sql::user_state": "Owns one private saved-state row per user for notifications, documents, itinerary, and checklists. Database checks enforce top-level JSON shapes and cascading ownership; the API applies detailed bounds, file validation, partial updates, and optional stale-tab account matching.",
+    "Backend/migrations/001_initial.sql::001_initial.sql": {
+      "fileSummary": "Backend/migrations/001_initial.sql"
+    },
+    "Backend/migrations/002_strict_trail_coordinates.sql::002_strict_trail_coordinates.sql": {
+      "fileSummary": "Backend/migrations/002_strict_trail_coordinates.sql"
+    },
+    "Backend/migrations/003_unavailable_catalog_photo.sql::003_unavailable_catalog_photo.sql": {
+      "fileSummary": "Backend/migrations/003_unavailable_catalog_photo.sql"
+    },
+    "Backend/migrations/004_sourced_sibale_attractions.sql::004_sourced_sibale_attractions.sql": {
+      "fileSummary": "Backend/migrations/004_sourced_sibale_attractions.sql"
+    },
+    "Backend/migrations/005_attraction_visitor_copy.sql::005_attraction_visitor_copy.sql": {
+      "fileSummary": "Backend/migrations/005_attraction_visitor_copy.sql"
+    },
+    "Backend/migrations/006_sourced_fiestas_and_customs.sql::006_sourced_fiestas_and_customs.sql": {
+      "fileSummary": "Backend/migrations/006_sourced_fiestas_and_customs.sql"
+    },
+    "Backend/migrations/007_sourced_asi_phrasebook.sql::007_sourced_asi_phrasebook.sql": {
+      "fileSummary": "Backend/migrations/007_sourced_asi_phrasebook.sql"
+    },
+    "Backend/migrations/008_sourced_accommodations.sql::008_sourced_accommodations.sql": {
+      "fileSummary": "Backend/migrations/008_sourced_accommodations.sql"
+    },
+    "Backend/migrations/009_sourced_island_foods.sql::009_sourced_island_foods.sql": {
+      "fileSummary": "Backend/migrations/009_sourced_island_foods.sql"
+    },
+    "Backend/scripts/migrate.ts::migrate.ts": {
+      "fileSummary": "Backend/scripts/migrate.ts"
+    },
+    "Backend/scripts/promote-admin.ts::promote-admin.ts": {
+      "fileSummary": "Backend/scripts/promote-admin.ts"
+    },
+    "Backend/scripts/seed.ts::seed.ts": {
+      "fileSummary": "Backend/scripts/seed.ts"
+    },
+    "Backend/scripts/validate-seed.ts::validate-seed.ts": {
+      "fileSummary": "Backend/scripts/validate-seed.ts"
+    },
+    "Backend/src/api.ts::Backend/src/api.ts": {
+      "fileSummary": "Backend/src/api.ts"
+    },
+    "Backend/src/app.ts::app.ts": {
+      "fileSummary": "Backend/src/app.ts"
+    },
+    "Backend/src/auth.ts::auth.ts": {
+      "fileSummary": "Backend/src/auth.ts"
+    },
+    "Backend/src/db.ts::db.ts": {
+      "fileSummary": "Backend/src/db.ts"
+    },
+    "Backend/src/portfolio.ts::Backend/src/portfolio.ts": {
+      "fileSummary": "Backend/src/portfolio.ts"
+    },
+    "Backend/src/publishing.ts::publishing.ts": {
+      "fileSummary": "Backend/src/publishing.ts"
+    },
+    "Backend/src/server.ts::server.ts": {
+      "fileSummary": "Backend/src/server.ts"
+    },
+    "Backend/test/api.integration.ts::api.integration.ts": {
+      "fileSummary": "Backend/test/api.integration.ts"
+    },
+    "Backend/test/app.test.ts::app.test.ts": {
+      "fileSummary": "Backend/test/app.test.ts"
+    },
+    "Backend/test/auth.test.ts::auth.test.ts": {
+      "fileSummary": "Backend/test/auth.test.ts"
+    },
+    "Backend/test/portfolio.test.ts::portfolio.test.ts": {
+      "fileSummary": "Backend/test/portfolio.test.ts"
+    },
+    "Backend/test/publishing.test.ts::publishing.test.ts": {
+      "fileSummary": "Backend/test/publishing.test.ts"
+    },
+    "Backend/src/validation.ts::validation.ts": {
+      "fileSummary": "Backend/src/validation.ts"
+    },
+    "Backend/test/validation.test.ts::validation.test.ts": {
+      "fileSummary": "Backend/test/validation.test.ts"
+    },
+    "Backend/test/api.integration.ts::request()": "Sends JSON requests to the isolated full-mode test server with optional session cookie and Origin header. It returns status, parsed response, and cookie metadata so subtests can assert authentication, session flags, access policy, and persisted behavior.",
+    "Backend/test/app.test.ts::get()": "Starts a temporary loopback app with an injected readiness probe, fetches one endpoint, and returns its status and JSON body. Cleanup closes the server and idle connections so health and fallback assertions do not require PostgreSQL.",
+    "Backend/test/validation.test.ts::document()": "Wraps supplied fileData in otherwise valid vault-document metadata. Tests vary the encoded content against the same wrapper to isolate decoded-size, MIME support, and malformed-base64 behavior."
+  }
+}

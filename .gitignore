@@ -12,5 +12,8 @@ coverage/
 # Project-local PostgreSQL data and logs
 .local-postgres/
 
+# Rebuildable local code graph and Obsidian vault
+graphify-out/
+
 # Unknown-rights original artwork retained locally, excluded from redistribution
 /docs/rights-review/withheld-assets/

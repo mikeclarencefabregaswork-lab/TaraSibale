@@ -1,0 +1,456 @@
+{
+  "anchors": [
+    {
+      "source": "Frontend/src/App.tsx",
+      "symbol": "App()",
+      "name": "Browser shell and traveler workflows",
+      "purpose": "App coordinates hash navigation, API catalog loading, session bootstrap and the shared saved-state provider used by planning features. Portfolio mode keeps accounts, uploads and public mutations unavailable while guest itineraries and checklists can remain in browser storage. This graph group also contains feature forms, API helpers and navigation components because they connect through the shell; it is broader than one traveler feature and is not an authorization boundary.",
+      "questions": [
+        "How does the catalog reach Explore without importing the ATTRACTIONS fixture?",
+        "What prevents an old account response or autosave from becoming another account’s state?",
+        "Which interactions remain usable in default portfolio mode?"
+      ],
+      "guide": "TaraSibale - Architecture",
+      "entries": [
+        {
+          "source": "Frontend/src/App.tsx",
+          "symbol": "App()",
+          "why": "Start at refreshCatalog, auth/bootstrap effects and feature callbacks to follow data into each tab."
+        },
+        {
+          "source": "Frontend/src/userState.tsx",
+          "symbol": "useUserStatePersistence()",
+          "why": "Follow guest storage, queued account writes, owner checks and page-exit save limits."
+        },
+        {
+          "source": "Frontend/src/portfolio.ts",
+          "symbol": "PORTFOLIO_MODE",
+          "why": "Check the default-on browser flag before interpreting collection or chat behavior."
+        },
+        {
+          "source": "Frontend/src/api.ts",
+          "symbol": "jsonRequest()",
+          "why": "Inspect the shared JSON request and expected-user header used by normal and keepalive saves."
+        }
+      ]
+    },
+    {
+      "source": "Frontend/src/components/InteractiveMap.tsx",
+      "symbol": "InteractiveMap()",
+      "name": "Catalog models, map exploration and administration",
+      "purpose": "This group links shared frontend domain types, catalog fixtures and components that inspect or edit those shapes. The map builds Leaflet layers from supplied data, omits unconfirmed attraction pins and uses a schematic background in portfolio mode; administration submits changes through App callbacks. Its graph membership mixes map, culture, notification and administrative concerns through common contracts, so membership does not prove that a fixture is imported at runtime or that all nodes belong to one feature.",
+      "questions": [
+        "Why are some attractions absent from map markers?",
+        "Which catalog fields distinguish reference-only lodging from bookable inventory?",
+        "Where do source dates, coordinate caveats and photograph credits reach the interface?"
+      ],
+      "guide": "TaraSibale - Attractions and Data",
+      "entries": [
+        {
+          "source": "Frontend/src/types.ts",
+          "symbol": "Attraction",
+          "why": "Inspect evidence and coordinate fields before treating a map position as confirmed."
+        },
+        {
+          "source": "Frontend/src/components/InteractiveMap.tsx",
+          "symbol": "InteractiveMap()",
+          "why": "Follow pin filtering, escaped popup text, base-layer selection and sample trail simulation."
+        },
+        {
+          "source": "Frontend/src/components/AdminPage.tsx",
+          "symbol": "AdminPage()",
+          "why": "Trace staged catalog edits and the asynchronous parent save contracts."
+        },
+        {
+          "source": "Frontend/src/data/concepcionData.ts",
+          "symbol": "ATTRACTIONS",
+          "why": "Compare reference fixture content with App’s separate API catalog-loading path."
+        }
+      ]
+    },
+    {
+      "source": "Backend/src/api.ts",
+      "symbol": "createApi()",
+      "name": "HTTP API, sessions and access policy",
+      "purpose": "The Express router resolves cookie sessions, validates requests and applies authenticated, administrative and feature-specific checks around PostgreSQL operations. Supporting modules implement password hashing, account publishing limits and portfolio catalog presentation, with backend tests exercising these boundaries. This group also includes test and dependency references connected by shared imports; it is not a single endpoint family or proof that all paths are reachable in default portfolio mode.",
+      "questions": [
+        "Where are authenticated identity and administrator role established before a mutation?",
+        "How does default portfolio middleware block writes while serving a sanitized catalog?",
+        "Which operations use transactions and server-derived values instead of trusting client records?"
+      ],
+      "guide": "TaraSibale - Modes and Access",
+      "entries": [
+        {
+          "source": "Backend/src/app.ts",
+          "symbol": "createApp()",
+          "why": "Read the health routes and portfolio allowlist before following router handlers."
+        },
+        {
+          "source": "Backend/src/api.ts",
+          "symbol": "createApi()",
+          "why": "Trace session resolution, authorization middleware and endpoint persistence."
+        },
+        {
+          "source": "Backend/src/auth.ts",
+          "symbol": "verifyPassword()",
+          "why": "Inspect encoded scrypt validation and timing-safe password comparison."
+        },
+        {
+          "source": "Backend/src/publishing.ts",
+          "symbol": "createPublishingLimit()",
+          "why": "Check that publishing quota belongs to the server-resolved account."
+        },
+        {
+          "source": "Backend/test/api.integration.ts",
+          "symbol": "request()",
+          "why": "Use the integration request helper to understand cookie and isolated-app test setup."
+        }
+      ]
+    },
+    {
+      "source": "Backend/src/validation.ts",
+      "symbol": "attraction",
+      "name": "Request payload schemas and validation tests",
+      "purpose": "Zod schemas constrain authentication, reviews, bookings, chat, saved state and administrative catalog payloads before handlers persist them. Checks include calendar ordering, numeric coordinate bounds, limited document formats/size and the nullable facts allowed for reference-only accommodation records. This graph group gathers many distinct request contracts and a test helper through shared validation definitions; schema membership does not imply that TypeScript types or database constraints are interchangeable with request validation.",
+      "questions": [
+        "Which unknown accommodation values are permitted only in reference-only mode?",
+        "How are document base64 data and total vault size bounded?",
+        "Which booking fields and dates must be supplied rather than accepted from a client voucher?"
+      ],
+      "guide": "TaraSibale - API and Validation",
+      "entries": [
+        {
+          "source": "Backend/src/validation.ts",
+          "symbol": "attraction",
+          "why": "Start with the catalog attraction contract, then compare accommodation and catalogUpdate."
+        },
+        {
+          "source": "Backend/src/validation.ts",
+          "symbol": "userState",
+          "why": "Inspect the separately optional saved-state branches and document bounds."
+        },
+        {
+          "source": "Backend/src/validation.ts",
+          "symbol": "booking",
+          "why": "Follow date, capacity input and guest-field validation before API pricing/inventory logic."
+        },
+        {
+          "source": "Backend/test/validation.test.ts",
+          "symbol": "document()",
+          "why": "Read representative document payload construction alongside rejection assertions."
+        }
+      ]
+    },
+    {
+      "source": "Frontend/src/toastStore.ts",
+      "symbol": "publish()",
+      "name": "Transient feedback and toast presentation",
+      "purpose": "The module-scoped toast store publishes deduplicated success, error and information messages, retains the newest four and notifies React subscribers. ToastViewport renders accessible cards with manual dismissal and hover/focus-paused timers; related tests cover store and API feedback behavior. This group combines the feedback mechanism with its callers/tests, and should be distinguished from persisted AppNotification records in the notification center.",
+      "questions": [
+        "Why does repeating the same message not add another toast?",
+        "How long do errors remain visible and what pauses dismissal?",
+        "How does an API failure both notify the user and remain available to a form catch handler?"
+      ],
+      "guide": "TaraSibale - Architecture",
+      "entries": [
+        {
+          "source": "Frontend/src/toastStore.ts",
+          "symbol": "publish()",
+          "why": "Check duplicate suppression, immutable snapshots and the four-message cap."
+        },
+        {
+          "source": "Frontend/src/components/ToastViewport.tsx",
+          "symbol": "ToastCard()",
+          "why": "Inspect role selection, timers and focus/hover pause behavior."
+        },
+        {
+          "source": "Frontend/src/api.ts",
+          "symbol": "api()",
+          "why": "Follow failure toasts and rethrow behavior; this caller may sit in another graph group."
+        }
+      ]
+    },
+    {
+      "source": "scripts/obsidian-consolidate.mjs",
+      "symbol": "consolidateVault()",
+      "name": "Knowledge export, local tooling and process lifecycle",
+      "purpose": "The knowledge scripts read the graph and maintained context, consolidate granular references into canonical Obsidian notes and preserve recoverable originals outside the vault. The same graph group includes migration/seed commands, notice generation, Vite configuration, PostgreSQL setup and server startup because Node filesystem/path/URL references connect otherwise independent tools. This is a mixed tooling cluster rather than one application feature or a claim that exporting notes starts the API or changes the database.",
+      "questions": [
+        "How are canonical notes generated and retired granular notes preserved?",
+        "Why do migration, Vite and server startup files share a graph group with Obsidian scripts?",
+        "Which command applies migrations safely, and which command only exports documentation?"
+      ],
+      "guide": "TaraSibale - Using the Knowledge Base",
+      "entries": [
+        {
+          "source": "scripts/obsidian-consolidate.mjs",
+          "symbol": "consolidateVault()",
+          "why": "Start with canonical destinations, context loading and recoverable consolidation behavior."
+        },
+        {
+          "source": "scripts/export-obsidian.mjs",
+          "symbol": "export-obsidian.mjs",
+          "why": "Inspect vault detection and the explicit export entry point."
+        },
+        {
+          "source": "Backend/scripts/migrate.ts",
+          "symbol": "migrate.ts",
+          "why": "Read the transaction, advisory lock and migration history handling before database maintenance."
+        },
+        {
+          "source": "Backend/scripts/seed.ts",
+          "symbol": "seed.ts",
+          "why": "Compare nonoverwriting resource seeding with numbered migrations that update existing content."
+        },
+        {
+          "source": "Backend/src/server.ts",
+          "symbol": "shutdown()",
+          "why": "Inspect signal handling, HTTP close and pool cleanup as a separate process-lifecycle concern."
+        },
+        {
+          "source": "Frontend/vite.config.ts",
+          "symbol": "vite.config.ts",
+          "why": "Check the dev proxy and filesystem allow/deny boundaries rather than assuming workspace-wide serving."
+        }
+      ]
+    },
+    {
+      "source": "Backend/migrations/001_initial.sql",
+      "symbol": "resources",
+      "name": "Relational storage and JSON catalog foundation",
+      "purpose": "The initial migration establishes users/sessions, typed JSON catalog resources, settings, reviews/votes, bookings, groups/messages, social records, verifications and owner-keyed saved state. Foreign keys, indexes and JSON checks keep related identities and core stored shapes consistent. This group combines many tables and helper functions rather than one runtime feature; the initial resource check is historical and later migrations replace it for strict trail pairs and reference-only accommodation nulls.",
+      "questions": [
+        "How do relational owner/target columns agree with IDs stored inside JSON records?",
+        "Which relationships preserve catalog targets referenced by bookings or reviews?",
+        "Which later migrations supersede the initial resource constraint?"
+      ],
+      "guide": "TaraSibale - Database",
+      "entries": [
+        {
+          "source": "Backend/migrations/001_initial.sql",
+          "symbol": "resources",
+          "why": "Start with kind/id consistency and the JSON checks, then read migrations 002 and 008 for the current constraint."
+        },
+        {
+          "source": "Backend/migrations/001_initial.sql",
+          "symbol": "bookings",
+          "why": "Inspect accommodation-kind foreign keys, date checks and the active-inventory index."
+        },
+        {
+          "source": "Backend/migrations/001_initial.sql",
+          "symbol": "user_state",
+          "why": "Locate the account-keyed saved planning fields and contrast them with separate booking/message tables."
+        },
+        {
+          "source": "Backend/migrations/001_initial.sql",
+          "symbol": "sessions",
+          "why": "See hashed-token ownership and expiry storage without reading credentials."
+        }
+      ]
+    },
+    {
+      "source": "Backend/src/server.ts",
+      "symbol": "shutdown()",
+      "name": "API process and database operations",
+      "purpose": "Connects the Express listener lifecycle and PostgreSQL pool with local migration, seed-validation and administrator tooling. These entries share database and process infrastructure rather than representing one user-facing feature. Check database readiness and configuration before treating an API outage as an interface problem.",
+      "questions": [
+        "Where does the API listen and how does it shut down?",
+        "How is PostgreSQL readiness checked?",
+        "Which local scripts connect to the same database?"
+      ],
+      "guide": "TaraSibale - Architecture",
+      "entries": [
+        {
+          "source": "Backend/src/server.ts",
+          "symbol": "shutdown()",
+          "why": "Inspect listener shutdown, the timeout and pool cleanup."
+        },
+        {
+          "source": "Backend/src/db.ts",
+          "symbol": "checkDatabase()",
+          "why": "Follow the SELECT 1 readiness probe before diagnosing catalog failures."
+        }
+      ]
+    }
+  ],
+  "files": {
+    "package.json": {
+      "name": "Root workspace commands",
+      "purpose": "Defines the private Frontend/Backend npm workspaces, supported Node engine and root commands for development, checks, database maintenance and knowledge tooling. This manifest-level group describes command orchestration, not application runtime calls; run project checks through these root workspace commands.",
+      "guide": "TaraSibale - Development",
+      "questions": [
+        "Which root command runs both workspaces’ checks?",
+        "Which commands build the graph versus export the Obsidian vault?"
+      ]
+    },
+    "Frontend/package.json": {
+      "name": "Frontend dependencies and build commands",
+      "purpose": "Declares the React/Vite browser workspace, Leaflet and Tailwind dependencies, TypeScript/lint/test commands and the prebuild notice generator. Manifest dependency nodes reflect declared version ranges and do not establish installed versions or prove that every package has a runtime import. Some dependency nodes can be grouped with their consumers elsewhere in the graph.",
+      "guide": "TaraSibale - Development",
+      "questions": [
+        "What runs before the Vite production build?",
+        "Which commands typecheck frontend source and run frontend tests?"
+      ]
+    },
+    "Backend/package.json": {
+      "name": "Backend dependencies and service commands",
+      "purpose": "Declares the Express/PostgreSQL/Zod API workspace and separate development, compiled startup, unit-test and integration-test commands. Database commands load Backend/.env through the runtime command line; the manifest contains commands rather than credentials. Graph grouping of manifest keys is configuration structure rather than an endpoint dependency map.",
+      "guide": "TaraSibale - Development",
+      "questions": [
+        "Which startup path runs TypeScript and which runs compiled JavaScript?",
+        "How are integration tests separated from the ordinary test command?"
+      ]
+    },
+    "Frontend/tsconfig.json": {
+      "name": "Frontend TypeScript project references",
+      "purpose": "References the separate app and Vite-config TypeScript projects with an empty direct file list. This small configuration group is the build entry point rather than a bundle of runtime modules.",
+      "guide": "TaraSibale - Development",
+      "questions": [
+        "Which TypeScript subprojects does tsc -b check?"
+      ]
+    },
+    "Frontend/tsconfig.app.json": {
+      "name": "Browser source TypeScript rules",
+      "purpose": "Checks src with ES2023/DOM libraries, Vite client types, React JSX and bundler resolution while emitting no JavaScript. Unused declarations and fallthrough checks constrain source quality; this configuration applies to browser code rather than backend Node modules.",
+      "guide": "TaraSibale - Development",
+      "questions": [
+        "Which browser APIs and JSX assumptions are available to frontend source?",
+        "Why does the TypeScript phase not produce the production JavaScript bundle?"
+      ]
+    },
+    "Frontend/tsconfig.node.json": {
+      "name": "Vite configuration TypeScript rules",
+      "purpose": "Checks vite.config.ts using Node types and NodeNext modules without emitting output. Its separate compiler context keeps build-configuration assumptions distinct from the browser app project.",
+      "guide": "TaraSibale - Development",
+      "questions": [
+        "Why is vite.config.ts checked separately from src?"
+      ]
+    },
+    "Backend/tsconfig.json": {
+      "name": "Backend compilation and strictness",
+      "purpose": "Compiles src to dist using NodeNext modules and strict TypeScript checks, including noUncheckedIndexedAccess. This project config governs emitted API code; tests and maintenance scripts are included by the separate test configuration.",
+      "guide": "TaraSibale - Development",
+      "questions": [
+        "Which directory becomes the compiled backend output?",
+        "Which strictness rule exposes possibly missing indexed values?"
+      ]
+    },
+    "Backend/tsconfig.test.json": {
+      "name": "Backend test and script typechecking",
+      "purpose": "Extends the backend compiler rules but uses the workspace root and noEmit to check src, test and scripts together. This group describes check coverage rather than test execution or database setup.",
+      "guide": "TaraSibale - Development",
+      "questions": [
+        "Are maintenance scripts included in the backend typecheck?",
+        "Why does this project not overwrite dist?"
+      ]
+    },
+    "Frontend/.oxlintrc.json": {
+      "name": "Frontend React lint policy",
+      "purpose": "Enables React, TypeScript and Oxc lint plugins, makes Rules of Hooks violations errors and warns about component-only exports while allowing constant exports. This file configures static lint diagnostics; it does not change React runtime behavior.",
+      "guide": "TaraSibale - Development",
+      "questions": [
+        "Which React hook violations fail lint?",
+        "Why can a component module also export a constant?"
+      ]
+    },
+    "Backend/migrations/002_strict_trail_coordinates.sql": {
+      "name": "Strict trail coordinate pair checks",
+      "purpose": "Replaces the resources kind-specific CHECK so strict JSONPath tests each trail coordinate as a two-element array without lax unwrapping. It preserves the other resource branches; migration 008 later replaces this check again while retaining the strict trail-pair expression. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
+      "guide": "TaraSibale - Database",
+      "questions": [
+        "Why did lax JSONPath reject or misread coordinate pairs?",
+        "Does the later resource check preserve this correction?"
+      ]
+    },
+    "Backend/migrations/003_unavailable_catalog_photo.sql": {
+      "name": "Known broken catalog image replacement",
+      "purpose": "Replaces only the known unavailable image URL inside matching resource JSON with the local photo-unavailable asset. The targeted value replacement avoids resetting unrelated catalog content or administrator changes. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
+      "guide": "TaraSibale - Database",
+      "questions": [
+        "Which exact fixture image value is repaired?",
+        "Why does this migration avoid reseeding the whole catalog?"
+      ]
+    },
+    "Backend/migrations/004_sourced_sibale_attractions.sql": {
+      "name": "Sourced attraction records and retained history",
+      "purpose": "Archives the former attraction IDs and upserts a new set of sourced destination records with provenance and coordinate-status caveats. Historical targets remain in storage so existing references are not repurposed; the subsequent visitor-copy migration updates presentation text for the new IDs. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
+      "guide": "TaraSibale - Database",
+      "questions": [
+        "How are old review targets retained when replacing unsupported demo attractions?",
+        "Which new attraction pins remain explicitly unconfirmed?"
+      ]
+    },
+    "Backend/migrations/005_attraction_visitor_copy.sql": {
+      "name": "Concise attraction visitor copy",
+      "purpose": "Patches descriptions, highlights, entry-fee text and best-time text for the sourced attraction IDs. It merges selected fields into existing JSON, preserving identity, credits and review history rather than replacing complete records. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
+      "guide": "TaraSibale - Database",
+      "questions": [
+        "Which fields change without discarding source metadata?",
+        "Why are fees and visit times stated as confirm locally?"
+      ]
+    },
+    "Backend/migrations/006_sourced_fiestas_and_customs.sql": {
+      "name": "Sourced fiestas and cultural customs",
+      "purpose": "Archives the former demo event and upserts sourced culture records covering fiestas and customs. Recorded source dates and schedule notes qualify the content; the migration does not create a live event schedule service. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
+      "guide": "TaraSibale - Database",
+      "questions": [
+        "Which demo event is retained as archived history?",
+        "How do event records communicate date and source limitations?"
+      ]
+    },
+    "Backend/migrations/007_sourced_asi_phrasebook.sql": {
+      "name": "Sourced Asi phrasebook",
+      "purpose": "Archives unsupported demo phrase records and upserts sourced phrasebook culture entries. Phrase, translation and pronunciation text are stored catalog content with evidence metadata rather than generated translation or speech recognition. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
+      "guide": "TaraSibale - Database",
+      "questions": [
+        "Which phrase fields connect the original wording with translation and pronunciation?",
+        "How are older unsupported phrase IDs preserved?"
+      ]
+    },
+    "Backend/migrations/008_sourced_accommodations.sql": {
+      "name": "Reference-only lodging and nullable unknown facts",
+      "purpose": "Replaces the resource CHECK to permit JSON null price, guest capacity and coordinates only for reference-only accommodation records, while retaining strict trail coordinate checks. It archives old demo lodgings and upserts sourced reference listings rather than inventing bookable prices or verified availability. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
+      "guide": "TaraSibale - Database",
+      "questions": [
+        "Which nullable facts require reference-only booking mode?",
+        "How do existing booking references survive lodging catalog replacement?"
+      ]
+    },
+    "Backend/migrations/009_sourced_island_foods.sql": {
+      "name": "Sourced island foods and credited imagery",
+      "purpose": "Archives unsupported demo food records and upserts three locally documented dish records with source metadata and individually credited representative food photos. The entries describe documented production and explicitly qualify availability; they do not establish current vendors, prices or menus. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
+      "guide": "TaraSibale - Database",
+      "questions": [
+        "Which food image credits must remain attached to the entries?",
+        "Why are representative food photographs distinguished from a Sibale vendor’s products?"
+      ]
+    },
+    "scripts/graph-community-context.mjs": {
+      "name": "Code graph explanation model",
+      "purpose": "Builds meaningful context for graph communities without changing their members or edges. Stable source/symbol anchors and file rules supply names, purposes, questions, and entry points; reviewed maps supply symbol explanations. Cross-group relationships are counted from indexed edges, and investigation tours are explicitly reading routes rather than asserted call chains.",
+      "guide": "TaraSibale - Using the Knowledge Base",
+      "questions": [
+        "How is the graph made readable without changing its recorded topology?",
+        "Which part publishes or displays the community explanations?"
+      ]
+    },
+    "scripts/enrich-graph.mjs": {
+      "name": "Graph context publication pipeline",
+      "purpose": "Applies community context to the local graph, writes native Graphify labels and a readable community guide, regenerates the stock HTML, and adds the contextual browser adapter. It validates the expected exporter hooks before injecting safely serialized data. Numeric memberships and recorded edges remain unchanged.",
+      "guide": "TaraSibale - Using the Knowledge Base",
+      "questions": [
+        "How is the graph made readable without changing its recorded topology?",
+        "Which part publishes or displays the community explanations?"
+      ]
+    },
+    "scripts/graph-context-ui.js": {
+      "name": "Interactive graph investigation controls",
+      "purpose": "Adds the interactive context sidebar to the generated graph viewer. Application/all-group controls, investigation tours, community questions, source responsibilities, Obsidian links, and selected-symbol explanations complement the native graph. The browser adapter is local viewer behavior and does not alter the tourism app or database.",
+      "guide": "TaraSibale - Using the Knowledge Base",
+      "questions": [
+        "How is the graph made readable without changing its recorded topology?",
+        "Which part publishes or displays the community explanations?"
+      ]
+    }
+  }
+}

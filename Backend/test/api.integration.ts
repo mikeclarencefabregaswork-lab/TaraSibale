@@ -25,7 +25,9 @@ test('real PostgreSQL API: accounts, isolation, permissions, reviews and booking
     await pool.query('INSERT INTO resources(id,kind,data) VALUES($1,$2,$3)', [stay.id, 'accommodation', stay])
     await pool.query("INSERT INTO travel_groups(id,name) VALUES('group-101','Island travelers')")
     await pool.query("INSERT INTO settings(key,data) VALUES('permissions',$1)", [{ enableGroupChat: true, enableHomestayBooking: true, enablePublicReviews: true, enableSocialCommunityStream: true, enableCloudVault: true, enableAiConcierge: true, requireLoginForReviews: true, allowOnlyVerifiedGuidesToMessage: false, allowOnlyVerifiedHostsToAcceptBookings: false, maintenanceMode: false }])
-    server = createApp(async () => { await pool.query('SELECT 1') }, pool).listen(0, '127.0.0.1')
+    // Exercise the full API regardless of the developer's portfolio setting.
+    // Portfolio-mode boundaries have their own tests in portfolio.test.ts.
+    server = createApp(async () => { await pool.query('SELECT 1') }, pool, { portfolioMode: false }).listen(0, '127.0.0.1')
     await once(server, 'listening')
     const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}/api`
     async function request(path: string, method = 'GET', body?: unknown, cookie = '', origin?: string) {

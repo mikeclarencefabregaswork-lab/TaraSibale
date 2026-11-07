@@ -6,30 +6,46 @@ The supplied TaraSibale tourism interface is integrated into `Frontend/`, with a
 
 ## This local Linux setup
 
-Repository contents are installed directly in this `TaraSibale` folder.
-Dependencies are installed and the project-local PostgreSQL database has been migrated and seeded.
-
-- Database: `tarasibale`, user: `mikeonlinux`, host: `127.0.0.1`, port: `5433`.
-- Private connection credentials: `Backend/.env` (ignored by Git).
-- Database files and server log: `.local-postgres/` (ignored by Git).
-- The project-local instance runs separately from the system PostgreSQL service on port 5432.
-- No application accounts are seeded; create an account through signup.
-
-From this folder, start PostgreSQL when it is stopped, then start the app:
+This checkout uses the existing system PostgreSQL server on `127.0.0.1:5432`.
+The `tarasibale` database is owned by the existing role `gemini.psql`.
+Private connection credentials are in `Backend/.env` (ignored by Git).
+Dependencies, all nine migrations, and the reference catalog are installed.
+No application accounts are seeded. Portfolio mode is enabled, so signup,
+bookings, uploads, and publishing are intentionally blocked.
 
 ```bash
-npm run db:start
+npm run db:status
 npm run dev
 ```
 
-Open http://localhost:5173. The backend runs at http://127.0.0.1:3001.
-Use `npm run db:status` to check PostgreSQL and `npm run db:stop` to stop it.
-The project database does not automatically start after a reboot. Do not delete
-`.local-postgres/` unless you intend to remove the local database and its data.
+Open http://localhost:5173. The API runs at http://127.0.0.1:3001.
+`npm run db:start` and `npm run db:stop` use sudo and control the **system**
+PostgreSQL service, including any other databases it serves. Do not stop it
+while other projects need it. The ignored `.local-postgres/` folder is an
+unused initialization attempt, not the active application database.
+
+For a fresh database on this machine, run the password-prompting bootstrap
+from the repository root:
+
+```bash
+psql -X -h 127.0.0.1 -U gemini.psql -d postgres -f Backend/gemini.psql
+npm run db:migrate
+npm run db:seed
+```
+
+The bootstrap requires the existing role to have database-creation privileges.
+It preserves an existing database, refuses an unexpected owner, and never
+changes a role or password. Configure `Backend/.env` to point at `tarasibale`
+before running migrations. See [local knowledge tools](docs/knowledge-tools.md)
+for the Graphify graph and Obsidian vault.
+
+For a guided explanation of the codebase, begin with
+[TaraSibale — Start Here](docs/obsidian/00%20TaraSibale%20-%20Start%20Here.md).
+The Obsidian export includes these guides, source links, and a reading map.
 
 ## Run locally
 
-Requirements: Node.js 22.12+ and npm, PostgreSQL running on Windows (verified with PostgreSQL 18).
+Requirements: Node.js 22.12+ and npm, and a running PostgreSQL server (verified with PostgreSQL 18).
 
 1. Configure `Backend/.env` using `Backend/.env.example`. Point `DATABASE_URL` to your existing `tarasibale` database. Keep credentials in that ignored file; URL-encode special characters in the password.
 2. Install dependencies, apply migrations, and import the reference catalog:
@@ -43,11 +59,11 @@ npm run dev
 
 Open http://localhost:5173. Vite forwards `/api` to the backend at http://127.0.0.1:3001. If you change the backend port, update `Frontend/vite.config.ts` too.
 
-Migrations are recorded and run transactionally. Seeding inserts only missing reference records and preserves later edits. Your local database has already been migrated and seeded during integration.
+Migrations are recorded and run transactionally. Seeding inserts only missing reference records and preserves later edits. This checkout’s local database has been migrated and seeded.
 
 ## Accounts and administrator access
 
-Create an account through the app. Passwords are hashed with salted scrypt; session cookies are HttpOnly and SameSite=Lax. Signup cannot create administrators. Resident, host, and guide accounts begin unverified and appear in the administrator verification queue.
+The default portfolio mode blocks account creation and sign-in. For intentional local full-application development, set `PORTFOLIO_MODE=false` in `Backend/.env` and `VITE_PORTFOLIO_MODE=false` in `Frontend/.env`, then restart the app. Create an account through the app in that mode. Passwords are hashed with salted scrypt; session cookies are HttpOnly and SameSite=Lax. Signup cannot create administrators. Resident, host, and guide accounts begin unverified and appear in the administrator verification queue.
 
 To promote an existing account, run locally:
 
@@ -83,7 +99,7 @@ npm run test:integration
 npm run build
 ```
 
-Unit/HTTP tests (`npm test`) run without a configured database. Integration tests use the configured database to create a randomly named temporary schema, exercise real PostgreSQL constraints and APIs, and remove only that test schema afterward; they do not modify application rows. The database role needs permission to create schemas for this test command.
+Unit/HTTP tests (`npm test`) run without a configured database. Integration tests explicitly disable portfolio mode for their isolated test app and use the configured database to create a randomly named temporary schema, exercise real PostgreSQL constraints and APIs, and remove only that test schema afterward; they do not modify application rows. The database role needs permission to create schemas for this test command.
 
 Health checks:
 
@@ -98,7 +114,7 @@ The database check executes `SELECT 1` and returns HTTP 503 without connection s
 
 The Asi phrasebook’s source and regional/audio limitations are documented in [docs/phrasebook-sources.md](docs/phrasebook-sources.md).
 
-Use Windows Services (`services.msc`) to start/stop the installed PostgreSQL service. Keep it running while developing. The old Docker volume has not been deleted or migrated; stop its container before running another PostgreSQL server on the same port.
+On this Linux machine, the existing system PostgreSQL service supplies the database; use `npm run db:status` to check readiness. On Windows, use Services (`services.msc`) to manage PostgreSQL. Keep the server running while developing. The old Docker volume has not been deleted or migrated; stop its container before running another PostgreSQL server on the same port.
 
 `npm run build` produces `Frontend/dist` and `Backend/dist`. Start the compiled API with `npm run start --workspace Backend`; check static output with `npm run preview --workspace Frontend`. The API currently loads `Backend/.env` through the start script. Vite development and preview proxy `/api` locally. Production hosting needs a static host/reverse proxy routing `/api` to Express, HTTPS, `NODE_ENV=production`, and `APP_ORIGIN` set to the frontend origin. Use a dedicated least-privileged runtime database role when deploying; the local administrator connection is for development and migrations.
 
@@ -106,7 +122,7 @@ Use Windows Services (`services.msc`) to start/stop the installed PostgreSQL ser
 
 Source ZIP: `tarasibale-webapp.zip`. UI/assets were imported; AI Studio server/build scripts, embedded project instructions, generated artifacts, and Gemini credentials were not imported as executable configuration. The prior starter was backed up in ignored `.superpowers/frontend-starter`; the inspected ZIP is in `.superpowers/zip-review`.
 
-Graphify was requested, but repository/workspace queries returned `No workspace is selected for this agent`; source files and TypeScript contracts were inspected directly.
+The local Graphify CLI indexes this checkout and exports linked Obsidian notes. The separate Graphify cloud connector currently has no available workspaces; it is not configured or required for local indexing. See [knowledge tools](docs/knowledge-tools.md).
 
 ## References
 

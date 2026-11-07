@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+.git/
+.local-postgres/
+.superpowers/
+graphify-out/
+.env
+.env.*
+package-lock.json
+# Authored prose stored as JSON is documentation, not application code.
+docs/obsidian-context/
+docs/graphify-communities.json

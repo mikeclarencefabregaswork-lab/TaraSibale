@@ -19,9 +19,12 @@
     "db:migrate": "npm run db:migrate --workspace Backend",
     "db:seed": "npm run db:seed --workspace Backend",
     "admin:promote": "npm run admin:promote --workspace Backend --",
-    "db:start": "pg_ctl -D .local-postgres/data -l .local-postgres/server.log start",
-    "db:stop": "pg_ctl -D .local-postgres/data stop -m fast",
-    "db:status": "pg_ctl -D .local-postgres/data status"
+    "db:start": "sudo systemctl start postgresql",
+    "db:stop": "sudo systemctl stop postgresql",
+    "db:status": "pg_isready -h 127.0.0.1 -p 5432",
+    "graph:build": "graphify extract . --code-only --no-cluster --max-workers 2 && graphify cluster-only . --no-label && node scripts/enrich-graph.mjs",
+    "graph:obsidian": "node scripts/export-obsidian.mjs",
+    "graph:context": "node scripts/enrich-graph.mjs"
   },
   "devDependencies": {
     "concurrently": "^10.0.6"

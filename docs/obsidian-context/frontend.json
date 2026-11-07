@@ -1,0 +1,475 @@
+{
+  "files": {
+    "Frontend/src/App.tsx": {
+      "summary": "Owns tab navigation, catalog loading, session bootstrap and the callbacks that connect feature components to the API. Catalog content comes from /api/catalog and /api/reviews rather than direct attraction fixture imports; account and catalog generations prevent stale responses crossing users. It provides saved-state context, flushes before logout, and composes the default portfolio notices and lazy feature pages.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Frontend/src/main.tsx": {
+      "summary": "Mounts App into the HTML root under React StrictMode and imports the global stylesheet. This is the browser entry point; it does not fetch catalog data or initialize database connections.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Frontend/src/api.ts": {
+      "summary": "Centralizes same-origin JSON fetches, response decoding and error toasts for browser API calls. Owner-bound saved-state writes can include X-TaraSibale-User-Id, while server authorization remains a backend responsibility. A bodyless invocation uses GET regardless of the default mutation method.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Frontend/src/types.ts": {
+      "summary": "Defines frontend domain contracts for catalog entries, bookings, community data, saved planning content, users and administration. Optional evidence, coordinate and reference-only fields preserve unknowns instead of requiring fabricated operating data. These TypeScript declarations do not validate incoming network payloads at runtime.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Frontend/src/portfolio.ts": {
+      "summary": "Enables portfolio mode unless VITE_PORTFOLIO_MODE is exactly false and chooses separate local-storage keys for portfolio and nonportfolio guest state. Turning the flag off changes behavior but does not establish publication or legal clearance.",
+      "guide": "TaraSibale - Modes and Access"
+    },
+    "Frontend/src/userState.tsx": {
+      "summary": "Provides shared saved-state fields and hooks for notifications, documents, itineraries and checklists. Guests save to the mode-specific browser key; signed-in users queue debounced field updates to /api/user-state with owner binding. Page-exit keepalive writes are size limited, and asynchronous writes are guarded against account changes.",
+      "guide": "TaraSibale - Saved State"
+    },
+    "Frontend/src/toastStore.ts": {
+      "summary": "Maintains a small in-memory external store for success, error and information messages. Publishing ignores empty or duplicate messages and keeps only the newest four; subscribers are notified when messages change. Toasts are transient UI feedback rather than persisted account notifications.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Frontend/src/index.css": {
+      "summary": "Loads Tailwind, theme and motion styles plus Leaflet CSS, and establishes the class-based dark variant. It customizes map popups, glass utilities and trail difficulty badges globally. This is the stylesheet imported by main.tsx.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Frontend/src/theme.css": {
+      "summary": "Defines the oceanic Tailwind color palette and aliases existing utility color families onto shared values. These tokens make light and dark screens use consistent navy, turquoise, sand and coral hues. Token changes can affect many components without edits to their JSX.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Frontend/src/motion.css": {
+      "summary": "Defines page, surface, toast and skeleton animation classes used across the interface. It also includes motion overrides for reduced-motion preferences. These styles affect presentation and do not control data loading or persistence.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Frontend/src/App.css": {
+      "summary": "Retains starter-style counter, logo, center and next-step selectors with responsive rules. The current App/main import chain uses index.css rather than importing this file. Treat these styles as residual assets unless a new import explicitly activates them.",
+      "guide": "TaraSibale - Code Map"
+    },
+    "Frontend/src/components/AdminPage.tsx": {
+      "summary": "Provides role-gated administration for attractions, accommodations, verification applications and system permissions. Form edits are staged locally and persisted through asynchronous callbacks supplied by App; successful saves update or refresh server-backed state. The visible admin gate is a UI boundary and backend endpoints still enforce access.",
+      "guide": "TaraSibale - Modes and Access"
+    },
+    "Frontend/src/components/AttractionsSection.tsx": {
+      "summary": "Filters supplied attractions by category and header search, renders cards and opens detailed source-aware modals. Favorites last only for the mounted visit, browser speech synthesis reads guide text, and review actions navigate through a parent callback. The component neither loads fixtures nor writes attraction changes to the database.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Frontend/src/components/AuthModal.tsx": {
+      "summary": "Implements login and registration as an overlay with validation and API calls followed by an onLoginSuccess callback. In default portfolio mode it renders account information instead of credential collection. It does not independently own the application session or saved-state bootstrap.",
+      "guide": "TaraSibale - Modes and Access"
+    },
+    "Frontend/src/components/AuthPage.tsx": {
+      "summary": "Provides the dedicated login/signup page and signed-in profile controls, using API authentication and parent callbacks. Portfolio mode replaces the page with a sample account notice. Session transitions and account state loading are coordinated by App.",
+      "guide": "TaraSibale - Modes and Access"
+    },
+    "Frontend/src/components/BookingSection.tsx": {
+      "summary": "Displays supplied lodging records, filters accommodation types and manages a booking dialog and returned reservation voucher. It validates dates and capacity locally but relies on the parent asynchronous booking callback for the persisted record. Reference-only lodging or missing rates/capacity cannot enter the submission path; displayed references do not prove current availability.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/components/BottomNavBar.tsx": {
+      "summary": "Renders the mobile primary tabs and a More menu for secondary destinations. Scroll direction controls visibility, and a callback reports visibility so floating controls can move. Tab selection delegates to App rather than using a routing library.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Frontend/src/components/CloudVaultCalendar.tsx": {
+      "summary": "Uses saved documents to read selected PDF/image files into bounded data URLs, download stored files and export reservation dates as an ICS calendar. Reader cleanup and owner checks prevent a completed file read from entering another account state. Portfolio mode replaces upload and calendar UI with a sample document notice.",
+      "guide": "TaraSibale - Saved State"
+    },
+    "Frontend/src/components/CulturalGuide.tsx": {
+      "summary": "Groups supplied culture records into phrase, food and festival/tradition tabs and renders their explanatory detail and evidence fields. Its active category is local UI state. It performs no API fetch or content mutation; App supplies the catalog.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Frontend/src/components/FerryAlertBanner.tsx": {
+      "summary": "Displays an itinerary-linked cancellation or delay conflict chosen by App, with an optional replacement route. Dismissal, itinerary navigation and ferry swapping are callbacks rather than direct server mutations. The component does not monitor live operator data or discover conflicts itself.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/components/Footer.tsx": {
+      "summary": "Renders portfolio identity, supporting navigation and disclaimer content below the feature area. Links that choose an application destination call setActiveTab. It does not own catalog or session state.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Frontend/src/components/GroupMessaging.tsx": {
+      "summary": "Combines supplied group chat messages with saved checklist and expense tabs. Chat submission awaits a parent server callback, while checklist/expense edits use the user-state persistence layer. The splitter currently assumes four participants, so its displayed share is a planning aid rather than a dynamic membership calculation.",
+      "guide": "TaraSibale - Saved State"
+    },
+    "Frontend/src/components/Header.tsx": {
+      "summary": "Coordinates desktop navigation, search, theme/offline controls, notification dropdown and session menu actions through parent props. It keeps dropdown state locally and has an empty notification fallback when no controlled notification list is supplied. Navigation and preference persistence belong to App.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Frontend/src/components/Hero.tsx": {
+      "summary": "Presents the explore landing area with calls to action that select feature tabs or open the island guide. It uses supplied callbacks and theme information rather than loading catalog data. Its promotional portfolio presentation is not a live travel service.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/components/InteractiveMap.tsx": {
+      "summary": "Builds a Leaflet map from supplied attractions, lodgings and hiking trails, with layer presets, filtering, details and animated trail simulation. Unconfirmed attraction coordinates are excluded from attraction pins, and popup text is HTML escaped. Portfolio mode uses a local schematic tile and blocks GPX exports; the interface is not verified navigation or a live location tracker.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Frontend/src/components/ItineraryPlanner.tsx": {
+      "summary": "Generates editable multi-day sample plans from selected attractions, supplied ferry routes and accommodations. Drag/drop, custom activities and ferry replacement update the shared itinerary field, which the persistence hook saves for the current owner. Copy and print produce portfolio-labeled planning output rather than reservations.",
+      "guide": "TaraSibale - Saved State"
+    },
+    "Frontend/src/components/LiveChatBot.tsx": {
+      "summary": "Renders an in-memory guide conversation with suggested prompts, loading feedback and response source labels. Portfolio mode replies locally without sending sample chat to the server; outside that mode it posts the prompt to /api/chat. Conversation state is not part of SavedState and the welcome text disclaims live advice and emergency service.",
+      "guide": "TaraSibale - Modes and Access"
+    },
+    "Frontend/src/components/MaritimeSimulatorBar.tsx": {
+      "summary": "Despite the historical name, exposes administrator publishing controls for ferry status, advisory reason and delay duration. App shows it only for an admin and supplies the asynchronous catalog update callback. It does not simulate weather or receive live operator reports automatically.",
+      "guide": "TaraSibale - Modes and Access"
+    },
+    "Frontend/src/components/NotificationCenter.tsx": {
+      "summary": "Renders controlled general/personal notification lists, unread counts and actions to read, dismiss or navigate to an action tab. Changes flow through the supplied notification setter; persistence depends on the parent saved-state integration. It has no polling or push-notification connection.",
+      "guide": "TaraSibale - Saved State"
+    },
+    "Frontend/src/components/PortfolioNotice.tsx": {
+      "summary": "Explains the independent prototype, sample-data limits, privacy constraints and third-party credits. Its browser reset removes the portfolio state, theme, tab and offline-map preference keys before reloading. The companion collection notice substitutes fictitious account/document examples for disabled collection flows.",
+      "guide": "TaraSibale - Modes and Access"
+    },
+    "Frontend/src/components/PullToRefresh.tsx": {
+      "summary": "Wraps content with a touch gesture that triggers a supplied asynchronous refresh only from the top of the page. Pull distance is damped and capped, and refreshing/error feedback is local to the wrapper. The actual network reload is implemented by App.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/components/ReviewSystem.tsx": {
+      "summary": "Displays supplied reviews with a rating filter and a write-review modal that selects an attraction or lodging target. New reviews go through a parent callback; helpful votes call the review API and return updated records to App. Form defaults are draft UI values and do not establish authenticated author identity or bypass server restrictions.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/components/SocialFeed.tsx": {
+      "summary": "Displays supplied community posts and offers draft post composition and API-backed like actions. New content goes through the parent asynchronous submission callback and successful like responses replace the parent record. The portfolio description states that public submissions are disabled; API enforcement remains necessary even though form controls are present.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/components/TravelInfoSection.tsx": {
+      "summary": "Displays supplied ferry schedules, their catalog-refresh label and static essential travel guidance. Packing checks update the packing branch of shared saved checklists rather than modifying transport records. Published/sample schedules must be confirmed with an operator and the component is not a live sailing feed.",
+      "guide": "TaraSibale - Saved State"
+    },
+    "Frontend/src/components/Skeletons.tsx": {
+      "summary": "Exports accessible page, attraction and accommodation loading placeholders that match the eventual card layouts. App uses the page skeleton for pending account/catalog data and lazy modules, while catalog sections use the grid variants. They contain no fetched data and must not be mistaken for empty results.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Frontend/src/components/ToastViewport.tsx": {
+      "summary": "Subscribes to the shared toast store using useSyncExternalStore and renders dismissible feedback cards. Errors live longer than other messages, and hover/focus pauses the dismissal timer. These transient alerts are separate from the saved notification center.",
+      "guide": "TaraSibale - Architecture"
+    },
+    "Frontend/src/data/adminDefaults.ts": {
+      "summary": "Contains initial system permission values, sample verification applicants and curated image/coordinate options for admin forms. App initially uses the permission defaults but replaces them with the server catalog, while current applicants come from account bootstrap. Fixture applicant details and map presets are reference/demo inputs, not proof of accreditation or live records.",
+      "guide": "TaraSibale - Modes and Access"
+    },
+    "Frontend/src/data/concepcionData.ts": {
+      "summary": "Defines typed attraction, lodging, ferry, culture and social fixture arrays with evidence metadata where available. ATTRACTIONS is not imported into the runtime frontend catalog path: App obtains its attractions from the API. Source dates, photo usage labels and reference-only lodging preserve the limits of the stored material rather than guaranteeing current conditions.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Frontend/src/data/hikingTrailsData.ts": {
+      "summary": "Defines illustrative hiking trails with coordinate polylines, waypoints, elevation samples and narrative route attributes. These values support trail cards and simulation and must not be treated as surveyed navigation data. Runtime frontend trails arrive through the catalog API rather than this module being imported by App.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Frontend/src/data/notificationsData.ts": {
+      "summary": "Contains initial sample general and personal notifications covering weather, ferries, bookings, chat and the vault. Its relative timestamps and authoritative-sounding bulletin text are fixture content, not fetched current advisories. The current Header fallback and empty user state do not initialize from this array.",
+      "guide": "TaraSibale - Saved State"
+    },
+    "Frontend/src/assets/hero.png": {
+      "summary": "Stores a bundled raster image asset under the frontend source tree. Current portfolio screens use explicit safe placeholders and the public portfolio mark where specified; this retained file should not be assumed to be displayed or cleared for publication merely because it exists.",
+      "guide": "TaraSibale - Code Map"
+    },
+    "Frontend/src/assets/react.svg": {
+      "summary": "Retains the React starter vector logo asset. The current browser entry point renders the TaraSibale application rather than a starter logo screen; an asset file alone does not establish an active import.",
+      "guide": "TaraSibale - Code Map"
+    },
+    "Frontend/src/assets/vite.svg": {
+      "summary": "Retains the Vite starter vector logo asset. The current browser entry point renders the TaraSibale application rather than a starter logo screen; an asset file alone does not establish an active import.",
+      "guide": "TaraSibale - Code Map"
+    },
+    "Frontend/src/assets/images/tarasibale_logo_1789230665804.jpg": {
+      "summary": "Stores a bundled raster image asset under the frontend source tree. Current portfolio screens use explicit safe placeholders and the public portfolio mark where specified; this retained file should not be assumed to be displayed or cleared for publication merely because it exists.",
+      "guide": "TaraSibale - Code Map"
+    }
+  },
+  "symbols": {
+    "Frontend/src/components/AdminPage.tsx::AdminPage()": {
+      "fileSummary": "Frontend/src/components/AdminPage.tsx"
+    },
+    "Frontend/src/components/AttractionsSection.tsx::AttractionsSection()": {
+      "fileSummary": "Frontend/src/components/AttractionsSection.tsx"
+    },
+    "Frontend/src/components/AuthModal.tsx::AuthModal()": {
+      "fileSummary": "Frontend/src/components/AuthModal.tsx"
+    },
+    "Frontend/src/components/AuthPage.tsx::AuthPage()": {
+      "fileSummary": "Frontend/src/components/AuthPage.tsx"
+    },
+    "Frontend/src/components/BookingSection.tsx::BookingSection()": {
+      "fileSummary": "Frontend/src/components/BookingSection.tsx"
+    },
+    "Frontend/src/components/BottomNavBar.tsx::BottomNavBar()": {
+      "fileSummary": "Frontend/src/components/BottomNavBar.tsx"
+    },
+    "Frontend/src/components/CloudVaultCalendar.tsx::CloudVaultCalendar()": {
+      "fileSummary": "Frontend/src/components/CloudVaultCalendar.tsx"
+    },
+    "Frontend/src/components/CulturalGuide.tsx::CulturalGuide()": {
+      "fileSummary": "Frontend/src/components/CulturalGuide.tsx"
+    },
+    "Frontend/src/components/FerryAlertBanner.tsx::FerryAlertBanner()": {
+      "fileSummary": "Frontend/src/components/FerryAlertBanner.tsx"
+    },
+    "Frontend/src/components/Footer.tsx::Footer()": {
+      "fileSummary": "Frontend/src/components/Footer.tsx"
+    },
+    "Frontend/src/components/GroupMessaging.tsx::GroupMessaging()": {
+      "fileSummary": "Frontend/src/components/GroupMessaging.tsx"
+    },
+    "Frontend/src/components/Header.tsx::Header()": {
+      "fileSummary": "Frontend/src/components/Header.tsx"
+    },
+    "Frontend/src/components/Hero.tsx::Hero()": {
+      "fileSummary": "Frontend/src/components/Hero.tsx"
+    },
+    "Frontend/src/components/InteractiveMap.tsx::InteractiveMap()": {
+      "fileSummary": "Frontend/src/components/InteractiveMap.tsx"
+    },
+    "Frontend/src/components/ItineraryPlanner.tsx::ItineraryPlanner()": {
+      "fileSummary": "Frontend/src/components/ItineraryPlanner.tsx"
+    },
+    "Frontend/src/components/LiveChatBot.tsx::LiveChatBot()": {
+      "fileSummary": "Frontend/src/components/LiveChatBot.tsx"
+    },
+    "Frontend/src/components/MaritimeSimulatorBar.tsx::MaritimeSimulatorBar()": {
+      "fileSummary": "Frontend/src/components/MaritimeSimulatorBar.tsx"
+    },
+    "Frontend/src/components/NotificationCenter.tsx::NotificationCenter()": {
+      "fileSummary": "Frontend/src/components/NotificationCenter.tsx"
+    },
+    "Frontend/src/components/PortfolioNotice.tsx::PortfolioNotice()": {
+      "fileSummary": "Frontend/src/components/PortfolioNotice.tsx"
+    },
+    "Frontend/src/components/PullToRefresh.tsx::PullToRefresh()": {
+      "fileSummary": "Frontend/src/components/PullToRefresh.tsx"
+    },
+    "Frontend/src/components/ReviewSystem.tsx::ReviewSystem()": {
+      "fileSummary": "Frontend/src/components/ReviewSystem.tsx"
+    },
+    "Frontend/src/components/SocialFeed.tsx::SocialFeed()": {
+      "fileSummary": "Frontend/src/components/SocialFeed.tsx"
+    },
+    "Frontend/src/components/TravelInfoSection.tsx::TravelInfoSection()": {
+      "fileSummary": "Frontend/src/components/TravelInfoSection.tsx"
+    },
+    "Frontend/src/components/Skeletons.tsx::PageSkeleton()": {
+      "fileSummary": "Frontend/src/components/Skeletons.tsx"
+    },
+    "Frontend/src/components/ToastViewport.tsx::ToastViewport()": {
+      "fileSummary": "Frontend/src/components/ToastViewport.tsx"
+    },
+    "Frontend/src/api.ts::api()": "Fetches JSON with same-origin credentials, reports non-OK or network failures through the toast store, and rethrows so callers can retain form/error state. A 204 response resolves without JSON.",
+    "Frontend/src/api.ts::jsonRequest()": "Builds JSON mutation options used by both normal calls and page-exit saves. An optional owner header binds a request to the expected user rather than relying only on a mutable browser session.",
+    "Frontend/src/api.ts::errorText()": "Extracts an Error message or supplies a generic save-failure message for unknown thrown values.",
+    "Frontend/src/App.tsx::App()": {
+      "fileSummary": "Frontend/src/App.tsx"
+    },
+    "Frontend/src/App.tsx::getInitialTab()": "Prefers a valid lowercase URL hash, then a valid saved browser tab, and otherwise starts on explore. Only the declared tab allowlist is accepted.",
+    "Frontend/src/App.tsx::getInitialDarkMode()": "Prefers the saved light/dark choice, then consults the operating-system dark-mode media query. Without a browser it returns false.",
+    "Frontend/src/App.tsx::VALID_TABS": "Lists the hash navigation values accepted during initial selection and hashchange handling, including auth aliases.",
+    "Frontend/src/portfolio.ts::PORTFOLIO_MODE": "Default-on compile-time browser flag: only the literal environment value false opts out. Frontend collection notices, local chat and schematic map behavior consult this value.",
+    "Frontend/src/portfolio.ts::portfolioStorageKey": "Separates portfolio saved planning content from nonportfolio guest content so the two modes do not share one local-storage record.",
+    "Frontend/src/userState.tsx::Expense": "Represents a saved planning expense with payer and participant-count fields. GroupMessaging currently creates expenses for four people.",
+    "Frontend/src/userState.tsx::SavedState": "Defines the four independently persisted branches: notifications, documents, itinerary and checklists. Bookings and chat messages are loaded separately from bootstrap rather than stored inside this object.",
+    "Frontend/src/userState.tsx::StateContext": "Carries the saved-state value/setter and optional authenticated owner identity to nested features. Persistence policy is implemented by hooks rather than by the interface.",
+    "Frontend/src/userState.tsx::UserStateContext": "Shares current saved planning data and owner metadata with consumers. A null default lets useSavedState detect missing provider wiring.",
+    "Frontend/src/userState.tsx::emptyUserState()": "Creates fresh empty arrays and a checklist object for initial fallback and account transitions. It avoids copying the previous owner’s records into the next session.",
+    "Frontend/src/userState.tsx::useSavedState()": "Reads one typed SavedState field and returns a functional setter that preserves the other branches. It requires UserStateContext and delegates durable writes to the App persistence hook.",
+    "Frontend/src/userState.tsx::useGuestState()": "Loads guest/portfolio browser state once with array-shape checks and a safe empty fallback after invalid JSON. It does not fetch account state or merge guest content into a signed-in account.",
+    "Frontend/src/userState.tsx::useUserStatePersistence()": {
+      "fileSummary": "Frontend/src/userState.tsx"
+    },
+    "Frontend/src/components/InteractiveMap.tsx::escapeHtml()": "Encodes ampersands, angle brackets and quotes before catalog text is interpolated into Leaflet HTML. This protects popup/marker construction outside React’s normal escaping.",
+    "Frontend/src/components/InteractiveMap.tsx::TileStyleKey": "Restricts selectable base-layer configurations to satellite, topo, terrain and street. In portfolio mode all four present a schematic preview.",
+    "Frontend/src/components/InteractiveMap.tsx::TileStyleConfig": "Describes a map layer’s URL, attribution, zoom limit and explanatory UI metadata. Portfolio rendering substitutes a local grid instead of loading these external tile URLs.",
+    "Frontend/src/components/InteractiveMap.tsx::MAP_STYLES": "Configures four external base-map providers for nonportfolio use. A portfolio-mode initialization pass changes labels/descriptions to schematic previews and map construction selects the local demo tile.",
+    "Frontend/src/components/InteractiveMap.tsx::SIBALE_CENTER": "Supplies the latitude/longitude pair used to center and recenter the Leaflet island view. It is a view default rather than a device geolocation reading.",
+    "Frontend/src/components/FerryAlertBanner.tsx::ActiveFerryAlert": "Links an impacted FerryRoute to the exact itinerary day and item and optionally supplies a same-direction alternative. App derives the conflict from saved itinerary references and current catalog status.",
+    "Frontend/src/components/LiveChatBot.tsx::ChatMessage": "Represents one in-memory user or guide message with an optional response-source label. It has no saved-state or database identity contract.",
+    "Frontend/src/components/LiveChatBot.tsx::createChatMessage()": "Creates a UUID-backed chat entry with the current localized hour/minute timestamp and optional source. Both local portfolio replies and API replies use the same message shape.",
+    "Frontend/src/components/PortfolioNotice.tsx::PortfolioCollectionNotice()": "Replaces account/document collection with a fictitious example and an optional Continue exploring action. The documents variant explicitly disables file selection and warns against supplying personal documents.",
+    "Frontend/src/components/ReviewSystem.tsx::RATING_LABELS": "Maps integer star ratings to score strings and descriptive labels used by the review interface. These labels describe the selected rating and do not calculate an aggregate score.",
+    "Frontend/src/components/Skeletons.tsx::AttractionSkeletonCard()": "Provides an aria-hidden placeholder matching the attraction image, badge, description and footer layout. It does not represent an attraction record.",
+    "Frontend/src/components/Skeletons.tsx::AccommodationSkeletonCard()": "Provides an aria-hidden lodging card placeholder with image, price, amenity and action shapes. It prevents layout collapse while data loads.",
+    "Frontend/src/components/Skeletons.tsx::AttractionsGridSkeleton()": "Repeats attraction placeholders in the responsive three-column catalog layout and exposes a loading status. Its default count is six.",
+    "Frontend/src/components/Skeletons.tsx::AccommodationsGridSkeleton()": "Repeats accommodation placeholders in the responsive two-column lodging layout and exposes a loading status. Its default count is four.",
+    "Frontend/src/components/ToastViewport.tsx::ToastCard()": "Renders one toast with alert/status semantics, an icon and a dismiss button. The timer is 9 seconds for errors and 5.5 seconds otherwise, with hover/focus pausing dismissal.",
+    "Frontend/src/toastStore.ts::ToastKind": "Restricts transient feedback to success, error and info variants, which determine viewport icons and timing.",
+    "Frontend/src/toastStore.ts::ToastMessage": "Stores numeric identity, plain message text and feedback kind for one transient toast. This differs from persisted AppNotification.",
+    "Frontend/src/toastStore.ts::getToasts()": "Returns the current immutable-array snapshot consumed by useSyncExternalStore.",
+    "Frontend/src/toastStore.ts::subscribeToasts()": "Registers a store listener and returns its unsubscribe function so React can clean up subscriptions.",
+    "Frontend/src/toastStore.ts::publish()": "Ignores blank text and duplicate message/kind pairs, appends a new incrementing identity and keeps the newest four toasts. It synchronously notifies all listeners.",
+    "Frontend/src/toastStore.ts::dismissToast()": "Removes the matching toast ID and notifies subscribers, supporting both timer and manual dismissal.",
+    "Frontend/src/toastStore.ts::toast": "Exposes success/error/info publisher functions so API and feature code can issue feedback without importing React.",
+    "Frontend/src/toastStore.ts::items": "Holds the module-scoped toast snapshot; publication and dismissal replace the array. The state disappears on reload.",
+    "Frontend/src/toastStore.ts::listeners": "Tracks external-store subscriber callbacks in a Set and is not part of persisted notification data.",
+    "Frontend/src/data/concepcionData.ts::ATTRACTIONS": "Documents destination fixture records with source links, coordinate status and photo usage metadata. App does not import this array for runtime catalog loading, and fixture coordinates/photos require their recorded caveats.",
+    "Frontend/src/data/concepcionData.ts::ACCOMMODATIONS": "Stores lodging fixture records, including reference-only entries and nullable prices/capacity. A listing is not a guarantee of a working online booking service.",
+    "Frontend/src/data/concepcionData.ts::FERRY_ROUTES": "Defines sample ferry route records consumed by seeding or reference workflows. Times, fares and statuses are stored content rather than a live operator feed.",
+    "Frontend/src/data/concepcionData.ts::CULTURE_ITEMS": "Stores phrases, dishes, events and traditions with detail text and optional source/photo-credit metadata. Its recorded verification dates describe the fixture, not ongoing external verification.",
+    "Frontend/src/data/concepcionData.ts::SOCIAL_POSTS": "Contains illustrative community posts with author, image, caption and engagement fields. It does not implement a social backend or automatic refresh.",
+    "Frontend/src/data/adminDefaults.ts::DEFAULT_SYSTEM_PERMISSIONS": "Initializes feature/access switches before catalog loading and supplies admin reset values. Client values do not replace server permission checks.",
+    "Frontend/src/data/adminDefaults.ts::INITIAL_VERIFICATION_APPLICANTS": "Provides illustrative host/guide/resident application records with review states. App uses bootstrap applicants at runtime rather than treating this list as verified current identities.",
+    "Frontend/src/data/adminDefaults.ts::CURATED_ATTRACTION_IMAGES": "Offers image choices for attraction administration forms. Selecting a URL does not establish a photograph’s usage rights.",
+    "Frontend/src/data/adminDefaults.ts::CURATED_ACCOMMODATION_IMAGES": "Offers lodging image choices for admin editing. These are form presets, not evidence that a photograph depicts a specific property.",
+    "Frontend/src/data/adminDefaults.ts::SIBALE_COORDINATE_PRESETS": "Provides named latitude/longitude presets for admin catalog editing. Selecting a preset is not equivalent to a field survey or coordinate verification.",
+    "Frontend/src/data/hikingTrailsData.ts::HIKING_TRAILS": "Defines sample trail geometry, waypoint descriptions and elevation profiles used as fixture/reference data. Route lengths, safety narratives and paths should not be treated as surveyed live navigation guidance.",
+    "Frontend/src/data/notificationsData.ts::INITIAL_NOTIFICATIONS": "Supplies illustrative notification records with static relative timestamps and general/personal categories. It is not connected to a current weather or ferry bulletin feed and current empty saved-state defaults do not import it.",
+    "Frontend/src/types.ts::CategoryType": "Defines the attraction filter vocabulary, including all plus the five destination categories. Attraction records themselves cannot use all as their category.",
+    "Frontend/src/types.ts::Attraction": "Describes a destination card/detail record with coordinates, category, highlights and optional evidence/photo metadata. coordinateStatus can mark an unconfirmed position so map rendering can exclude it.",
+    "Frontend/src/types.ts::AvailabilityStatus": "Enumerates lodging availability labels used for catalog display: available, few rooms, fully booked and maintenance. This type does not itself reserve inventory.",
+    "Frontend/src/types.ts::Accommodation": "Describes lodging details and optional availability/host information. Nullable price/capacity/coordinates and reference-only booking mode let the UI represent incomplete evidence without inventing bookable inventory.",
+    "Frontend/src/types.ts::Review": "Represents a review attached to a catalog target ID, with author presentation, rating, comment, tags and helpful count. Helpful updates and review creation use separate API operations.",
+    "Frontend/src/types.ts::FerryRoute": "Carries the stored operator/route description, sailing times, fare and status plus optional advisory/delay text. The type models published catalog content rather than a live maritime data subscription.",
+    "Frontend/src/types.ts::GroupMessage": "Represents a message for a group with sender presentation, text, timestamp and optional guide flag/location pin. Message transport is separate from the saved checklist state.",
+    "Frontend/src/types.ts::WeatherInfo": "Defines a weather/advisory display shape including sea conditions and update text. Its existence does not indicate that App fetches live weather.",
+    "Frontend/src/types.ts::TrailWaypoint": "Describes a named geographic stop on an illustrative hiking route with a constrained waypoint kind and optional elevation. Coordinates are latitude/longitude attributes rather than surveyed certification.",
+    "Frontend/src/types.ts::ElevationPoint": "Represents one distance/elevation sample used to draw a trail profile. The optional label annotates a point rather than creating a separate route waypoint.",
+    "Frontend/src/types.ts::HikingTrail": "Combines illustrative trail geometry, waypoints, elevations and narrative difficulty/safety attributes for map exploration. coordinates stores latitude/longitude pairs, while mapSvgPath uses a stylized SVG viewBox and is not interchangeable geographic geometry.",
+    "Frontend/src/types.ts::TravelDocument": "Represents saved document metadata with optional URL or encoded file payload. The vault currently reads permitted files into fileData, and portfolio mode prevents collection.",
+    "Frontend/src/types.ts::SocialPost": "Represents the community feed’s author, image, caption, location and engagement snapshot. userLiked reflects a user-specific interaction state rather than a global count alone.",
+    "Frontend/src/types.ts::CultureItem": "Describes a phrase, dish, event or tradition with detailed text and optional language, schedule, source and photo-license metadata. Evidence labels and dates qualify the stored content rather than guaranteeing current event schedules.",
+    "Frontend/src/types.ts::BookingRecord": "Carries the saved reservation identity, lodging reference, guest details, dates, amount and status. BookingSection treats the server-returned record as the voucher rather than trusting its provisional client ID.",
+    "Frontend/src/types.ts::ChecklistItem": "Represents a saved planning task with completion and optional assignment. GroupMessaging stores these inside SavedState.checklists.items rather than chat messages.",
+    "Frontend/src/types.ts::UserProfile": "Models authenticated user presentation, role, verification and optional role-specific profile details. Frontend role checks affect UI visibility while server routes remain responsible for access control.",
+    "Frontend/src/types.ts::VerificationApplicant": "Models host, guide or resident verification submissions and pending/approved/rejected review states. Its fields support administrative review and do not by themselves establish a real-world accreditation.",
+    "Frontend/src/types.ts::SystemPermissions": "Defines feature switches, login/verification requirements and maintenance mode shared with administrative controls. The frontend contract does not replace backend enforcement of these permissions.",
+    "Frontend/src/types.ts::NotificationCategory": "Splits saved notifications into general island notices and personal traveler notices. NotificationCenter filters and marks unread counts by this category.",
+    "Frontend/src/types.ts::AppNotification": "Represents persisted notification content with category, kind, read state and optional action tab/priority. This is separate from short-lived toast messages and does not imply push delivery.",
+    "Frontend/src/types.ts::ItineraryItem": "Represents an editable plan stop with time, duration, location and optional ferry/attraction references. ferryId enables App to match disruptions to a saved itinerary item.",
+    "Frontend/src/types.ts::ItineraryDay": "Groups ordered itinerary items under a day number/title with optional date text. The planner updates arrays of these records through the saved-state hook.",
+    "Frontend/src/components/AuthModal.tsx::AuthModalProps": "Defines the parent-to-component contract for AuthModal. Implements login and registration as an overlay with validation and API calls followed by an onLoginSuccess callback. In default portfolio mode it renders account information instead of credential collection. It does not independently own the application session or saved-state bootstrap.",
+    "Frontend/src/components/AuthPage.tsx::AuthPageProps": "Defines the parent-to-component contract for AuthPage. Provides the dedicated login/signup page and signed-in profile controls, using API authentication and parent callbacks. Portfolio mode replaces the page with a sample account notice. Session transitions and account state loading are coordinated by App.",
+    "Frontend/src/components/BottomNavBar.tsx::BottomNavBarProps": "Defines the parent-to-component contract for BottomNavBar. Renders the mobile primary tabs and a More menu for secondary destinations. Scroll direction controls visibility, and a callback reports visibility so floating controls can move. Tab selection delegates to App rather than using a routing library.",
+    "Frontend/src/components/FerryAlertBanner.tsx::FerryAlertBannerProps": "Defines the parent-to-component contract for FerryAlertBanner. Displays an itinerary-linked cancellation or delay conflict chosen by App, with an optional replacement route. Dismissal, itinerary navigation and ferry swapping are callbacks rather than direct server mutations. The component does not monitor live operator data or discover conflicts itself.",
+    "Frontend/src/components/Footer.tsx::FooterProps": "Defines the parent-to-component contract for Footer. Renders portfolio identity, supporting navigation and disclaimer content below the feature area. Links that choose an application destination call setActiveTab. It does not own catalog or session state.",
+    "Frontend/src/components/GroupMessaging.tsx::GroupMessagingProps": "Defines the parent-to-component contract for GroupMessaging. Combines supplied group chat messages with saved checklist and expense tabs. Chat submission awaits a parent server callback, while checklist/expense edits use the user-state persistence layer. The splitter currently assumes four participants, so its displayed share is a planning aid rather than a dynamic membership calculation.",
+    "Frontend/src/components/Header.tsx::HeaderProps": "Defines the parent-to-component contract for Header. Coordinates desktop navigation, search, theme/offline controls, notification dropdown and session menu actions through parent props. It keeps dropdown state locally and has an empty notification fallback when no controlled notification list is supplied. Navigation and preference persistence belong to App.",
+    "Frontend/src/components/Hero.tsx::HeroProps": "Defines the parent-to-component contract for Hero. Presents the explore landing area with calls to action that select feature tabs or open the island guide. It uses supplied callbacks and theme information rather than loading catalog data. Its promotional portfolio presentation is not a live travel service.",
+    "Frontend/src/components/LiveChatBot.tsx::LiveChatBotProps": "Defines the parent-to-component contract for LiveChatBot. Renders an in-memory guide conversation with suggested prompts, loading feedback and response source labels. Portfolio mode replies locally without sending sample chat to the server; outside that mode it posts the prompt to /api/chat. Conversation state is not part of SavedState and the welcome text disclaims live advice and emergency service.",
+    "Frontend/src/components/MaritimeSimulatorBar.tsx::MaritimeSimulatorBarProps": "Defines the parent-to-component contract for MaritimeSimulatorBar. Despite the historical name, exposes administrator publishing controls for ferry status, advisory reason and delay duration. App shows it only for an admin and supplies the asynchronous catalog update callback. It does not simulate weather or receive live operator reports automatically.",
+    "Frontend/src/components/NotificationCenter.tsx::NotificationCenterProps": "Defines the parent-to-component contract for NotificationCenter. Renders controlled general/personal notification lists, unread counts and actions to read, dismiss or navigate to an action tab. Changes flow through the supplied notification setter; persistence depends on the parent saved-state integration. It has no polling or push-notification connection.",
+    "Frontend/src/components/PullToRefresh.tsx::PullToRefreshProps": "Defines the parent-to-component contract for PullToRefresh. Wraps content with a touch gesture that triggers a supplied asynchronous refresh only from the top of the page. Pull distance is damped and capped, and refreshing/error feedback is local to the wrapper. The actual network reload is implemented by App.",
+    "Frontend/src/components/SocialFeed.tsx::SocialFeedProps": "Defines the parent-to-component contract for SocialFeed. Displays supplied community posts and offers draft post composition and API-backed like actions. New content goes through the parent asynchronous submission callback and successful like responses replace the parent record. The portfolio description states that public submissions are disabled; API enforcement remains necessary even though form controls are present.",
+    "Frontend/src/components/TravelInfoSection.tsx::TravelInfoSectionProps": "Defines the parent-to-component contract for TravelInfoSection. Displays supplied ferry schedules, their catalog-refresh label and static essential travel guidance. Packing checks update the packing branch of shared saved checklists rather than modifying transport records. Published/sample schedules must be confirmed with an operator and the component is not a live sailing feed.",
+    "Frontend/src/components/AdminPage.tsx::AdminPageProps": "Defines the parent-to-component contract for AdminPage. Provides role-gated administration for attractions, accommodations, verification applications and system permissions. Form edits are staged locally and persisted through asynchronous callbacks supplied by App; successful saves update or refresh server-backed state. The visible admin gate is a UI boundary and backend endpoints still enforce access.",
+    "Frontend/src/components/CulturalGuide.tsx::CulturalGuideProps": "Defines the parent-to-component contract for CulturalGuide. Groups supplied culture records into phrase, food and festival/tradition tabs and renders their explanatory detail and evidence fields. Its active category is local UI state. It performs no API fetch or content mutation; App supplies the catalog.",
+    "Frontend/src/components/InteractiveMap.tsx::InteractiveMapProps": "Defines the parent-to-component contract for InteractiveMap. Builds a Leaflet map from supplied attractions, lodgings and hiking trails, with layer presets, filtering, details and animated trail simulation. Unconfirmed attraction coordinates are excluded from attraction pins, and popup text is HTML escaped. Portfolio mode uses a local schematic tile and blocks GPX exports; the interface is not verified navigation or a live location tracker.",
+    "Frontend/src/components/ItineraryPlanner.tsx::ItineraryPlannerProps": "Defines the parent-to-component contract for ItineraryPlanner. Generates editable multi-day sample plans from selected attractions, supplied ferry routes and accommodations. Drag/drop, custom activities and ferry replacement update the shared itinerary field, which the persistence hook saves for the current owner. Copy and print produce portfolio-labeled planning output rather than reservations.",
+    "Frontend/src/components/ReviewSystem.tsx::ReviewSystemProps": "Defines the parent-to-component contract for ReviewSystem. Displays supplied reviews with a rating filter and a write-review modal that selects an attraction or lodging target. New reviews go through a parent callback; helpful votes call the review API and return updated records to App. Form defaults are draft UI values and do not establish authenticated author identity or bypass server restrictions.",
+    "Frontend/src/components/AttractionsSection.tsx::AttractionsSectionProps": "Defines the parent-to-component contract for AttractionsSection. Filters supplied attractions by category and header search, renders cards and opens detailed source-aware modals. Favorites last only for the mounted visit, browser speech synthesis reads guide text, and review actions navigate through a parent callback. The component neither loads fixtures nor writes attraction changes to the database.",
+    "Frontend/src/components/BookingSection.tsx::BookingSectionProps": "Defines the parent-to-component contract for BookingSection. Displays supplied lodging records, filters accommodation types and manages a booking dialog and returned reservation voucher. It validates dates and capacity locally but relies on the parent asynchronous booking callback for the persisted record. Reference-only lodging or missing rates/capacity cannot enter the submission path; displayed references do not prove current availability.",
+    "Frontend/src/components/CloudVaultCalendar.tsx::CloudVaultCalendarProps": "Defines the parent-to-component contract for CloudVaultCalendar. Uses saved documents to read selected PDF/image files into bounded data URLs, download stored files and export reservation dates as an ICS calendar. Reader cleanup and owner checks prevent a completed file read from entering another account state. Portfolio mode replaces upload and calendar UI with a sample document notice.",
+    "Frontend/src/api.ts::Frontend/src/api.ts": {
+      "fileSummary": "Frontend/src/api.ts"
+    },
+    "Frontend/src/App.tsx::App.tsx": {
+      "fileSummary": "Frontend/src/App.tsx"
+    },
+    "Frontend/src/App.tsx::AdminPage": "Lazy-loads the AdminPage feature module and adapts its named export for React.lazy. App places these modules under Suspense with a PageSkeleton fallback.",
+    "Frontend/src/App.tsx::CloudVaultCalendar": "Lazy-loads the CloudVaultCalendar feature module and adapts its named export for React.lazy. App places these modules under Suspense with a PageSkeleton fallback.",
+    "Frontend/src/App.tsx::CulturalGuide": "Lazy-loads the CulturalGuide feature module and adapts its named export for React.lazy. App places these modules under Suspense with a PageSkeleton fallback.",
+    "Frontend/src/App.tsx::GroupMessaging": "Lazy-loads the GroupMessaging feature module and adapts its named export for React.lazy. App places these modules under Suspense with a PageSkeleton fallback.",
+    "Frontend/src/App.tsx::InteractiveMap": "Lazy-loads the InteractiveMap feature module and adapts its named export for React.lazy. App places these modules under Suspense with a PageSkeleton fallback.",
+    "Frontend/src/App.tsx::ItineraryPlanner": "Lazy-loads the ItineraryPlanner feature module and adapts its named export for React.lazy. App places these modules under Suspense with a PageSkeleton fallback.",
+    "Frontend/src/App.tsx::SocialFeed": "Lazy-loads the SocialFeed feature module and adapts its named export for React.lazy. App places these modules under Suspense with a PageSkeleton fallback.",
+    "Frontend/src/App.tsx::TravelInfoSection": "Lazy-loads the TravelInfoSection feature module and adapts its named export for React.lazy. App places these modules under Suspense with a PageSkeleton fallback.",
+    "Frontend/src/components/AuthModal.tsx::AuthModal.tsx": {
+      "fileSummary": "Frontend/src/components/AuthModal.tsx"
+    },
+    "Frontend/src/components/AuthPage.tsx::AuthPage.tsx": {
+      "fileSummary": "Frontend/src/components/AuthPage.tsx"
+    },
+    "Frontend/src/components/BottomNavBar.tsx::BottomNavBar.tsx": {
+      "fileSummary": "Frontend/src/components/BottomNavBar.tsx"
+    },
+    "Frontend/src/components/CloudVaultCalendar.tsx::CloudVaultCalendar.tsx": {
+      "fileSummary": "Frontend/src/components/CloudVaultCalendar.tsx"
+    },
+    "Frontend/src/components/FerryAlertBanner.tsx::FerryAlertBanner.tsx": {
+      "fileSummary": "Frontend/src/components/FerryAlertBanner.tsx"
+    },
+    "Frontend/src/components/Footer.tsx::Footer.tsx": {
+      "fileSummary": "Frontend/src/components/Footer.tsx"
+    },
+    "Frontend/src/components/GroupMessaging.tsx::GroupMessaging.tsx": {
+      "fileSummary": "Frontend/src/components/GroupMessaging.tsx"
+    },
+    "Frontend/src/components/Header.tsx::Header.tsx": {
+      "fileSummary": "Frontend/src/components/Header.tsx"
+    },
+    "Frontend/src/components/Hero.tsx::Hero.tsx": {
+      "fileSummary": "Frontend/src/components/Hero.tsx"
+    },
+    "Frontend/src/components/LiveChatBot.tsx::LiveChatBot.tsx": {
+      "fileSummary": "Frontend/src/components/LiveChatBot.tsx"
+    },
+    "Frontend/src/components/MaritimeSimulatorBar.tsx::MaritimeSimulatorBar.tsx": {
+      "fileSummary": "Frontend/src/components/MaritimeSimulatorBar.tsx"
+    },
+    "Frontend/src/components/NotificationCenter.tsx::NotificationCenter.tsx": {
+      "fileSummary": "Frontend/src/components/NotificationCenter.tsx"
+    },
+    "Frontend/src/components/PortfolioNotice.tsx::PortfolioNotice.tsx": {
+      "fileSummary": "Frontend/src/components/PortfolioNotice.tsx"
+    },
+    "Frontend/src/components/PullToRefresh.tsx::PullToRefresh.tsx": {
+      "fileSummary": "Frontend/src/components/PullToRefresh.tsx"
+    },
+    "Frontend/src/components/SocialFeed.tsx::SocialFeed.tsx": {
+      "fileSummary": "Frontend/src/components/SocialFeed.tsx"
+    },
+    "Frontend/src/components/TravelInfoSection.tsx::TravelInfoSection.tsx": {
+      "fileSummary": "Frontend/src/components/TravelInfoSection.tsx"
+    },
+    "Frontend/src/data/notificationsData.ts::notificationsData.ts": {
+      "fileSummary": "Frontend/src/data/notificationsData.ts"
+    },
+    "Frontend/src/main.tsx::main.tsx": {
+      "fileSummary": "Frontend/src/main.tsx"
+    },
+    "Frontend/src/portfolio.ts::Frontend/src/portfolio.ts": {
+      "fileSummary": "Frontend/src/portfolio.ts"
+    },
+    "Frontend/src/userState.tsx::userState.tsx": {
+      "fileSummary": "Frontend/src/userState.tsx"
+    },
+    "Frontend/src/components/AdminPage.tsx::AdminPage.tsx": {
+      "fileSummary": "Frontend/src/components/AdminPage.tsx"
+    },
+    "Frontend/src/components/CulturalGuide.tsx::CulturalGuide.tsx": {
+      "fileSummary": "Frontend/src/components/CulturalGuide.tsx"
+    },
+    "Frontend/src/components/InteractiveMap.tsx::InteractiveMap.tsx": {
+      "fileSummary": "Frontend/src/components/InteractiveMap.tsx"
+    },
+    "Frontend/src/components/ItineraryPlanner.tsx::ItineraryPlanner.tsx": {
+      "fileSummary": "Frontend/src/components/ItineraryPlanner.tsx"
+    },
+    "Frontend/src/components/ReviewSystem.tsx::ReviewSystem.tsx": {
+      "fileSummary": "Frontend/src/components/ReviewSystem.tsx"
+    },
+    "Frontend/src/data/adminDefaults.ts::adminDefaults.ts": {
+      "fileSummary": "Frontend/src/data/adminDefaults.ts"
+    },
+    "Frontend/src/data/concepcionData.ts::concepcionData.ts": {
+      "fileSummary": "Frontend/src/data/concepcionData.ts"
+    },
+    "Frontend/src/data/hikingTrailsData.ts::hikingTrailsData.ts": {
+      "fileSummary": "Frontend/src/data/hikingTrailsData.ts"
+    },
+    "Frontend/src/types.ts::types.ts": {
+      "fileSummary": "Frontend/src/types.ts"
+    },
+    "Frontend/src/components/AttractionsSection.tsx::AttractionsSection.tsx": {
+      "fileSummary": "Frontend/src/components/AttractionsSection.tsx"
+    },
+    "Frontend/src/components/BookingSection.tsx::BookingSection.tsx": {
+      "fileSummary": "Frontend/src/components/BookingSection.tsx"
+    },
+    "Frontend/src/components/Skeletons.tsx::Skeletons.tsx": {
+      "fileSummary": "Frontend/src/components/Skeletons.tsx"
+    },
+    "Frontend/src/components/ToastViewport.tsx::ToastViewport.tsx": {
+      "fileSummary": "Frontend/src/components/ToastViewport.tsx"
+    },
+    "Frontend/src/toastStore.ts::toastStore.ts": {
+      "fileSummary": "Frontend/src/toastStore.ts"
+    }
+  }
+}

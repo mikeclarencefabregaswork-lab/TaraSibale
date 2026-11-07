@@ -1,0 +1,532 @@
+{
+  "files": {
+    "package.json": {
+      "summary": "The private root npm package defines the Frontend and Backend workspaces and requires Node.js 22.12.0 or newer. Its commands coordinate workspace development, verification, database operations, and Graphify/Obsidian exports; run these commands from the repository root.",
+      "guide": "TaraSibale - Development"
+    },
+    "Frontend/package.json": {
+      "summary": "The private ECMAScript-module frontend package declares React, maps, animation, icons, styling, and Vite tooling. Building first generates third-party notices through npm’s prebuild lifecycle hook, then checks TypeScript and bundles browser assets.",
+      "guide": "TaraSibale - Development"
+    },
+    "Backend/package.json": {
+      "summary": "The private ECMAScript-module API package declares Express, PostgreSQL access, request rate limiting, and Zod validation. Development and database scripts load the local .env file; build emits JavaScript and start runs the compiled server.",
+      "guide": "TaraSibale - Development"
+    },
+    "Frontend/tsconfig.json": {
+      "summary": "This solution-style TypeScript configuration contains no source files directly. Its references make build mode check the browser application and Node-based Vite configuration as separate projects.",
+      "guide": "TaraSibale - Development"
+    },
+    "Frontend/tsconfig.app.json": {
+      "summary": "This configuration checks browser source under src using ES2023 and DOM declarations, React’s automatic JSX transform, and bundler-style resolution. It emits no JavaScript because Vite owns the bundle, while unused-symbol and restricted-syntax checks catch mistakes.",
+      "guide": "TaraSibale - Development"
+    },
+    "Frontend/tsconfig.node.json": {
+      "summary": "This configuration checks vite.config.ts with Node types and NodeNext module semantics. It emits no JavaScript and keeps build metadata separate from the browser project.",
+      "guide": "TaraSibale - Development"
+    },
+    "Backend/tsconfig.json": {
+      "summary": "The API compiler checks src with strict typing, NodeNext modules, and extra indexed-access safety. It emits ES2022 JavaScript from src into dist; tests and administrative scripts are outside this base include list.",
+      "guide": "TaraSibale - Development"
+    },
+    "Backend/tsconfig.test.json": {
+      "summary": "This configuration extends the API compiler settings to include src, test, and scripts. It changes rootDir to the Backend directory and disables output so the backend typecheck command also checks code outside production src.",
+      "guide": "TaraSibale - Development"
+    },
+    "Frontend/.oxlintrc.json": {
+      "summary": "This Oxlint configuration enables React, TypeScript, and Oxc plugin rules. Hook-rule violations are errors; non-component exports receive a warning while constant exports are allowed.",
+      "guide": "TaraSibale - Development"
+    },
+    "Frontend/vite.config.ts": {
+      "summary": "Vite combines React and Tailwind plugins, serves on port 5173 with a strict port requirement, and proxies /api to API_PROXY_TARGET or the local API default. Its explicit filesystem allow list and private-file deny patterns keep the frontend development server from serving sibling backend and database files.",
+      "guide": "TaraSibale - Development"
+    },
+    "Frontend/test/api.test.ts": {
+      "summary": "Node-based tests replace fetch to verify API mutation errors, same-origin cookies, successful response preservation, empty logout responses, non-JSON failures, and account-bound autosave headers. Cleanup restores fetch and clears notifications after each test; these are client-helper tests rather than real backend requests.",
+      "guide": "TaraSibale - Development"
+    },
+    "Frontend/test/toast.test.ts": {
+      "summary": "Node tests verify duplicate suppression, the four-notification bound, error kinds, dismissal, subscriber notifications, and unsubscription. Cleanup clears the shared toast store after each test.",
+      "guide": "TaraSibale - Development"
+    },
+    "Frontend/test/vite-security.test.ts": {
+      "summary": "This test starts a real Vite development server on an ephemeral loopback port and creates a harmless database-directory probe. It verifies the frontend entry point is served while the probe and Backend/src/db.ts receive HTTP 403, then closes the server and deletes the probe.",
+      "guide": "TaraSibale - Development"
+    },
+    "scripts/generate-third-party-notices.mjs": {
+      "summary": "This frontend prebuild script reads installed runtime-package metadata and recursively collects license, COPYING, and NOTICE files. It writes Frontend/public/THIRD_PARTY_NOTICES.txt, deduplicates by package name/version, and fails if a package or its notice file cannot be found; it is a distribution helper, not an application request handler.",
+      "guide": "TaraSibale - Development"
+    },
+    "scripts/export-obsidian.mjs": {
+      "summary": "Publishes the consolidated Obsidian knowledge base into the requested folder. It detects the actual vault root and delegates grouping, link migration, edit preservation, backup, and obsolete-note archival to consolidateVault. It no longer runs Graphify’s granular Obsidian export into the active vault.",
+      "guide": "TaraSibale - Using the Knowledge Base"
+    },
+    "scripts/obsidian-guides.mjs": {
+      "summary": "Publishes maintained Markdown guides and generated reference notes with a reading map. Source citations resolve to the checkout, while a SHA-256 manifest preserves locally edited canonical files. It supports the consolidated export only.",
+      "guide": "TaraSibale - Using the Knowledge Base"
+    },
+    "scripts/obsidian-note-context.mjs": {
+      "summary": "Parses current TypeScript declarations for the consolidated documentation. It matches a named declaration near its indexed line and extracts field contracts, function inputs, array shape and source spans. This module handles syntax details only; it does not publish granular notes or load explanation maps.",
+      "guide": "TaraSibale - Using the Knowledge Base"
+    },
+    "scripts/obsidian-consolidate.mjs": {
+      "summary": "Groups the indexed source into fifteen canonical guide/reference notes instead of producing one file per symbol. It combines package versions and workspace settings, moves old links to their owning sections, backs up managed originals outside the vault, and archives granular notes only after validation. Unmanaged inbound links and locally edited canonical files stop pruning for review.",
+      "guide": "TaraSibale - Using the Knowledge Base"
+    },
+    "scripts/graph-community-context.mjs": {
+      "summary": "Builds meaningful context for graph communities without changing their members or edges. Stable source/symbol anchors and file rules supply names, purposes, questions, and entry points; reviewed maps supply symbol explanations. Cross-group relationships are counted from indexed edges, and investigation tours are explicitly reading routes rather than asserted call chains.",
+      "guide": "TaraSibale - Using the Knowledge Base"
+    },
+    "scripts/enrich-graph.mjs": {
+      "summary": "Applies community context to the local graph, writes native Graphify labels and a readable community guide, regenerates the stock HTML, and adds the contextual browser adapter. It validates the expected exporter hooks before injecting safely serialized data. Numeric memberships and recorded edges remain unchanged.",
+      "guide": "TaraSibale - Using the Knowledge Base"
+    },
+    "scripts/graph-context-ui.js": {
+      "summary": "Adds the interactive context sidebar to the generated graph viewer. Application/all-group controls, investigation tours, community questions, source responsibilities, Obsidian links, and selected-symbol explanations complement the native graph. The browser adapter is local viewer behavior and does not alter the tourism app or database.",
+      "guide": "TaraSibale - Using the Knowledge Base"
+    },
+    "scripts/knowledge-context.mjs": {
+      "summary": "Loads and resolves the reviewed explanation maps shared by Graphify and Obsidian. File-summary and shared-description references keep prose in one place, while consumers receive the same string-based context shape. Duplicate keys, malformed references and missing targets fail explicitly.",
+      "guide": "TaraSibale - Using the Knowledge Base"
+    }
+  },
+  "symbols": {
+    "scripts/generate-third-party-notices.mjs::visit()": "Locates an installed package by searching node_modules upward from its parent, records its license notices once per name/version, and recursively visits its runtime dependencies. Missing packages or license notice files cause the prebuild to fail.",
+    "Frontend/package.json::lucide-react": "Provides React SVG icon components for interface controls and visual cues.",
+    "Frontend/package.json::react": "Provides the component, hook, and rendering model used by the browser interface.",
+    "Frontend/tsconfig.node.json::tsconfig.node.json": {
+      "fileSummary": "Frontend/tsconfig.node.json"
+    },
+    "Frontend/tsconfig.node.json::compilerOptions": {
+      "shared": "compilerOptions-305706eb"
+    },
+    "Frontend/tsconfig.node.json::allowImportingTsExtensions": {
+      "shared": "allowImportingTsExtensions-e03c5dd8"
+    },
+    "Frontend/tsconfig.node.json::erasableSyntaxOnly": {
+      "shared": "erasableSyntaxOnly-6c847f16"
+    },
+    "Frontend/tsconfig.node.json::lib": {
+      "shared": "lib-dd59104b"
+    },
+    "Frontend/tsconfig.node.json::module": {
+      "shared": "module-d7ecb383"
+    },
+    "Frontend/tsconfig.node.json::moduleDetection": {
+      "shared": "moduleDetection-559ffc36"
+    },
+    "Frontend/tsconfig.node.json::noEmit": {
+      "shared": "noEmit-e29aba6a"
+    },
+    "Frontend/tsconfig.node.json::noFallthroughCasesInSwitch": {
+      "shared": "noFallthroughCasesInSwitch-a7b30e8e"
+    },
+    "Frontend/tsconfig.node.json::noUnusedLocals": {
+      "shared": "noUnusedLocals-e7d73a34"
+    },
+    "Frontend/tsconfig.node.json::noUnusedParameters": {
+      "shared": "noUnusedParameters-b884703c"
+    },
+    "Frontend/tsconfig.node.json::skipLibCheck": {
+      "shared": "skipLibCheck-31cfaf82"
+    },
+    "Frontend/tsconfig.node.json::target": {
+      "shared": "target-e54c5579"
+    },
+    "Frontend/tsconfig.node.json::tsBuildInfoFile": {
+      "shared": "tsBuildInfoFile-56b2b29c"
+    },
+    "Frontend/tsconfig.node.json::types": {
+      "shared": "types-e6e33253"
+    },
+    "Frontend/tsconfig.node.json::verbatimModuleSyntax": {
+      "shared": "verbatimModuleSyntax-7ca0d6d9"
+    },
+    "Frontend/tsconfig.node.json::include": {
+      "shared": "include-4789f7d7"
+    },
+    "Backend/tsconfig.json::Backend/tsconfig.json": {
+      "fileSummary": "Backend/tsconfig.json"
+    },
+    "Backend/tsconfig.json::compilerOptions": {
+      "shared": "compilerOptions-305706eb"
+    },
+    "Backend/tsconfig.json::esModuleInterop": "Improves TypeScript compatibility when importing CommonJS modules through ES module syntax.",
+    "Backend/tsconfig.json::forceConsistentCasingInFileNames": "Enforces consistent import filename casing to avoid platform-dependent resolution errors.",
+    "Backend/tsconfig.json::module": {
+      "shared": "module-d7ecb383"
+    },
+    "Backend/tsconfig.json::moduleResolution": {
+      "shared": "moduleResolution-4c91e131"
+    },
+    "Backend/tsconfig.json::noUncheckedIndexedAccess": "Adds possible undefined to unchecked indexed lookups so callers must account for absent values.",
+    "Backend/tsconfig.json::outDir": "Places compiled API JavaScript under dist instead of beside TypeScript source.",
+    "Backend/tsconfig.json::rootDir": {
+      "shared": "rootDir-26c496ab"
+    },
+    "Backend/tsconfig.json::skipLibCheck": {
+      "shared": "skipLibCheck-31cfaf82"
+    },
+    "Backend/tsconfig.json::strict": "Enables the family of strict TypeScript checks, including strict null handling and implicit-any checks.",
+    "Backend/tsconfig.json::target": {
+      "shared": "target-e54c5579"
+    },
+    "Backend/tsconfig.json::types": {
+      "shared": "types-e6e33253"
+    },
+    "Backend/tsconfig.json::include": {
+      "shared": "include-4789f7d7"
+    },
+    "Backend/tsconfig.test.json::tsconfig.test.json": {
+      "fileSummary": "Backend/tsconfig.test.json"
+    },
+    "Backend/tsconfig.test.json::compilerOptions": {
+      "shared": "compilerOptions-305706eb"
+    },
+    "Backend/tsconfig.test.json::noEmit": {
+      "shared": "noEmit-e29aba6a"
+    },
+    "Backend/tsconfig.test.json::rootDir": {
+      "shared": "rootDir-26c496ab"
+    },
+    "Backend/tsconfig.test.json::extends": "Inherits Backend/tsconfig.json before applying test/script-specific compiler and include overrides.",
+    "Backend/tsconfig.test.json::include": {
+      "shared": "include-4789f7d7"
+    },
+    "Backend/tsconfig.test.json::./tsconfig.json": "The relative reference to Backend/tsconfig.json inherited by the test configuration.",
+    "Frontend/.oxlintrc.json::.oxlintrc.json": {
+      "fileSummary": "Frontend/.oxlintrc.json"
+    },
+    "Frontend/.oxlintrc.json::plugins": "Enables the react, typescript, and oxc rule plugins.",
+    "Frontend/.oxlintrc.json::rules": "Provides explicit rule severities and options on top of Oxlint’s enabled rules.",
+    "Frontend/.oxlintrc.json::react/only-export-components": "Warns about exports that interfere with component-only refresh boundaries; allowConstantExport permits constant exports.",
+    "Frontend/.oxlintrc.json::react/rules-of-hooks": "Treats violations of React’s hook calling rules as lint errors.",
+    "Frontend/.oxlintrc.json::$schema": "Points editor tooling to Oxlint’s local configuration schema for validation and completion.",
+    "Frontend/tsconfig.json::Frontend/tsconfig.json": {
+      "fileSummary": "Frontend/tsconfig.json"
+    },
+    "Frontend/tsconfig.json::files": "An empty direct-input list in the frontend solution configuration; referenced projects supply the actual inputs.",
+    "Frontend/tsconfig.json::references": "Connects the frontend browser and Vite-config TypeScript projects for tsc build mode.",
+    "Frontend/package.json::dependencies": {
+      "shared": "dependencies-9f673668"
+    },
+    "Frontend/package.json::leaflet@^1.9.4": "Provides interactive browser maps used by the island map interface. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Frontend/package.json::lucide-react@^1.61.0": "Provides React SVG icon components for interface controls and visual cues. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Frontend/package.json::motion@^14.6.0": "Provides React animation helpers used by the interface. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Frontend/package.json::react@^19.3.1": "Provides the component, hook, and rendering model used by the browser interface. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Frontend/package.json::react-dom@^19.3.1": "Mounts and renders the React interface into the browser DOM. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Frontend/package.json::tailwindcss@^4.3.3": "Provides utility-driven CSS processing for the interface styling. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Frontend/package.json::leaflet": "Provides interactive browser maps used by the island map interface.",
+    "Frontend/package.json::motion": "Provides React animation helpers used by the interface.",
+    "Frontend/package.json::react-dom": "Mounts and renders the React interface into the browser DOM.",
+    "Frontend/package.json::tailwindcss": "Provides utility-driven CSS processing for the interface styling.",
+    "Frontend/package.json::@tailwindcss/vite@^4.3.3": "Connects Tailwind CSS processing to the Vite build and development pipeline. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Frontend/package.json::vite@^8.3.4": "Runs the frontend development server, proxy, production bundler, and preview server. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Frontend/package.json::@vitejs/plugin-react@^6.1.2": "Integrates React JSX handling and development refresh with Vite. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Frontend/vite.config.ts::vite.config.ts": {
+      "fileSummary": "Frontend/vite.config.ts"
+    },
+    "Frontend/package.json::@tailwindcss/vite": "Connects Tailwind CSS processing to the Vite build and development pipeline.",
+    "Frontend/package.json::vite": "Runs the frontend development server, proxy, production bundler, and preview server.",
+    "Frontend/package.json::@vitejs/plugin-react": "Integrates React JSX handling and development refresh with Vite.",
+    "Frontend/package.json::scripts": {
+      "shared": "scripts-f37cb4d2"
+    },
+    "Frontend/package.json::build": "Runs TypeScript build-mode checks followed by the Vite production bundle; npm invokes prebuild first.",
+    "Frontend/package.json::dev": "Starts the Vite browser development server.",
+    "Frontend/package.json::lint": "Runs Oxlint for the frontend workspace.",
+    "Frontend/package.json::prebuild": "Generates the runtime third-party license notices before a frontend build.",
+    "Frontend/package.json::preview": "Serves an existing Vite production build for local inspection.",
+    "Frontend/package.json::test": "Uses Node’s test runner with the tsx import hook for test/*.test.ts.",
+    "Frontend/package.json::typecheck": "Checks the referenced TypeScript projects without emitting JavaScript.",
+    "Frontend/package.json::Frontend/package.json": {
+      "fileSummary": "Frontend/package.json"
+    },
+    "Frontend/package.json::devDependencies": {
+      "shared": "devDependencies-ea6671dd"
+    },
+    "Frontend/package.json::oxlint@^1.88.0": {
+      "shared": "oxlint--1-88-0-01b1d9bb"
+    },
+    "Frontend/package.json::tsx@^4.23.15": {
+      "shared": "tsx--4-23-15-0139c117"
+    },
+    "Frontend/package.json::@types/leaflet@^1.9.22": "Provides TypeScript declarations for Leaflet; these declarations do not implement runtime behavior. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Frontend/package.json::@types/node@^24.19.2": {
+      "shared": "types-node--24-19-2-7c772630"
+    },
+    "Frontend/package.json::@types/react@^19.3.0": "Provides TypeScript declarations for React; these declarations do not implement runtime behavior. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Frontend/package.json::@types/react-dom@^19.3.0": "Provides TypeScript declarations for React DOM; these declarations do not implement runtime behavior. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Frontend/package.json::typescript@~6.0.3": {
+      "shared": "typescript--6-0-3-5e190156"
+    },
+    "Frontend/package.json::name": {
+      "shared": "name-f5db2e72"
+    },
+    "Frontend/package.json::private": {
+      "shared": "private-ead8a0fb"
+    },
+    "Frontend/package.json::type": {
+      "shared": "type-9dbdbb07"
+    },
+    "Frontend/package.json::version": {
+      "shared": "version-73663c7e"
+    },
+    "Frontend/package.json::oxlint": {
+      "shared": "oxlint-34934d66"
+    },
+    "Frontend/package.json::tsx": {
+      "shared": "tsx-e9becfd4"
+    },
+    "Frontend/package.json::@types/node": {
+      "shared": "types-node-902d7c7e"
+    },
+    "Frontend/package.json::typescript": {
+      "shared": "typescript-9ff3fdea"
+    },
+    "Frontend/package.json::@types/leaflet": "Provides TypeScript declarations for Leaflet; these declarations do not implement runtime behavior.",
+    "Frontend/package.json::@types/react": "Provides TypeScript declarations for React; these declarations do not implement runtime behavior.",
+    "Frontend/package.json::@types/react-dom": "Provides TypeScript declarations for React DOM; these declarations do not implement runtime behavior.",
+    "scripts/generate-third-party-notices.mjs::generate-third-party-notices.mjs": {
+      "fileSummary": "scripts/generate-third-party-notices.mjs"
+    },
+    "scripts/generate-third-party-notices.mjs::root": "Absolute repository root derived from this script’s own module URL, independent of the current working directory.",
+    "scripts/generate-third-party-notices.mjs::sections": "Collected notice sections containing installed package versions, declared licenses, and license-file text; sorted before writing the public notice file.",
+    "scripts/generate-third-party-notices.mjs::visited": "Set of package-name/version keys that prevents repeated notices and recursion through already visited packages.",
+    "Backend/package.json::dependencies": {
+      "shared": "dependencies-9f673668"
+    },
+    "Backend/package.json::express@^5.3.0": "Provides the HTTP application and routing/middleware framework for the API. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Backend/package.json::express-rate-limit@^8.7.1": "Adds request-rate limiting middleware to API endpoints. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Backend/package.json::pg@^8.23.1": "Provides the PostgreSQL connection pool and query client used by the backend. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Backend/package.json::zod@^4.6.7": "Provides runtime parsing and validation schemas for incoming API data. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Frontend/test/vite-security.test.ts::vite-security.test.ts": {
+      "fileSummary": "Frontend/test/vite-security.test.ts"
+    },
+    "Backend/package.json::express": "Provides the HTTP application and routing/middleware framework for the API.",
+    "Backend/package.json::express-rate-limit": "Adds request-rate limiting middleware to API endpoints.",
+    "Backend/package.json::pg": "Provides the PostgreSQL connection pool and query client used by the backend.",
+    "Backend/package.json::zod": "Provides runtime parsing and validation schemas for incoming API data.",
+    "Backend/package.json::Backend/package.json": {
+      "fileSummary": "Backend/package.json"
+    },
+    "Backend/package.json::devDependencies": {
+      "shared": "devDependencies-ea6671dd"
+    },
+    "Backend/package.json::oxlint@^1.89.0": {
+      "shared": "oxlint--1-88-0-01b1d9bb"
+    },
+    "Backend/package.json::tsx@^4.23.15": {
+      "shared": "tsx--4-23-15-0139c117"
+    },
+    "Backend/package.json::@types/express@^5.0.6": "Provides TypeScript declarations for Express; these declarations do not implement runtime behavior. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Backend/package.json::@types/node@^24.19.2": {
+      "shared": "types-node--24-19-2-7c772630"
+    },
+    "Backend/package.json::@types/pg@^8.23.1": "Provides TypeScript declarations for PostgreSQL client; these declarations do not implement runtime behavior. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "Backend/package.json::typescript@^6.0.3": {
+      "shared": "typescript--6-0-3-5e190156"
+    },
+    "Backend/package.json::name": {
+      "shared": "name-f5db2e72"
+    },
+    "Backend/package.json::private": {
+      "shared": "private-ead8a0fb"
+    },
+    "Backend/package.json::scripts": {
+      "shared": "scripts-f37cb4d2"
+    },
+    "Backend/package.json::admin:promote": "Runs scripts/promote-admin.ts with local environment configuration to promote the specified account.",
+    "Backend/package.json::build": "Compiles src into dist using the backend TypeScript configuration.",
+    "Backend/package.json::db:migrate": "Runs scripts/migrate.ts with local environment configuration.",
+    "Backend/package.json::db:seed": "Runs scripts/seed.ts with local environment configuration.",
+    "Backend/package.json::dev": "Runs src/server.ts through tsx watch while loading Backend/.env.",
+    "Backend/package.json::lint": "Runs Oxlint for the backend workspace.",
+    "Backend/package.json::start": "Runs compiled dist/server.js with Backend/.env loaded; a build is required first.",
+    "Backend/package.json::test": "Executes test/*.test.ts with tsx and Node’s test runner.",
+    "Backend/package.json::test:integration": "Executes test/*.integration.ts with Backend/.env loaded for PostgreSQL-backed integration tests.",
+    "Backend/package.json::typecheck": "Checks production src without emitting, then checks src/test/scripts through tsconfig.test.json.",
+    "Backend/package.json::type": {
+      "shared": "type-9dbdbb07"
+    },
+    "Backend/package.json::version": {
+      "shared": "version-73663c7e"
+    },
+    "Backend/package.json::oxlint": {
+      "shared": "oxlint-34934d66"
+    },
+    "Backend/package.json::tsx": {
+      "shared": "tsx-e9becfd4"
+    },
+    "Backend/package.json::@types/node": {
+      "shared": "types-node-902d7c7e"
+    },
+    "Backend/package.json::typescript": {
+      "shared": "typescript-9ff3fdea"
+    },
+    "Backend/package.json::@types/express": "Provides TypeScript declarations for Express; these declarations do not implement runtime behavior.",
+    "Backend/package.json::@types/pg": "Provides TypeScript declarations for PostgreSQL client; these declarations do not implement runtime behavior.",
+    "package.json::package.json": {
+      "fileSummary": "package.json"
+    },
+    "package.json::devDependencies": {
+      "shared": "devDependencies-ea6671dd"
+    },
+    "package.json::concurrently@^10.0.6": "Runs the frontend and backend development commands together; -k stops the other process when one exits. The version text is the manifest’s allowed range, not proof of the currently resolved installation.",
+    "package.json::engines": "Declares the supported Node.js runtime range for the root workspace.",
+    "package.json::node": "Requires Node.js >=22.12.0 for this workspace.",
+    "package.json::name": {
+      "shared": "name-f5db2e72"
+    },
+    "package.json::private": {
+      "shared": "private-ead8a0fb"
+    },
+    "package.json::scripts": {
+      "shared": "scripts-f37cb4d2"
+    },
+    "package.json::admin:promote": "Delegates to the Backend administrator promotion script and forwards additional arguments.",
+    "package.json::build": "Runs each workspace build; npm also runs the frontend prebuild notice generator.",
+    "package.json::db:migrate": "Delegates to the Backend migration runner.",
+    "package.json::db:seed": "Delegates to the Backend seed runner.",
+    "package.json::db:start": "Starts the local PostgreSQL system service through sudo/systemctl.",
+    "package.json::db:status": "Checks PostgreSQL readiness at loopback port 5432 with pg_isready.",
+    "package.json::db:stop": "Stops the local PostgreSQL system service through sudo/systemctl.",
+    "package.json::dev": "Starts both workspace development servers concurrently with labeled output and coupled shutdown.",
+    "package.json::graph:build": "Extracts the code graph with two workers, then computes clusters without generated labels. The result is a snapshot of source at extraction time.",
+    "package.json::graph:obsidian": "Runs scripts/export-obsidian.mjs to export the graph as linked Obsidian notes.",
+    "package.json::lint": "Runs both workspace lint commands.",
+    "package.json::test": "Runs workspace test commands where present; this does not include the separately named database integration suite.",
+    "package.json::test:integration": "Delegates to the Backend database integration suite.",
+    "package.json::typecheck": "Runs both workspace typecheck commands.",
+    "package.json::version": {
+      "shared": "version-73663c7e"
+    },
+    "package.json::workspaces": "Registers Frontend and Backend as root npm workspaces so root commands can coordinate them.",
+    "package.json::concurrently": "Runs the frontend and backend development commands together; -k stops the other process when one exits.",
+    "Frontend/test/api.test.ts::api.test.ts": {
+      "fileSummary": "Frontend/test/api.test.ts"
+    },
+    "Frontend/test/toast.test.ts::toast.test.ts": {
+      "fileSummary": "Frontend/test/toast.test.ts"
+    },
+    "Frontend/tsconfig.app.json::tsconfig.app.json": {
+      "fileSummary": "Frontend/tsconfig.app.json"
+    },
+    "Frontend/tsconfig.app.json::compilerOptions": {
+      "shared": "compilerOptions-305706eb"
+    },
+    "Frontend/tsconfig.app.json::allowArbitraryExtensions": "Permits TypeScript’s supported declaration-file handling for imports with nonstandard extensions, useful alongside bundler-managed assets.",
+    "Frontend/tsconfig.app.json::allowImportingTsExtensions": {
+      "shared": "allowImportingTsExtensions-e03c5dd8"
+    },
+    "Frontend/tsconfig.app.json::erasableSyntaxOnly": {
+      "shared": "erasableSyntaxOnly-6c847f16"
+    },
+    "Frontend/tsconfig.app.json::jsx": "Uses react-jsx, React’s automatic JSX runtime transform, for TSX source.",
+    "Frontend/tsconfig.app.json::lib": {
+      "shared": "lib-dd59104b"
+    },
+    "Frontend/tsconfig.app.json::module": {
+      "shared": "module-d7ecb383"
+    },
+    "Frontend/tsconfig.app.json::moduleDetection": {
+      "shared": "moduleDetection-559ffc36"
+    },
+    "Frontend/tsconfig.app.json::moduleResolution": {
+      "shared": "moduleResolution-4c91e131"
+    },
+    "Frontend/tsconfig.app.json::noEmit": {
+      "shared": "noEmit-e29aba6a"
+    },
+    "Frontend/tsconfig.app.json::noFallthroughCasesInSwitch": {
+      "shared": "noFallthroughCasesInSwitch-a7b30e8e"
+    },
+    "Frontend/tsconfig.app.json::noUnusedLocals": {
+      "shared": "noUnusedLocals-e7d73a34"
+    },
+    "Frontend/tsconfig.app.json::noUnusedParameters": {
+      "shared": "noUnusedParameters-b884703c"
+    },
+    "Frontend/tsconfig.app.json::skipLibCheck": {
+      "shared": "skipLibCheck-31cfaf82"
+    },
+    "Frontend/tsconfig.app.json::target": {
+      "shared": "target-e54c5579"
+    },
+    "Frontend/tsconfig.app.json::tsBuildInfoFile": {
+      "shared": "tsBuildInfoFile-56b2b29c"
+    },
+    "Frontend/tsconfig.app.json::types": {
+      "shared": "types-e6e33253"
+    },
+    "Frontend/tsconfig.app.json::verbatimModuleSyntax": {
+      "shared": "verbatimModuleSyntax-7ca0d6d9"
+    },
+    "Frontend/tsconfig.app.json::include": {
+      "shared": "include-4789f7d7"
+    },
+    "scripts/export-obsidian.mjs::export-obsidian.mjs": {
+      "fileSummary": "scripts/export-obsidian.mjs"
+    },
+    "scripts/export-obsidian.mjs::guides": "Holds the guide publisher result: number of outputs written and locally edited files preserved. The following loop reports preserved-file conflicts rather than overwriting those guide edits.",
+    "scripts/export-obsidian.mjs::notes": "Holds enrichment counts for source notes, external references, and communities. These counts are reported after the generated notes have been processed.",
+    "scripts/export-obsidian.mjs::repository": "Resolves the checkout root relative to this module rather than the output vault. Source guide files, explanation maps, and source excerpts are read from that repository.",
+    "scripts/export-obsidian.mjs::result": "Reports the number of canonical notes published, the granular files archived during this run, and the recoverable archive location.",
+    "scripts/export-obsidian.mjs::target": "Resolves the requested export directory, defaulting to graphify-out/obsidian. An optional command-line path allows publishing inside the existing Obsidian vault.",
+    "scripts/obsidian-guides.mjs::obsidian-guides.mjs": {
+      "fileSummary": "scripts/obsidian-guides.mjs"
+    },
+    "scripts/obsidian-guides.mjs::digest()": "Computes a SHA-256 content hash for an exported guide. Hash comparison detects local edits; it is a change-detection mechanism, not document encryption.",
+    "scripts/obsidian-guides.mjs::publishGuides()": "Combines maintained guides with additional reference notes, applies a caller-supplied content transformation, and publishes a vault-relative reading map. Files changed locally since their previous publication are preserved and reported; the consolidation caller stops pruning when conflicts exist.",
+    "scripts/obsidian-note-context.mjs::obsidian-note-context.mjs": {
+      "fileSummary": "scripts/obsidian-note-context.mjs"
+    },
+    "scripts/obsidian-note-context.mjs::cell()": "Makes a value safe for a Markdown table cell by escaping pipe characters and flattening newlines. It is presentation formatting, not general HTML sanitization.",
+    "scripts/obsidian-note-context.mjs::declarationDetails()": "Uses the installed TypeScript parser to match a named declaration near the indexed line. It reports actual declaration spans, typed parameters, interface members, and literal-array shape when available; otherwise it explicitly falls back to a source window.",
+    "scripts/obsidian-note-context.mjs::visit()": "Recursively visits the parsed TypeScript syntax tree and gathers declarations/nodes whose names match the requested symbol. The surrounding declarationDetails function chooses the candidate closest to the indexed source line.",
+    "scripts/obsidian-consolidate.mjs::obsidian-consolidate.mjs": {
+      "fileSummary": "scripts/obsidian-consolidate.mjs"
+    },
+    "scripts/obsidian-consolidate.mjs::consolidateVault()": "Builds canonical notes from reviewed descriptions, current interface contracts, and the graph snapshot. It combines duplicate configuration/dependency entries, rewrites maintained symbol links, validates the resulting note targets, and archives former managed files with a saved recovery route.",
+    "scripts/obsidian-consolidate.mjs::destination()": "Assigns each graph entry to one owning guide or reference section based on its source and category. Dependencies, command definitions, component props, tests, schema objects, and state helpers therefore share their relevant canonical note.",
+    "scripts/obsidian-consolidate.mjs::json()": "Reads and parses a JSON metadata file used during consolidation. Parse failures abort rather than silently ignoring ownership or recovery information.",
+    "scripts/obsidian-consolidate.mjs::packageKey()": "Removes a version suffix from a dependency label while retaining scoped package names, allowing conceptual package and versioned graph nodes to share one dependency row.",
+    "scripts/obsidian-consolidate.mjs::read()": "Reads a local UTF-8 note, source, or metadata file for consolidation. No source is fetched remotely by this helper.",
+    "scripts/obsidian-consolidate.mjs::table()": "Escapes pipes, flattens newlines, and normalizes backticks for values inserted into consolidated Markdown tables.",
+    "scripts/obsidian-consolidate.mjs::title()": "Applies the shared TaraSibale prefix to canonical note names so references remain distinctive within the existing vault.",
+    "scripts/obsidian-consolidate.mjs::extras": "Defines the five detailed reference notes supplementing the ten maintained guides: UI components, API validation, domain types, dependencies, and workspace configuration.",
+    "scripts/obsidian-consolidate.mjs::inboundReferences()": "Scans non-managed Markdown and canvases for links to granular notes that would be retired. These references block pruning rather than leaving personal files with broken links.",
+    "scripts/obsidian-consolidate.mjs::visit()": "Walks non-hidden vault directories without following symlinks, checking unmanaged Markdown wiki links and canvas file nodes for references affected by consolidation.",
+    "scripts/graph-community-context.mjs::graph-community-context.mjs": {
+      "fileSummary": "scripts/graph-community-context.mjs"
+    },
+    "scripts/graph-community-context.mjs::buildCommunityContext()": "Joins graph members to reviewed semantic rules and descriptions, then computes valid member entry points, related-group counts, per-node explanations, and guided investigation paths. It does not mutate the input graph.",
+    "scripts/enrich-graph.mjs::enrich-graph.mjs": {
+      "fileSummary": "scripts/enrich-graph.mjs"
+    },
+    "scripts/graph-context-ui.js::graph-context-ui.js": {
+      "fileSummary": "scripts/graph-context-ui.js"
+    },
+    "scripts/graph-context-ui.js::showCommunity()": "Displays a selected community’s purpose, questions, member entry points, related groups and guide link. Explicit group inspection can reveal and fit that community without changing its graph membership.",
+    "scripts/graph-context-ui.js::setVisible()": "Synchronizes a community’s visibility through the native Graphify legend checkbox so hidden-state and dataset behavior stay aligned.",
+    "scripts/graph-context-ui.js::changeView()": "Resets the native visibility controls and optionally hides configuration/tooling groups, updating the accessible view state and fitting the visible graph.",
+    "scripts/knowledge-context.mjs::knowledge-context.mjs": {
+      "fileSummary": "scripts/knowledge-context.mjs"
+    },
+    "scripts/knowledge-context.mjs::loadKnowledgeContext()": "Reads the sorted JSON maps from docs/obsidian-context and passes all parts to the shared resolver. Resolving after collection makes references independent of file order.",
+    "scripts/knowledge-context.mjs::resolveKnowledgeContext()": "Combines file metadata, entry descriptions, external references and shared definitions. Each reference resolves to an existing string; duplicate keys or invalid targets throw an explicit error instead of silently overwriting text or rendering an object.",
+    "scripts/knowledge-context.mjs::resolve()": "Expands one literal, file-summary reference or shared-description reference into a string for the consumer. Unrecognized reference shapes and missing targets are rejected."
+  },
+  "external": {
+    "frontend_src_index": "Graph resolution placeholder for the ./index.css import in Frontend/src/main.tsx. The source file Frontend/src/index.css is the browser stylesheet; the graph’s source-less identifier is a parser/resolution limitation, not a JavaScript function or configured path alias.",
+    "ref_node_url": "Node.js URL built-in. fileURLToPath converts module-relative file URLs into filesystem paths in Vite configuration, tests, and scripts.",
+    "ref_node_path": "Node.js path built-in. dirname and join support installed-package lookup and generated-file paths in the notice script; export tooling also uses path helpers.",
+    "ref_node_assert": "Node.js assertion built-in, imported as node:assert/strict in tests and seed validation. Its equality and rejection checks verify behavior; it is not application business logic.",
+    "ref_node_crypto": "Node.js cryptography built-in. Backend source uses password/session cryptography and identifiers, while test probes use randomUUID; the graph placeholder groups these distinct imports.",
+    "ref_node_events": "Node.js events built-in. Backend HTTP tests use once to await a server event before making requests.",
+    "ref_node_fs": "Node.js filesystem built-ins, including node:fs/promises. Scripts read migrations, seed data and package licenses; the Vite isolation test creates and removes a temporary harmless probe.",
+    "ref_node_net": "Node.js networking built-in. Backend tests import AddressInfo only as a TypeScript type to inspect an ephemeral HTTP server’s bound port.",
+    "ref_node_test": "Node.js built-in test runner. Tests import test and, where needed, afterEach to register checks and cleanup hooks.",
+    "ref_node_child_process": "Node.js child_process built-in. The Obsidian export wrapper uses spawnSync to run the installed Graphify CLI and checks its exit status before enriching the exported notes.",
+    "ref_typescript": "Unresolved graph reference to the locally installed TypeScript compiler API imported by the note-context exporter. The module parses source declarations and JSON/JSONC for documentation details; that parsing does not replace running the project typecheck command."
+  }
+}
