@@ -1,3 +1,4 @@
+import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import { Heart, MapPin, MessageCircle, Palmtree, Plus, X } from "lucide-react";
 import React, { useState } from "react";
 import { api, errorText } from "../api";
@@ -179,8 +180,9 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
       </div>
 
       {/* Add Post Modal */}
+      <SurfacePresence>
       {showAddPostModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl overflow-y-auto">
+        <AnimatedSurface className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl overflow-y-auto">
           <div
             className={`relative w-full max-w-lg rounded-3xl border shadow-2xl p-6 space-y-4 backdrop-blur-2xl ${
               isDarkMode
@@ -269,8 +271,9 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
               </div>
             </form>
           </div>
-        </div>
+        </AnimatedSurface>
       )}
+      </SurfacePresence>
     </div>
   );
 };

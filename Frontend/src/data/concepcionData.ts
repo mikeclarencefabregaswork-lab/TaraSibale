@@ -5,6 +5,7 @@ import {
   FerryRoute,
   SocialPost,
 } from "../types";
+import { BARANGAY_FIESTAS } from "./barangayFiestas";
 
 export const ATTRACTIONS: Attraction[] = [
   {
@@ -381,6 +382,7 @@ export const FERRY_ROUTES: FerryRoute[] = [
 ];
 
 export const CULTURE_ITEMS: CultureItem[] = [
+  ...BARANGAY_FIESTAS,
   {
     id: "culture-event-immaculate-conception",
     title: "Feast of the Immaculate Conception",

@@ -1,3 +1,4 @@
+import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import { toast } from "../toastStore";
 import {
   CheckCircle2,
@@ -378,8 +379,9 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
       )}
 
       {/* Attraction Full Detail Modal */}
+      <SurfacePresence>
       {activeModalAttraction && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl overflow-y-auto">
+        <AnimatedSurface className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl overflow-y-auto">
           <div
             className={`relative w-full max-w-3xl rounded-3xl border shadow-2xl overflow-hidden my-8 backdrop-blur-2xl ${
               isDarkMode
@@ -630,8 +632,9 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
               </div>
             </div>
           </div>
-        </div>
+        </AnimatedSurface>
       )}
+      </SurfacePresence>
     </div>
   );
 };

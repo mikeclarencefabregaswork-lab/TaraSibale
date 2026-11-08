@@ -1,3 +1,4 @@
+import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import { PORTFOLIO_MODE } from "../portfolio";
 import { PortfolioCollectionNotice } from "./PortfolioNotice";
 import {
@@ -30,7 +31,11 @@ interface AuthModalProps {
   onLoginSuccess: (user: UserProfile) => void;
 }
 
-export function AuthModal({
+export function AuthModal(props: AuthModalProps) {
+  return <SurfacePresence>{props.isOpen && <AuthModalContent key={props.initialMode} {...props} />}</SurfacePresence>;
+}
+
+function AuthModalContent({
   isOpen,
   onClose,
   isDarkMode,
@@ -59,9 +64,9 @@ export function AuthModal({
   const [agreedPledge, setAgreedPledge] = useState(true);
 
   if (!isOpen) return null;
-  if (PORTFOLIO_MODE) return <div role="dialog" aria-modal="true" aria-label="Portfolio account information" className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4" onClick={onClose}>
+  if (PORTFOLIO_MODE) return <AnimatedSurface role="dialog" aria-modal="true" aria-label="Portfolio account information" className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4" onClick={onClose}>
     <div className="w-full max-w-2xl" onClick={event => event.stopPropagation()}><PortfolioCollectionNotice onContinue={onClose} /></div>
-  </div>;
+  </AnimatedSurface>;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,7 +127,7 @@ export function AuthModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-md animate-fade-in overflow-y-auto">
+    <AnimatedSurface className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-md animate-fade-in overflow-y-auto">
       <div
         className={`relative w-full max-w-lg rounded-3xl border shadow-2xl overflow-hidden my-auto max-h-[92dvh] flex flex-col transition-all ${
           isDarkMode
@@ -528,6 +533,6 @@ export function AuthModal({
           )}
         </div>
       </div>
-    </div>
+    </AnimatedSurface>
   );
 }

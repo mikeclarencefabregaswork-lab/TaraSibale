@@ -204,7 +204,9 @@ export interface SocialPost {
 export interface CultureItem {
   id: string;
   title: string;
-  category: "dish" | "tradition" | "phrase" | "event";
+  category: "dish" | "tradition" | "phrase" | "event" | "fiesta-directory";
+  barangay?: string;
+  patronSaint?: string | null;
   image?: string;
   description: string;
   detailText: string;

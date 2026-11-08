@@ -1,6 +1,7 @@
 import { BookOpen } from "lucide-react";
 import React, { useState } from "react";
 import { CultureItem } from "../types";
+import { FiestasAndCustoms } from "./FiestasAndCustoms";
 
 interface CulturalGuideProps {
   cultureItems: CultureItem[];
@@ -15,11 +16,6 @@ export const CulturalGuide: React.FC<CulturalGuideProps> = ({
   );
   const phrases = cultureItems.filter((c) => c.category === "phrase");
   const dishes = cultureItems.filter((c) => c.category === "dish");
-  const events = cultureItems
-    .filter((c) => c.category === "event" || c.category === "tradition")
-    .sort(
-      (a, b) => Number(b.category === "event") - Number(a.category === "event"),
-    );
 
   return (
     <div className="space-y-6">
@@ -203,73 +199,7 @@ export const CulturalGuide: React.FC<CulturalGuideProps> = ({
 
       {/* Festivals & Customs View */}
       {activeTab === "festivals" && (
-        <div className="space-y-4">
-          <div className="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 text-xs text-amber-950 dark:text-amber-100">
-            <strong>Planning a fiesta visit?</strong> December 8 is the patronal
-            feast date. The customs below are documented in older local
-            reporting; confirm the current year’s program with the parish or
-            municipality.
-          </div>
-          {events.map((event) => (
-            <div
-              key={event.id}
-              className="p-6 rounded-3xl border border-slate-200/90 dark:border-white/15 bg-white/85 dark:bg-slate-900/60 backdrop-blur-xl text-slate-900 dark:text-white space-y-4 hover:border-teal-500/60 transition-all shadow-sm">
-              {event.image && (
-                <div className="h-56 rounded-2xl overflow-hidden bg-slate-900/40">
-                  <img
-                    src={event.image}
-                    alt={event.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-              <div>
-                <span className="text-xs font-black text-amber-800 dark:text-amber-300 uppercase tracking-widest">
-                  {event.category === "tradition"
-                    ? "Documented Local Custom"
-                    : "Patronal Feast"}
-                </span>
-                <h3 className="text-2xl font-black mt-0.5 text-slate-900 dark:text-white">
-                  {event.title}
-                </h3>
-                {event.dateLabel && (
-                  <p className="text-sm font-bold mt-2 text-teal-800 dark:text-teal-200">
-                    {event.dateLabel}
-                  </p>
-                )}
-                {event.evidenceLabel && (
-                  <p className="text-[11px] mt-1 text-slate-500 dark:text-slate-400">
-                    {event.evidenceLabel}
-                  </p>
-                )}
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
-                  {event.description}
-                </p>
-                <div className="mt-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-950 dark:text-amber-200 backdrop-blur-md">
-                  {event.detailText}
-                </div>
-                {event.sources && (
-                  <div className="mt-4 border-t border-slate-200 dark:border-white/10 pt-3 text-xs space-y-2">
-                    <p className="font-bold">Sources</p>
-                    {event.sources.map((source) => (
-                      <a
-                        key={source.url}
-                        href={source.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block underline text-teal-700 dark:text-teal-300">
-                        {source.title}
-                      </a>
-                    ))}
-                    <p className="text-[10px] text-slate-500">
-                      Sources checked {event.verifiedAt}.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        <FiestasAndCustoms cultureItems={cultureItems} />
       )}
     </div>
   );

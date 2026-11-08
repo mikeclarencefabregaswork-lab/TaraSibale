@@ -7,8 +7,9 @@ import {
   Sparkles,
   Waves,
 } from "lucide-react";
-import React from "react";
-import { LiveWeather } from "./LiveWeather";
+import React, { useState } from "react";
+import { WeatherDialog, WeatherSummary, WeatherView } from "./LiveWeather";
+import { useLiveWeather } from "../useLiveWeather";
 
 interface HeroProps {
   setActiveTab: (tab: string) => void;
@@ -17,6 +18,8 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
+  const weather = useLiveWeather();
+  const [weatherOpen, setWeatherOpen] = useState(false);
   return (
     <div className="relative overflow-hidden rounded-3xl mb-8 border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-2xl bg-white/10 dark:bg-slate-900/60 text-white">
       <img
@@ -35,7 +38,7 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
       {/* Content Container */}
       <div className="relative max-w-7xl mx-auto px-6 py-12 sm:py-20 lg:py-24 flex flex-col items-start justify-between min-h-[460px]">
         {/* Top Pills */}
-        <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div role="group" aria-label="Island overview" className="flex flex-wrap items-center gap-2 mb-4">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-teal-500/20 text-teal-300 border border-teal-500/40 backdrop-blur-md shadow-[0_0_10px_rgba(46,196,182,0.2)]">
             <Sparkles className="w-3.5 h-3.5 text-teal-400" />
             TaraSibale • Portfolio Prototype
@@ -44,9 +47,8 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
             <Waves className="w-3.5 h-3.5 text-cyan-300" />
             Sibale Island (Maestro de Campo)
           </span>
+          <WeatherSummary {...weather} />
         </div>
-
-        <LiveWeather />
 
         {/* Headline & Description */}
         <div className="max-w-2xl mb-8 space-y-3">
@@ -63,6 +65,10 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
             homestays.
           </p>
         </div>
+
+        <WeatherDialog open={weatherOpen} onClose={() => setWeatherOpen(false)}>
+          <WeatherView {...weather} />
+        </WeatherDialog>
 
         {/* CTA Buttons */}
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
@@ -92,6 +98,15 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
             className="min-h-[48px] w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-200 border border-cyan-400/30 backdrop-blur-md transition-all cursor-pointer">
             <Sparkles className="w-4 h-4 text-cyan-300 shrink-0" />
             <span>Ask Island Travel Guide</span>
+          </button>
+
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            onClick={() => setWeatherOpen(true)}
+            className="min-h-[48px] w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm bg-white/10 hover:bg-white/20 text-cyan-100 border border-white/20 backdrop-blur-md transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200">
+            <Waves className="w-4 h-4 text-cyan-300 shrink-0" />
+            <span>Weather &amp; sea conditions</span>
           </button>
         </div>
 

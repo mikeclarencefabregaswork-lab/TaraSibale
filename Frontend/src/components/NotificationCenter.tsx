@@ -1,3 +1,4 @@
+import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import {
   Bell,
   Check,
@@ -54,7 +55,6 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
 
   // Filter notifications by category
   const generalList = notifications.filter((n) => n.category === "general");
@@ -141,7 +141,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   };
 
   return (
-    <div
+    <SurfacePresence>
+    {isOpen && <AnimatedSurface
       className={`fixed left-3 right-3 top-20 mx-auto z-50 w-auto max-w-[440px] max-h-[calc(100dvh-7rem)] flex flex-col sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2.5 sm:w-[420px] sm:max-h-[calc(100dvh-9rem)] rounded-3xl border shadow-2xl backdrop-blur-2xl transition-all duration-200 isolate select-none overflow-hidden ${
         isDarkMode
           ? "bg-[#0b2d40]/98 border-slate-700/80 text-slate-100 shadow-[0_25px_60px_rgba(0,0,0,0.85)]"
@@ -270,7 +271,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
       {/* Notifications List (Scrollable) */}
       <div className="min-h-0 flex-1 max-h-[380px] sm:max-h-[420px] overflow-y-auto p-3 space-y-2">
-        {currentList.length === 0 ? (
+        {currentList.length === 0 && (
           <div className="py-10 px-4 text-center">
             <div className="w-12 h-12 mx-auto rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 mb-2">
               <Bell className="w-5 h-5 opacity-40" />
@@ -284,11 +285,12 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 : "No pending booking updates or message alerts."}
             </p>
           </div>
-        ) : (
-          currentList.map((item) => {
+        )}
+        <SurfacePresence>
+          {currentList.map((item) => {
             const isUnread = !item.read;
             return (
-              <div
+              <AnimatedSurface
                 key={item.id}
                 onClick={() => handleNotificationClick(item)}
                 className={`group relative p-3 rounded-2xl border transition-all cursor-pointer ${
@@ -363,10 +365,10 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                     </button>
                   </div>
                 </div>
-              </div>
+              </AnimatedSurface>
             );
-          })
-        )}
+          })}
+        </SurfacePresence>
       </div>
 
       {/* Footer Hotlines & Timetable Shortcut */}
@@ -387,6 +389,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           Ferry Timetables →
         </button>
       </div>
-    </div>
+    </AnimatedSurface>}
+    </SurfacePresence>
   );
 };

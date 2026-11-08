@@ -897,7 +897,7 @@ export default function App() {
 
           {/* Auth Modal (Triggered anywhere from header or buttons) */}
           <AuthModal
-            key={`${isAuthModalOpen}-${authModalMode}`}
+            key={authModalMode}
             isOpen={isAuthModalOpen}
             onClose={() => setIsAuthModalOpen(false)}
             initialMode={authModalMode}

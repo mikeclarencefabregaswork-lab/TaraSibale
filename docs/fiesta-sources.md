@@ -2,6 +2,14 @@
 
 Checked 25 October 2026. This change covers only the Fiestas & Customs tab, leaving the phrasebook and food entries outside its verification scope.
 
+## Barangay directory added 9 November 2026
+
+The user approved a directory covering all nine barangays while individual fiesta details await local confirmation. The [Philippine Statistics Authority's Concepcion directory](https://psa.gov.ph/classification/psgc/barangays/1705905000) establishes the names Bachawan, Calabasahan, Dalajican, Masadya, Masudsud, Poblacion, Sampong, San Pedro and San Vicente. It does **not** establish their fiesta dates, patrons or programs.
+
+Every directory card therefore shows “To be confirmed” for date and patron saint. The directory is separate from the sourced municipal feast and customs below. December 8 is not assigned to Poblacion as a separately verified barangay feast. Search results for Bachawan in San Agustin were excluded; an old reference to a Calabasahan fiesta-related ball does not establish a recurring feast date. See [the research record](superpowers/specs/2026-11-09-barangay-fiesta-research.md).
+
+The new `fiesta-directory` records are in `Backend/seed/barangay-fiestas.json`, the canonical catalog seed, and frontend reference data. Additive migration `010_barangay_fiesta_directory.sql` inserts these records without overwriting existing IDs or editing any earlier migration. The new category distinguishes directory coverage from confirmed events. No fiesta photos, dates, saints or current-year programs were invented.
+
 ## Published entries
 
 - **Feast of the Immaculate Conception — December 8.** The parish-information page gives the feast date. Romblon News's contemporaneous report describes Sibale's 2017 celebration and identifies the same patron and date.

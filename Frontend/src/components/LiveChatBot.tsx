@@ -1,3 +1,4 @@
+import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import { PORTFOLIO_MODE } from "../portfolio";
 import { Bot, RefreshCw, Send, User, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
@@ -110,10 +111,10 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
     }
   };
 
-  if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-20 sm:bottom-6 right-2 sm:right-6 z-50 w-[calc(100vw-1rem)] sm:w-96 max-w-sm h-[calc(100dvh-130px)] sm:h-[540px] max-h-[600px] rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] border border-white/20 dark:border-white/15 bg-slate-900/95 backdrop-blur-2xl text-white flex flex-col overflow-hidden transition-all animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <SurfacePresence>
+    {isOpen && <AnimatedSurface className="fixed bottom-20 sm:bottom-6 right-2 sm:right-6 z-50 w-[calc(100vw-1rem)] sm:w-96 max-w-sm h-[calc(100dvh-130px)] sm:h-[540px] max-h-[600px] rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] border border-white/20 dark:border-white/15 bg-slate-900/95 backdrop-blur-2xl text-white flex flex-col overflow-hidden transition-all animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/10 backdrop-blur-md">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-full bg-white p-0.5 flex items-center justify-center shadow-[0_0_12px_rgba(46,196,182,0.4)] ring-2 ring-teal-400/60 shrink-0 overflow-hidden">
@@ -230,6 +231,7 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
           </button>
         </form>
       </div>
-    </div>
+    </AnimatedSurface>}
+    </SurfacePresence>
   );
 };

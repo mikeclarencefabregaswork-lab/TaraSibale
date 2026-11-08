@@ -3,7 +3,7 @@ import { afterEach, test } from "node:test";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Hero } from "../src/components/Hero.tsx";
-import { WeatherView } from "../src/components/LiveWeather.tsx";
+import { WeatherSummary, WeatherView } from "../src/components/LiveWeather.tsx";
 import { fetchWeather, hourlyOutlook, manilaTime, measurement, sectionStatus } from "../src/weather.ts";
 import type { WeatherReport } from "../src/weather.ts";
 
@@ -25,13 +25,16 @@ function render(data: WeatherReport | undefined, failed = false) {
   return renderToStaticMarkup(React.createElement(WeatherView, { report: data, loading: false, failed, now: NOW, onRetry: () => {} }));
 }
 
-test("hero starts with a loading weather panel and visible ferry safety notice", () => {
+test("hero groups the loading summary with its badges and offers weather details as a modal action", () => {
   const html = renderToStaticMarkup(React.createElement(Hero, {
     setActiveTab: () => {}, onOpenAiChat: () => {}, isDarkMode: false,
   }));
   assert.match(html, /Loading weather/);
   assert.match(html, /Ferry safety not assessed/);
-  assert.match(html, /Sea conditions/);
+  assert.match(html, /aria-label="Island overview"[^>]*>[\s\S]*?Sibale Island \(Maestro de Campo\)[\s\S]*?Loading weather[\s\S]*?<\/div>/);
+  assert.match(html, /<button[^>]*aria-haspopup="dialog"[^>]*>[\s\S]*?Weather &amp; sea conditions<\/span>/);
+  assert.match(html, /<dialog[^>]*aria-labelledby="weather-dialog-title"/);
+  assert.doesNotMatch(html, /<details>/);
 });
 
 test("weather panel renders sea estimates, units, credits and official warnings without ferry clearance", () => {
@@ -116,4 +119,12 @@ test("malformed grid coordinates are rejected before rendering the weather cards
   const malformed = { ...data, marine: { ...data.marine, grid: { latitude: "bad", longitude: null } } };
   globalThis.fetch = async () => Response.json(malformed);
   await assert.rejects(fetchWeather(new AbortController().signal), /Invalid weather response/);
+});
+
+test("compact weather summary displays current weather and waves without the details panel", () => {
+  const html = renderToStaticMarkup(React.createElement(WeatherSummary, { report: report(), loading: false, failed: false, now: NOW }));
+  assert.match(html, /29.0 °C/);
+  assert.match(html, /Overcast/);
+  assert.match(html, /Waves 2.5 m/);
+  assert.doesNotMatch(html, /<table|Significant wave height|Refresh weather/);
 });

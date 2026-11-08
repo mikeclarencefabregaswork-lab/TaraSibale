@@ -36,6 +36,33 @@ test('real PostgreSQL API: accounts, isolation, permissions, reviews and booking
     }
     const password = 'Integration test passphrase!'
     let owner = '', other = '', ownerId = ''
+    await t.test('catalog exposes all nine barangays with fiesta details explicitly pending', async () => {
+      const result = await request('/catalog')
+      assert.equal(result.status, 200)
+      const directory = result.body.cultureItems.filter((item: { category: string }) => item.category === 'fiesta-directory')
+      assert.deepEqual(directory.map((item: { barangay: string }) => item.barangay).sort(),
+        ['Bachawan', 'Calabasahan', 'Dalajican', 'Masadya', 'Masudsud', 'Poblacion', 'Sampong', 'San Pedro', 'San Vicente'])
+      for (const item of directory) {
+        assert.equal(item.dateLabel, 'To be confirmed')
+        assert.equal(item.patronSaint, null)
+      }
+      assert.ok(result.body.cultureItems.some((item: { id: string }) => item.id === 'culture-event-immaculate-conception'))
+      assert.equal(result.body.cultureItems.filter((item: { category: string }) => item.category === 'tradition').length, 2)
+    })
+    await t.test('reapplying the barangay directory migration preserves local edits and avoids duplicates', async () => {
+      await pool.query('BEGIN')
+      try {
+        await pool.query(`UPDATE resources SET data=jsonb_set(data, '{dateLabel}', '"Local confirmation pending"'::jsonb) WHERE id='culture-fiesta-directory-bachawan'`)
+        const migration = await readFile(new URL('../migrations/010_barangay_fiesta_directory.sql', import.meta.url), 'utf8')
+        await pool.query(migration)
+        await pool.query(migration)
+        const saved = await pool.query("SELECT data FROM resources WHERE kind='culture' AND data->>'category'='fiesta-directory'")
+        assert.equal(saved.rows.length, 9)
+        assert.equal(saved.rows.find(item => item.data.id === 'culture-fiesta-directory-bachawan')?.data.dateLabel, 'Local confirmation pending')
+      } finally {
+        await pool.query('ROLLBACK')
+      }
+    })
     await t.test('guest cannot write private resources or access admin', async () => {
       assert.equal((await request('/bookings', 'POST', {})).status, 401)
       assert.equal((await request('/admin/permissions', 'PUT', {})).status, 401)

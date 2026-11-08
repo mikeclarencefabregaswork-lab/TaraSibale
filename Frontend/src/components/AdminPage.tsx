@@ -1,3 +1,4 @@
+import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import { toast } from "../toastStore";
 import {
   Activity,
@@ -1666,8 +1667,9 @@ export function AdminPage({
       {/* ========================================================================= */}
       {/* MODAL: ADD / EDIT LANDMARK */}
       {/* ========================================================================= */}
+      <SurfacePresence>
       {isLandmarkModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
+        <AnimatedSurface className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
           <div
             className={`w-full max-w-2xl rounded-3xl border shadow-2xl p-6 sm:p-8 my-8 max-h-[90vh] overflow-y-auto transition-all ${
               isDarkMode
@@ -1998,14 +2000,16 @@ export function AdminPage({
               </div>
             </form>
           </div>
-        </div>
+        </AnimatedSurface>
       )}
+      </SurfacePresence>
 
       {/* ========================================================================= */}
       {/* MODAL: ADD / EDIT ACCOMMODATION */}
       {/* ========================================================================= */}
+      <SurfacePresence>
       {isAccModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
+        <AnimatedSurface className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
           <div
             className={`w-full max-w-2xl rounded-3xl border shadow-2xl p-6 sm:p-8 my-8 max-h-[90vh] overflow-y-auto transition-all ${
               isDarkMode
@@ -2275,8 +2279,9 @@ export function AdminPage({
               </div>
             </form>
           </div>
-        </div>
+        </AnimatedSurface>
       )}
+      </SurfacePresence>
     </div>
   );
 }

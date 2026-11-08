@@ -1,3 +1,6 @@
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { ToastViewport } from "../src/components/ToastViewport.tsx";
 import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
 import {
@@ -43,4 +46,14 @@ test("dismissal removes only its notification and subscribers can unsubscribe", 
   unsubscribe();
   toast.info("Third");
   assert.equal(updates, 3);
+});
+
+test("temporary notifications expose a dismissal countdown and manual close control", () => {
+  toast.info("Sample update");
+  const html = renderToStaticMarkup(React.createElement(ToastViewport));
+  assert.match(html, /role="progressbar"/);
+  assert.match(html, /aria-label="Time until notification closes"/);
+  assert.match(html, /aria-valuenow="6"/);
+  assert.match(html, /aria-label="Dismiss notification"/);
+  assert.match(html, /Sample update/);
 });

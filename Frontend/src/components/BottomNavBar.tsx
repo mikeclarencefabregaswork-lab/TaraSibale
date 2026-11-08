@@ -1,3 +1,4 @@
+import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import {
   BookOpen,
   Calendar,
@@ -166,8 +167,9 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   return (
     <>
       {/* Mobile "More" Slide-up Drawer */}
+      <SurfacePresence>
       {showMoreMenu && (
-        <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end p-3 sm:p-4">
+        <AnimatedSurface className="md:hidden fixed inset-0 z-50 flex flex-col justify-end p-3 sm:p-4">
           {/* Backdrop */}
           <div
             onClick={() => setShowMoreMenu(false)}
@@ -243,8 +245,9 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
               })}
             </div>
           </div>
-        </div>
+        </AnimatedSurface>
       )}
+      </SurfacePresence>
 
       {/* Main Fixed Bottom Navigation Bar with Smooth Slide & Opacity Transition */}
       <nav
