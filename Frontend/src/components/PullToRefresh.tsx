@@ -125,7 +125,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchCancel}
-      className="relative w-full">
+      className="relative w-full flex-1">
       {/* Elastic Circular Indicator Floating Anchor */}
       <div
         className="pointer-events-none fixed left-1/2 -translate-x-1/2 z-40 transition-transform duration-200 ease-out"

@@ -572,7 +572,7 @@ export default function App() {
         userId: currentUser?.id,
       }}>
       <div
-        className={`app-motion min-h-screen font-sans transition-colors duration-300 relative overflow-hidden pb-24 md:pb-8 ${
+        className={`app-motion flex min-h-dvh flex-col font-sans transition-colors duration-300 relative overflow-hidden pb-24 md:pb-8 ${
           isDarkMode
             ? "dark bg-[#061e2c] text-slate-100 selection:bg-teal-500 selection:text-slate-950"
             : "bg-shell text-slate-900 selection:bg-teal-600 selection:text-white"
@@ -592,7 +592,7 @@ export default function App() {
         />
 
         {/* Main Content Wrapper */}
-        <div className="relative z-10">
+        <div className="relative z-10 flex flex-1 flex-col">
           {apiError && (
             <div
               role="alert"
