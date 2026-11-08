@@ -82,7 +82,7 @@ export function ToastViewport() {
   return (
     <section
       aria-label="Notifications"
-      className="pointer-events-none fixed z-[100] top-20 right-3 left-3 sm:left-auto sm:right-6 sm:w-96 max-h-[calc(100dvh-11rem)] overflow-y-auto space-y-3">
+      className="pointer-events-none fixed z-[100] top-20 right-3 left-3 sm:left-auto sm:right-6 sm:w-96 max-h-[calc(100dvh-11rem)] overflow-x-hidden overflow-y-auto space-y-3">
       <SurfacePresence>
         {items.map((item) => <ToastCard key={item.id} item={item} />)}
       </SurfacePresence>
