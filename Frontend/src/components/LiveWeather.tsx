@@ -43,8 +43,8 @@ export function WeatherSummary({ report, loading, failed, now }: WeatherState) {
   const summary = loading && !report ? "Loading weather…" : weatherStatus === "available"
     ? `${measurement(report?.weather.current.temperature_2m, "°C")} · ${condition(report?.weather.current.weather_code)}`
     : weatherStatus === "outdated" ? "Weather outdated" : "Weather unavailable";
-  return <span role="status" className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold text-cyan-100 backdrop-blur-md">
-    <Waves className="h-3.5 w-3.5 shrink-0 text-cyan-300" aria-hidden="true" />
+  return <span role="status" className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-full border border-teal-300/70 bg-teal-400/90 px-3 py-1 text-xs font-semibold text-slate-950 shadow-sm backdrop-blur-md">
+    <Waves className="h-3.5 w-3.5 shrink-0 text-teal-950" aria-hidden="true" />
     <span>{summary}</span>
     <span>· {marineStatus === "available" ? `Waves ${measurement(report?.marine.current.wave_height, "m")}` : marineStatus === "outdated" ? "Sea data outdated" : "Sea data unavailable"}</span>
   </span>;

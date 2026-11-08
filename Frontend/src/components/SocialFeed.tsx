@@ -1,14 +1,15 @@
-import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
-import { Heart, MapPin, MessageCircle, Palmtree, Plus, X } from "lucide-react";
+import { SurfacePresence } from "./SurfacePresence";
+import { Heart, MapPin, MessageCircle, Palmtree, Plus } from "lucide-react";
 import React, { useState } from "react";
 import { api, errorText } from "../api";
-import { SocialPost } from "../types";
+import { SocialPost, SocialPostDraft } from "../types";
+import { CommunityPostComposer } from "./CommunityPostComposer";
 
 interface SocialFeedProps {
   posts: SocialPost[];
   isDarkMode: boolean;
   onUpdatePost: (post: SocialPost) => void;
-  onAddPost: (post: SocialPost) => Promise<SocialPost>;
+  onAddPost: (post: SocialPostDraft) => Promise<SocialPost>;
 }
 
 export const SocialFeed: React.FC<SocialFeedProps> = ({
@@ -20,14 +21,7 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
   const feedPosts = posts;
 
   const [showAddPostModal, setShowAddPostModal] = useState(false);
-  const [caption, setCaption] = useState("");
-  const [location, setLocation] = useState("Bachawan Beach, Concepcion");
-  const [imageUrl, setImageUrl] = useState(
-    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80",
-  );
-
   const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
   const toggleLike = async (postId: string) => {
     try {
       const updated = await api<SocialPost>(
@@ -41,35 +35,6 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
     }
   };
 
-  const handleSubmitPost = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!caption.trim() || submitting) return;
-    setSubmitting(true);
-    setError(null);
-    const newPost: SocialPost = {
-      id: `post-${Date.now()}`,
-      author: "You (Island Traveler)",
-      handle: "@island_explorer",
-      avatar:
-        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
-      image: imageUrl,
-      caption,
-      likes: 1,
-      commentsCount: 0,
-      location,
-      timestamp: "Just now",
-      userLiked: true,
-    };
-    try {
-      await onAddPost(newPost);
-      setCaption("");
-      setShowAddPostModal(false);
-    } catch (error) {
-      setError(errorText(error));
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   return (
     <div className="space-y-6 w-full max-w-6xl mx-auto">
@@ -138,13 +103,13 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
             </div>
 
             {/* Post Image */}
-            <div className="relative max-h-96 overflow-hidden bg-slate-950">
+            {post.image && <div className="relative max-h-96 overflow-hidden bg-slate-950">
               <img
                 src={post.image}
-                alt="Post moment"
+                alt={`Photo shared by ${post.author}`}
                 className="w-full h-full object-cover"
               />
-            </div>
+            </div>}
 
             {/* Post Footer & Actions */}
             <div className="p-5 space-y-3">
@@ -181,98 +146,11 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
 
       {/* Add Post Modal */}
       <SurfacePresence>
-      {showAddPostModal && (
-        <AnimatedSurface className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl overflow-y-auto">
-          <div
-            className={`relative w-full max-w-lg rounded-3xl border shadow-2xl p-6 space-y-4 backdrop-blur-2xl ${
-              isDarkMode
-                ? "bg-[#061e2c]/90 border-white/20 text-slate-100"
-                : "bg-white/95 border-slate-200 text-slate-800"
-            }`}>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/10">
-              <h3 className="font-extrabold text-lg text-slate-900 dark:text-white">
-                Share Your Concepcion Experience
-              </h3>
-              <button
-                onClick={() => setShowAddPostModal(false)}
-                className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white cursor-pointer">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmitPost} className="space-y-4 text-xs">
-              {error && (
-                <p role="alert" className="text-rose-600">
-                  {error}
-                </p>
-              )}
-              <div>
-                <label className="block font-bold mb-1 text-slate-800 dark:text-slate-200">
-                  Caption / Story *
-                </label>
-                <textarea
-                  required
-                  rows={3}
-                  placeholder="Share what you loved about Bachawan beach, local fresh seafood, or watchtower views..."
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  className="w-full p-3 rounded-xl border border-slate-300 dark:border-white/15 bg-slate-50 text-slate-900 placeholder:text-slate-400 dark:bg-white/10 dark:text-white focus:outline-none focus:border-teal-500 text-xs"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold mb-1 text-slate-800 dark:text-slate-200">
-                  Location Tag
-                </label>
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-white/15 bg-slate-50 text-slate-900 dark:bg-white/10 dark:text-white focus:outline-none focus:border-teal-500 text-xs"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold mb-1 text-slate-800 dark:text-slate-200">
-                  Photo Preset
-                </label>
-                <select
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-white/15 bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-white focus:outline-none focus:border-teal-500 text-xs">
-                  <option value="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80">
-                    Bachawan White Sands
-                  </option>
-                  <option value="https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&auto=format&fit=crop&q=80">
-                    Spanish Watchtower Ruins
-                  </option>
-                  <option value="https://images.unsplash.com/photo-1506953823976-52e1fdc0149a?w=800&auto=format&fit=crop&q=80">
-                    Dampali Cove Lagoon
-                  </option>
-                  <option value="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&auto=format&fit=crop&q=80">
-                    Masaguisi Coral Reef
-                  </option>
-                </select>
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddPostModal(false)}
-                  className="px-4 py-2 rounded-xl text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white font-bold cursor-pointer">
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-extrabold shadow-[0_0_15px_rgba(46,196,182,0.4)] cursor-pointer transition-all">
-                  Post to Community Stream
-                </button>
-              </div>
-            </form>
-          </div>
-        </AnimatedSurface>
-      )}
+        {showAddPostModal && <CommunityPostComposer
+          isDarkMode={isDarkMode}
+          onAddPost={onAddPost}
+          onClose={() => setShowAddPostModal(false)}
+        />}
       </SurfacePresence>
     </div>
   );

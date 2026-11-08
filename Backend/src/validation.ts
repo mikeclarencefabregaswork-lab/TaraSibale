@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { postImageData } from "./postImage.js";
 
 const text = (max = 300) => z.string().trim().min(1).max(max);
 export const email = z
@@ -62,13 +63,13 @@ const url = z.union([
     .url()
     .max(2048)
     .refine(
-      (value) => ["https:", "http:"].includes(new URL(value).protocol),
+      (value) => URL.canParse(value) && ["https:", "http:"].includes(new URL(value).protocol),
       "Only HTTP image URLs are supported",
     ),
 ]);
 export const post = z.object({
   caption: text(4000),
-  image: url,
+  image: z.union([url, postImageData]).optional(),
   location: text(200),
 });
 const documentData = z

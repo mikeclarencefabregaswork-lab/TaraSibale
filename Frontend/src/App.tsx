@@ -546,7 +546,7 @@ export default function App() {
     setGroupMessages((old) => [...old, message]);
     toast.success("Message sent.");
   };
-  const handleAddPost = async (post: SocialPost) => {
+  const handleAddPost = async (post: Pick<SocialPost, "caption" | "location" | "image">) => {
     const owner = currentUser?.id;
     const saved = await api<SocialPost>("/api/social-posts", post);
     if (currentUserId.current !== owner)

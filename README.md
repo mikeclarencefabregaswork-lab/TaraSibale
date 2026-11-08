@@ -79,6 +79,8 @@ See [database documentation](docs/database.md) for the schema, relationships, JS
 
 The API persists accounts/sessions, reference content, bookings, reviews/helpful votes, travel-group messages/membership, social posts/likes, verification applications, permissions, and per-user notifications, itineraries, checklists, and document vault data.
 
+Community posts support one optional device photo with preview, replacement and removal, or a caption-only post. JPEG, PNG and WebP files up to 5 MiB are resized locally to 1600px and at most 1 MiB before saving with the post. Portfolio mode still blocks publishing. See [community image attachments](docs/community-post-images.md) for processing, storage and verification details.
+
 Bookings validate accommodation, room type, guest count and date range; the server calculates totals. An accommodation row lock serializes inventory checks so concurrent requests cannot oversell available rooms. Stored bookings belong to the signed-in user. Confirmation is a record in this local application: no payment gateway, email delivery, or external accommodation reservation system is connected.
 
 The supplied place, culture, trail, and ferry content is reference material from the ZIP. Ratings/counts come from stored reviews. The hero's weather panel uses Open-Meteo weather and marine model estimates, with current conditions, wind/gusts and a 24-hour offshore wave outlook. Expand **Sea conditions** for details. See [weather data and limitations](docs/weather.md). There is no live ferry-clearance or social provider. The travel concierge uses a clearly identified curated guide and requires no AI key. Map tiles and externally hosted photos require network access; map references are not navigation or safety guarantees.

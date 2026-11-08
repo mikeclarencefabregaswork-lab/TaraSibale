@@ -26,6 +26,7 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { AppNotification, UserProfile } from "../types";
 import { NotificationCenter } from "./NotificationCenter";
+import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 
 interface HeaderProps {
   activeTab: string;
@@ -657,6 +658,8 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="relative" ref={moreDropdownRef}>
                 <button
                   onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
+                  aria-expanded={moreDropdownOpen}
+                  aria-controls="island-tools-menu"
                   className={`flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-full text-xs lg:text-sm font-bold transition-all duration-200 whitespace-nowrap cursor-pointer shrink-0 border select-none ${
                     isMoreActive
                       ? "bg-teal-500 text-slate-950 border-teal-400 font-black shadow-[0_0_15px_rgba(46,196,182,0.4)] ring-1 ring-teal-400/50"
@@ -680,8 +683,10 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
 
                 {/* Dropdown Menu */}
+                <SurfacePresence>
                 {moreDropdownOpen && (
-                  <div
+                  <AnimatedSurface
+                    id="island-tools-menu"
                     className={`absolute right-0 top-full mt-2 z-50 w-72 max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-12rem)] overflow-y-auto overscroll-contain rounded-2xl border p-2 animate-fade-in shadow-2xl backdrop-blur-2xl ${
                       isDarkMode
                         ? "bg-[#0b2d40]/98 border-slate-700/80 text-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
@@ -729,8 +734,9 @@ export const Header: React.FC<HeaderProps> = ({
                         );
                       })}
                     </div>
-                  </div>
+                  </AnimatedSurface>
                 )}
+                </SurfacePresence>
               </div>
             </div>
           </nav>

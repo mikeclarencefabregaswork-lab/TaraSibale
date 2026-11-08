@@ -192,7 +192,7 @@ export interface SocialPost {
   author: string;
   handle: string;
   avatar: string;
-  image: string;
+  image?: string;
   caption: string;
   likes: number;
   commentsCount: number;
@@ -200,6 +200,8 @@ export interface SocialPost {
   timestamp: string;
   userLiked?: boolean;
 }
+
+export type SocialPostDraft = Pick<SocialPost, "caption" | "location" | "image">;
 
 export interface CultureItem {
   id: string;

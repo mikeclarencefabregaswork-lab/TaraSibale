@@ -133,6 +133,21 @@ test('real PostgreSQL API: accounts, isolation, permissions, reviews and booking
       assert.equal(like.status, 200); assert.equal(like.body.likes, 1); assert.equal(like.body.userLiked, true)
       assert.equal((await request(`/social-posts/${saved.body.id}/like`, 'POST', {}, other)).body.likes, 0)
     })
+    await t.test('community attachments and caption-only posts survive catalog reload with server authorship', async () => {
+      const image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aVYkAAAAASUVORK5CYII='
+      const saved = await request('/social-posts', 'POST', { caption: 'My photo', image, location: 'Sibale', author: 'Forged author' }, owner)
+      assert.equal(saved.status, 201)
+      assert.equal(saved.body.image, image)
+      assert.equal(saved.body.author, 'Owner Tester')
+      const textOnly = await request('/social-posts', 'POST', { caption: 'No photo today', location: 'Sibale' }, owner)
+      assert.equal(textOnly.status, 201)
+      assert.equal(textOnly.body.image, undefined)
+      const reloaded = await request('/catalog')
+      assert.equal(reloaded.body.socialPosts.find((item: { id: string }) => item.id === saved.body.id)?.image, image)
+      assert.equal(reloaded.body.socialPosts.find((item: { id: string }) => item.id === textOnly.body.id)?.image, undefined)
+      assert.equal((await request('/social-posts', 'POST', { caption: 'Invalid', image: image.replace('image/png', 'image/jpeg'), location: 'Sibale' }, owner)).status, 400)
+      assert.equal((await request('/social-posts', 'POST', { caption: 'Invalid', image: '', location: 'Sibale' }, owner)).status, 400)
+    })
     await t.test('vault rejects executable data URLs and invalid itinerary dates remain separate from booking dates', async () => {
       assert.equal((await request('/user-state', 'PUT', { documents: [{ id: 'x', title: 'Bad file', category: 'id', uploadDate: '2026-10-25', size: '1 KB', fileData: 'data:text/html;base64,PHNjcmlwdD4=' }] }, owner)).status, 400)
       assert.equal((await request('/user-state', 'PUT', { itinerary: [{ dayNumber: 1, title: 'Day one', items: [{ id: 'i1', title: 'Explore' }] }], notifications: [{ id: 'n1', title: 'Trip saved' }] }, owner)).status, 200)
