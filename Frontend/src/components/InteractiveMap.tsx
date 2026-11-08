@@ -175,6 +175,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const markersLayerGroupRef = useRef<L.LayerGroup | null>(null);
+  const pinMarkersRef = useRef(new Map<string, L.Marker>());
   const trailsLayerGroupRef = useRef<L.LayerGroup | null>(null);
   const simulationMarkerRef = useRef<L.Marker | null>(null);
   const layerControlRef = useRef<HTMLDivElement>(null);
@@ -682,10 +683,9 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
     if (!mapInstanceRef.current || !markersLayerGroupRef.current) return;
     const group = markersLayerGroupRef.current;
     group.clearLayers();
+    pinMarkersRef.current.clear();
 
     filteredPins.forEach((pin) => {
-      const isSelected = selectedPin?.id === pin.id;
-
       let badgeColor = "bg-emerald-500 text-white";
       let iconSymbol = "📍";
 
@@ -720,8 +720,8 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       const customIcon = L.divIcon({
         className: "custom-leaflet-marker",
         html: `
-          <div class="relative group cursor-pointer transition-transform duration-200 ${isSelected ? "scale-125 z-50" : "hover:scale-115"}">
-            <div class="w-9 h-9 rounded-2xl ${badgeColor} flex items-center justify-center text-sm shadow-xl ring-2 ${isSelected ? "ring-cyan-300 shadow-[0_0_15px_rgba(34,181,214,0.7)]" : "ring-white/80"}">
+          <div class="relative group cursor-pointer transition-transform duration-200 hover:scale-115">
+            <div class="w-9 h-9 rounded-2xl ${badgeColor} flex items-center justify-center text-sm shadow-xl ring-2 ring-white/80">
               <span>${iconSymbol}</span>
             </div>
             <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 ${badgeColor}"></div>
@@ -787,14 +787,21 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       });
 
       group.addLayer(marker);
+      pinMarkersRef.current.set(pin.id, marker);
     });
   }, [
     filteredPins,
-    selectedPin,
     hikingTrails,
     onSelectAttraction,
     onSelectAccommodation,
   ]);
+
+  // Selection changes decorate existing markers, preserving the open popup.
+  useEffect(() => {
+    for (const [id, marker] of pinMarkersRef.current) {
+      marker.getElement()?.classList.toggle("selected-map-pin", id === selectedPin?.id);
+    }
+  }, [selectedPin?.id, filteredPins]);
 
   // Virtual Trek Simulation on Map
   useEffect(() => {

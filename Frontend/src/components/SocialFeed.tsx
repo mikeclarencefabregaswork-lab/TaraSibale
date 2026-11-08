@@ -106,6 +106,8 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
             {post.image && <div className="relative max-h-96 overflow-hidden bg-slate-950">
               <img
                 src={post.image}
+                loading="lazy"
+                decoding="async"
                 alt={`Photo shared by ${post.author}`}
                 className="w-full h-full object-cover"
               />

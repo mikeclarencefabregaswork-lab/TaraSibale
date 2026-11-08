@@ -137,16 +137,45 @@ test('real PostgreSQL API: accounts, isolation, permissions, reviews and booking
       const image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aVYkAAAAASUVORK5CYII='
       const saved = await request('/social-posts', 'POST', { caption: 'My photo', image, location: 'Sibale', author: 'Forged author' }, owner)
       assert.equal(saved.status, 201)
-      assert.equal(saved.body.image, image)
+      assert.equal(saved.body.image, `/api/social-posts/${saved.body.id}/image`)
+      const photo = await fetch(base.replace(/\/api$/, '') + saved.body.image)
+      assert.equal(photo.status, 200)
+      assert.equal(photo.headers.get('content-type'), 'image/png')
+      assert.equal(photo.headers.get('x-content-type-options'), 'nosniff')
+      assert.equal(photo.headers.get('cache-control'), 'no-store')
+      assert.deepEqual(Buffer.from(await photo.arrayBuffer()), Buffer.from(image.split(',')[1]!, 'base64'))
+      const liked = await request(`/social-posts/${saved.body.id}/like`, 'POST', {}, other)
+      assert.equal(liked.body.image, saved.body.image)
       assert.equal(saved.body.author, 'Owner Tester')
       const textOnly = await request('/social-posts', 'POST', { caption: 'No photo today', location: 'Sibale' }, owner)
       assert.equal(textOnly.status, 201)
       assert.equal(textOnly.body.image, undefined)
       const reloaded = await request('/catalog')
-      assert.equal(reloaded.body.socialPosts.find((item: { id: string }) => item.id === saved.body.id)?.image, image)
+      assert.equal(reloaded.body.socialPosts.find((item: { id: string }) => item.id === saved.body.id)?.image, saved.body.image)
       assert.equal(reloaded.body.socialPosts.find((item: { id: string }) => item.id === textOnly.body.id)?.image, undefined)
       assert.equal((await request('/social-posts', 'POST', { caption: 'Invalid', image: image.replace('image/png', 'image/jpeg'), location: 'Sibale' }, owner)).status, 400)
       assert.equal((await request('/social-posts', 'POST', { caption: 'Invalid', image: '', location: 'Sibale' }, owner)).status, 400)
+    })
+    await t.test('catalog excludes large stored image bytes and image reads reject invalid records', async () => {
+      const small = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aVYkAAAAASUVORK5CYII=', 'base64')
+      const bytes = Buffer.alloc(1024 * 1024)
+      small.subarray(0, 33).copy(bytes)
+      small.subarray(-12).copy(bytes, bytes.length - 12)
+      const image = `data:image/png;base64,${bytes.toString('base64')}`
+      for (let i = 0; i < 4; i++) {
+        await pool.query('INSERT INTO social_posts(id,user_id,data) VALUES($1,$2,$3)', [`large-${i}`, ownerId, { id: `large-${i}`, caption: 'Large fixture', image }])
+      }
+      const catalog = await request('/catalog')
+      assert.ok(JSON.stringify(catalog.body.socialPosts).length < 20000, 'Catalog must contain metadata, not attachment bytes')
+      assert.equal(catalog.body.socialPosts.find((p: { id: string }) => p.id === 'large-0').image, '/api/social-posts/large-0/image')
+      const legacy = await fetch(base + '/social-posts/large-0/image')
+      assert.equal(legacy.status, 200)
+      assert.equal((await legacy.arrayBuffer()).byteLength, bytes.length)
+      for (const [id, bad] of [['invalid', 'data:image/png;base64,AAAA'], ['svg', 'data:image/svg+xml;base64,AAAA'], ['mismatch', image.replace('image/png', 'image/jpeg')], ['oversized', image + 'AAAA'], ['remote', 'https://example.test/photo.jpg'], ['text-only', undefined]] as const) {
+        await pool.query('INSERT INTO social_posts(id,user_id,data) VALUES($1,$2,$3)', [id, ownerId, { id, caption: 'Fixture', image: bad }])
+        assert.equal((await fetch(base + `/social-posts/${id}/image`)).status, 404)
+      }
+      assert.equal((await fetch(base + '/social-posts/missing/image')).status, 404)
     })
     await t.test('vault rejects executable data URLs and invalid itinerary dates remain separate from booking dates', async () => {
       assert.equal((await request('/user-state', 'PUT', { documents: [{ id: 'x', title: 'Bad file', category: 'id', uploadDate: '2026-10-25', size: '1 KB', fileData: 'data:text/html;base64,PHNjcmlwdD4=' }] }, owner)).status, 400)

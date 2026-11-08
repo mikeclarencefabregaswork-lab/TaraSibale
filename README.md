@@ -9,7 +9,7 @@ The supplied TaraSibale tourism interface is integrated into `Frontend/`, with a
 This checkout uses the existing system PostgreSQL server on `127.0.0.1:5432`.
 The `tarasibale` database is owned by the existing role `gemini.psql`.
 Private connection credentials are in `Backend/.env` (ignored by Git).
-Dependencies, all nine migrations, and the reference catalog are installed.
+Dependencies, numbered migrations through 010, and the reference catalog are installed.
 No application accounts are seeded. Portfolio mode is enabled, so signup,
 bookings, uploads, and publishing are intentionally blocked.
 

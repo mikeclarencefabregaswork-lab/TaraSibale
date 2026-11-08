@@ -13,11 +13,12 @@ test("portfolio boundary blocks collection and private reads before querying sto
   await once(server, "listening");
   const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}/api`;
   try {
-    for (const [method, path] of [["POST", "/auth/signup"], ["POST", "/auth/login"], ["POST", "/bookings"], ["PUT", "/user-state"], ["POST", "/social-posts"], ["GET", "/user-state"], ["GET", "/admin/permissions"], ["GET", "/bookings"]]) {
+    for (const [method, path] of [["POST", "/auth/signup"], ["POST", "/auth/login"], ["POST", "/bookings"], ["PUT", "/user-state"], ["POST", "/social-posts"], ["GET", "/user-state"], ["GET", "/admin/permissions"], ["GET", "/bookings"], ["GET", "/social-posts/test/image"]]) {
       const response = await fetch(base + path, { method, headers: { Cookie: `tarasibale_session=${"a".repeat(64)}` } });
       assert.equal(response.status, 403, `${method} ${path}`);
       assert.match((await response.json()).error, /portfolio/i);
     }
+    assert.equal((await fetch(base + "/social-posts/test/image", { method: "HEAD" })).status, 403);
     assert.deepEqual(await (await fetch(base + "/auth/me")).json(), null);
     assert.deepEqual(await (await fetch(base + "/reviews")).json(), []);
     assert.equal(queries, 0);

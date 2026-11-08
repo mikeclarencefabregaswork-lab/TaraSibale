@@ -115,3 +115,12 @@
 .trail-difficulty-badge[data-difficulty="Expert"] {
   background-color: #581c87;
 }
+
+/* Keep Leaflet's positioning transform on the marker root intact. */
+.selected-map-pin > div {
+  transform: scale(1.25);
+}
+.selected-map-pin > div > div:first-child {
+  --tw-ring-color: #67e8f9;
+  filter: drop-shadow(0 0 7px rgba(34, 181, 214, 0.7));
+}

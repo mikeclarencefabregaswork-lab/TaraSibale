@@ -1,8 +1,10 @@
 # Graphify and Obsidian
 
 The installed local `graphify` CLI builds a code graph without API keys or LLM
-requests. This is separate from the Graphify cloud connector: that connection
-currently lists no available workspaces, so cloud indexing is unavailable.
+requests. This is separate from the Graphify cloud connector. On 2026-11-09 the cloud
+connector exposes this repository, but its indexed commit may lag the local
+checkout. Confirm current behavior in source and rebuild the local snapshot
+before exporting notes.
 
 ## Rebuild and explore
 

@@ -1,6 +1,6 @@
 ---
 tags: [tarasibale/guide]
-reviewed: 2026-11-07
+reviewed: 2026-11-09
 ---
 
 # Feature Flows
@@ -73,12 +73,34 @@ The UI cannot grant these permissions by changing its local state. Group message
 are fetched through HTTP; `App.tsx` also refreshes them on pull-to-refresh.
 This code does not establish a live WebSocket messaging service.
 
+Community images remain in existing PostgreSQL records. Catalog, create and like
+responses expose a local `/social-posts/:id/image` URL for uploaded raster images;
+SQL removes the embedded bytes before returning feed rows to Node. Each image is
+validated again and served with its raster MIME type, `nosniff` and `no-store`.
+Remote photo URLs and caption-only posts retain their previous representation.
+The feed loads images lazily. Portfolio mode blocks the image endpoint.
+
+## Map and itinerary interactions
+
+Map selection updates existing marker styling; it does not recreate all markers
+or remove an open popup. The popup details button opens the destination reviews.
+
+Itinerary generation and movement rules live in `Frontend/src/itinerary.ts`.
+Day trips require compatible arrival/return times, include both crossings and omit
+overnight activities. An incompatible sample return is rejected with a message;
+the previous plan remains intact. Activities must fit before return boarding.
+Dragging within a day inserts before the chosen drop target, including when moving
+an earlier activity downward. Ferry replacements require matching both ports and
+an on-time or scheduled service.
+
 ## Guide chat and weather
 
 In portfolio mode, the guide replies in page memory without sending prompts to
 the backend. In full mode, `/chat` chooses a curated reply using message keywords;
-it does not call an LLM. The implemented `/weather` endpoint returns 503 because
-no live provider is configured; portfolio mode blocks that route earlier.
+it does not call an LLM. The `/weather` endpoint is available in portfolio and full mode. It uses fixed
+Open-Meteo weather/marine locations, validates measurements and units, coalesces
+concurrent requests, and caches success for five minutes. Unavailable sections
+are explicit; weather data is not a sailing clearance.
 
 Continue: [[TaraSibale - Modes and Access]], [[TaraSibale - Code Map]].
 

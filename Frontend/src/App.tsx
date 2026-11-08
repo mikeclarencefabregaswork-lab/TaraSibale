@@ -3,7 +3,7 @@ import { PortfolioNotice } from "./components/PortfolioNotice";
 import { toast } from "./toastStore";
 import { ToastViewport } from "./components/ToastViewport";
 import { PageSkeleton } from "./components/Skeletons";
-import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
+import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { api, errorText } from "./api";
 import { AttractionsSection } from "./components/AttractionsSection";
 import { AuthModal } from "./components/AuthModal";
@@ -558,10 +558,14 @@ export default function App() {
     return saved;
   };
 
-  const handleOpenReviewForAttraction = (attractionId: string) => {
+  const handleOpenReviewForAttraction = useCallback((attractionId: string) => {
     setPreSelectedReviewTarget(attractionId);
     setActiveTab("reviews");
-  };
+  }, []);
+  const handleMapAttraction = useCallback((attraction: Attraction) => {
+    handleOpenReviewForAttraction(attraction.id);
+  }, [handleOpenReviewForAttraction]);
+  const handleMapAccommodation = useCallback(() => setActiveTab("stay"), []);
 
   return (
     <UserStateContext.Provider
@@ -725,12 +729,8 @@ export default function App() {
                           attractions={attractions}
                           accommodations={accommodations}
                           isDarkMode={isDarkMode}
-                          onSelectAttraction={(att) => {
-                            handleOpenReviewForAttraction(att.id);
-                          }}
-                          onSelectAccommodation={() => {
-                            setActiveTab("stay");
-                          }}
+                          onSelectAttraction={handleMapAttraction}
+                          onSelectAccommodation={handleMapAccommodation}
                           isOffline={isOffline}
                         />
                       )}

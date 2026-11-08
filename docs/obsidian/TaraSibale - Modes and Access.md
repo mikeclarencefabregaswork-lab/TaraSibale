@@ -1,6 +1,6 @@
 ---
 tags: [tarasibale/guide]
-reviewed: 2026-11-07
+reviewed: 2026-11-09
 ---
 
 # Modes and Access
@@ -44,8 +44,8 @@ existing account; it is not an automatic login.
 
 ## Demonstration limits to keep in mind
 
-- No live weather provider, payment gateway, or external reservation fulfillment
-  is connected.
+- Open-Meteo supplies weather/marine data; it does not provide sailing clearance.
+- No payment gateway or external reservation fulfillment is connected.
 - Guide chat uses local demonstration responses or curated server replies.
 - Sample map geometry and reference schedules are not navigation or live sailing
   information.

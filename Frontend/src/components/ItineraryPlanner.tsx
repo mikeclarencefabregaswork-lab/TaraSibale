@@ -20,10 +20,10 @@ import {
   Accommodation,
   Attraction,
   FerryRoute,
-  ItineraryDay,
   ItineraryItem,
 } from "../types";
 import { useSavedState } from "../userState";
+import { generateItinerary, moveItineraryItem, findAlternativeFerry } from "../itinerary";
 
 interface ItineraryPlannerProps {
   attractions: Attraction[];
@@ -143,192 +143,19 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
         departureFerries[0] ||
         ferryRoutes[1];
 
-      const generatedDays: ItineraryDay[] = [];
-      const attractionPool = [...chosenAttractions];
-
-      // Time slots helper
-      const sunsetSlot = "05:30 PM";
-
-      for (let dayIdx = 1; dayIdx <= numDays; dayIdx++) {
-        const dayItems: ItineraryItem[] = [];
-
-        if (dayIdx === 1) {
-          // Day 1: Arrival & Orientation
-          if (arrivalFerry) {
-            dayItems.push({
-              id: `item-arr-${itineraryId}-1`,
-              title: `Arrive via ${arrivalFerry.boatName}`,
-              category: "ferry",
-              time: arrivalFerry.departureTime || "08:30 AM",
-              duration: "1 hr 45 min crossing",
-              location: arrivalFerry.origin + " ➔ " + arrivalFerry.destination,
-              notes:
-                arrivalFerry.notes ||
-                "Boarding at port terminal. Keep ticket and ID ready.",
-              isFerry: true,
-              ferryId: arrivalFerry.id,
-              badge: "Sea Crossing",
-              cost: arrivalFerry.fare,
-            });
-          }
-
-          dayItems.push({
-            id: `item-checkin-${itineraryId}-2`,
-            title: "Port Registration & Homestay Check-In",
-            category: "stay",
-            time: "11:00 AM",
-            duration: "1 hour",
-            location: "Poblacion Port Tourism Desk & Accommodations",
-            notes:
-              "Pay municipal ecological fee (₱50), arrange habal-habal or tricycle guide.",
-            badge: "Check-In",
-            cost: "₱50 eco-fee",
-          });
-
-          // Add 1-2 afternoon activities
-          if (attractionPool.length > 0) {
-            const item1 = attractionPool.shift()!;
-            dayItems.push({
-              id: `item-att-${item1.id}-${itineraryId}`,
-              title: item1.name,
-              category: item1.category,
-              time: "02:00 PM",
-              duration: "2 hours",
-              location: item1.locationName,
-              notes: item1.description,
-              image: item1.image,
-              attractionId: item1.id,
-              cost: item1.entryFee,
-              badge: item1.category.toUpperCase(),
-            });
-          }
-
-          // Sunset activity or town walk
-          dayItems.push({
-            id: `item-sunset-${itineraryId}-3`,
-            title: "Sunset at Poblacion Baywalk & Fresh Seafood Dinner",
-            category: "culture",
-            time: sunsetSlot,
-            duration: "1.5 hours",
-            location: "Brgy. Poblacion Bayfront",
-            notes:
-              "Try fresh grilled tuna, lato (sea grapes), and local Asi delicacies.",
-            badge: "Relaxation",
-          });
-        } else if (dayIdx === numDays) {
-          // Final Day: Morning highlight + Departure
-          if (attractionPool.length > 0) {
-            const morningAttraction = attractionPool.shift()!;
-            dayItems.push({
-              id: `item-att-${morningAttraction.id}-${itineraryId}`,
-              title: morningAttraction.name,
-              category: morningAttraction.category,
-              time: "06:30 AM",
-              duration: "2 hours",
-              location: morningAttraction.locationName,
-              notes: morningAttraction.description,
-              image: morningAttraction.image,
-              attractionId: morningAttraction.id,
-              cost: morningAttraction.entryFee,
-              badge: morningAttraction.category.toUpperCase(),
-            });
-          }
-
-          dayItems.push({
-            id: `item-souvenir-${itineraryId}-4`,
-            title: "Local Market Souvenirs & Homestay Check-Out",
-            category: "culture",
-            time: "09:00 AM",
-            duration: "1 hour",
-            location: "Public Market & Town Plaza",
-            notes:
-              "Buy dried fish (tuyo), woven pandan mats, and pack travel bags.",
-            badge: "Shopping",
-          });
-
-          if (departureFerry) {
-            dayItems.push({
-              id: `item-dep-${itineraryId}-5`,
-              title: `Depart via ${departureFerry.boatName}`,
-              category: "ferry",
-              time: departureFerry.departureTime || "11:00 AM",
-              duration: "Sea voyage home",
-              location:
-                departureFerry.origin + " ➔ " + departureFerry.destination,
-              notes:
-                departureFerry.notes ||
-                "Arrive at Concepcion Port 30 minutes before departure.",
-              isFerry: true,
-              ferryId: departureFerry.id,
-              badge: "Departure",
-              cost: departureFerry.fare,
-            });
-          }
-        } else {
-          // Middle Day (Day 2 or Day 3): Full exploration day
-          let slotCounter = 0;
-          const slots = ["08:00 AM", "11:00 AM", "02:30 PM", "05:00 PM"];
-
-          while (attractionPool.length > 0 && slotCounter < slots.length) {
-            const att = attractionPool.shift()!;
-            dayItems.push({
-              id: `item-att-${att.id}-${itineraryId}-${slotCounter}`,
-              title: att.name,
-              category: att.category,
-              time: slots[slotCounter],
-              duration: "2 hours",
-              location: att.locationName,
-              notes: att.description,
-              image: att.image,
-              attractionId: att.id,
-              cost: att.entryFee,
-              badge: att.category.toUpperCase(),
-            });
-            slotCounter++;
-          }
-
-          // If day has fewer than 2 items, add cultural immersive experiences
-          if (dayItems.length < 2) {
-            dayItems.push({
-              id: `item-eco-${itineraryId}-${dayIdx}`,
-              title: "Coastal Snorkeling & Coral Garden Discovery",
-              category: "beach",
-              time: "09:30 AM",
-              duration: "2.5 hours",
-              location: "East Coast Marine Reserve",
-              notes:
-                "Rent snorkeling gear from local guide and explore vibrant reef arches.",
-              badge: "Snorkeling",
-              cost: "₱150 gear rental",
-            });
-            dayItems.push({
-              id: `item-asi-${itineraryId}-${dayIdx}-2`,
-              title: "Asi Heritage Walk & Coconut Sugar Making Demo",
-              category: "culture",
-              time: "03:00 PM",
-              duration: "1.5 hours",
-              location: "Brgy. Masadya & San Pedro",
-              notes:
-                "Meet elderly elders sharing indigenous Bantoanon/Asi folklore and crafts.",
-              badge: "Culture",
-            });
-          }
-        }
-
-        generatedDays.push({
-          dayNumber: dayIdx,
-          title:
-            dayIdx === 1
-              ? "Day 1: Island Arrival & Warm Welcome"
-              : dayIdx === numDays
-                ? `Day ${dayIdx}: Morning Splendor & Farewell Voyage`
-                : `Day ${dayIdx}: Deep Coast & Highland Exploration`,
-          items: dayItems,
+      try {
+        const generatedDays = generateItinerary({
+          numDays,
+          chosenAttractions,
+          arrivalFerry,
+          departureFerry,
+          itineraryId,
         });
+        setDays(generatedDays);
+        setShowConfigDrawer(false);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Unable to generate this itinerary. Check the ferry times and try again.");
       }
-
-      setDays(generatedDays);
-      setShowConfigDrawer(false);
     },
     [
       tripDays,
@@ -398,40 +225,9 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
     const sourceDayNum = draggedItem.dayNumber;
     const itemId = draggedItem.itemId;
 
-    setDays((prevDays) => {
-      // Find source item
-      const sourceDay = prevDays.find((d) => d.dayNumber === sourceDayNum);
-      if (!sourceDay) return prevDays;
-
-      const itemToMove = sourceDay.items.find((i) => i.id === itemId);
-      if (!itemToMove) return prevDays;
-
-      return prevDays.map((day) => {
-        if (
-          day.dayNumber === sourceDayNum &&
-          sourceDayNum === targetDayNumber
-        ) {
-          // Reordering within the exact same day
-          const filtered = day.items.filter((i) => i.id !== itemId);
-          const adjustedIndex = Math.min(
-            Math.max(0, targetIndex),
-            filtered.length,
-          );
-          filtered.splice(adjustedIndex, 0, itemToMove);
-          return { ...day, items: filtered };
-        } else if (day.dayNumber === sourceDayNum) {
-          // Remove from source day
-          return { ...day, items: day.items.filter((i) => i.id !== itemId) };
-        } else if (day.dayNumber === targetDayNumber) {
-          // Insert into target day
-          const copy = [...day.items];
-          const adjustedIndex = Math.min(Math.max(0, targetIndex), copy.length);
-          copy.splice(adjustedIndex, 0, itemToMove);
-          return { ...day, items: copy };
-        }
-        return day;
-      });
-    });
+    setDays((prevDays) =>
+      moveItineraryItem(prevDays, sourceDayNum, itemId, targetDayNumber, targetIndex),
+    );
 
     setDraggedItem(null);
   };
@@ -1084,24 +880,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
 
                               const isCancelled =
                                 matchedRoute.status === "CANCELLED_SEA";
-                              const altRoute = ferryRoutes.find(
-                                (f) =>
-                                  f.id !== matchedRoute.id &&
-                                  (f.status === "ON_TIME" ||
-                                    f.status === "SCHEDULED") &&
-                                  ((matchedRoute.destination
-                                    .toLowerCase()
-                                    .includes("concepcion") &&
-                                    f.destination
-                                      .toLowerCase()
-                                      .includes("concepcion")) ||
-                                    (matchedRoute.origin
-                                      .toLowerCase()
-                                      .includes("concepcion") &&
-                                      f.origin
-                                        .toLowerCase()
-                                        .includes("concepcion"))),
-                              );
+                              const altRoute = findAlternativeFerry(ferryRoutes, matchedRoute);
 
                               return (
                                 <div

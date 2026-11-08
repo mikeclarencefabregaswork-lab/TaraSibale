@@ -13,6 +13,7 @@ import * as v from "./validation.js";
 import { createPublishingLimit } from "./publishing.js";
 import { portfolioCatalog } from "./portfolio.js";
 import { createWeatherService } from "./weather.js";
+import { postImageData } from "./postImage.js";
 
 interface UserRow {
   id: string;
@@ -65,6 +66,15 @@ const profile = (user: UserRow) => ({
     year: "numeric",
   }),
 });
+// Strip attachment bytes inside PostgreSQL, before feed rows cross into Node.
+const publicPostData = `CASE WHEN p.data->>'image' LIKE 'data:%'
+  THEN (p.data - 'image') || jsonb_build_object('image', '/api/social-posts/' || p.id || '/image')
+  ELSE p.data END`;
+const postForResponse = <T extends { id: string; image?: string }>(post: T): T =>
+  post.image?.startsWith("data:")
+    ? { ...post, image: `/api/social-posts/${encodeURIComponent(post.id)}/image` }
+    : post;
+
 const defaults = {
   enableGroupChat: true,
   enableHomestayBooking: true,
@@ -280,7 +290,7 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
   });
   async function socialPosts(userId?: string) {
     const rows = await pool.query(
-      `SELECT p.data, (SELECT count(*)::int FROM social_likes l WHERE l.post_id=p.id) AS likes,
+      `SELECT ${publicPostData} AS data, (SELECT count(*)::int FROM social_likes l WHERE l.post_id=p.id) AS likes,
       EXISTS(SELECT 1 FROM social_likes l WHERE l.post_id=p.id AND l.user_id=$1) AS liked FROM social_posts p ORDER BY p.created_at DESC LIMIT 200`,
       [userId ?? null],
     );
@@ -595,6 +605,16 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
       response.status(201).json(data);
     },
   );
+  api.get("/social-posts/:id/image", async (request, response) => {
+    const result = await pool.query("SELECT data->>'image' AS image FROM social_posts WHERE id=$1", [request.params.id]);
+    const parsed = postImageData.safeParse(result.rows[0]?.image);
+    if (!parsed.success) throw new ApiError(404, "Post image not found");
+    const separator = parsed.data.indexOf(",");
+    const mime = parsed.data.slice(5, parsed.data.indexOf(";"));
+    response.setHeader("Content-Type", mime);
+    response.setHeader("X-Content-Type-Options", "nosniff");
+    response.send(Buffer.from(parsed.data.slice(separator + 1), "base64"));
+  });
   api.post(
     "/social-posts",
     requireUser,
@@ -618,14 +638,14 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
         "INSERT INTO social_posts(id,user_id,data) VALUES($1,$2,$3)",
         [data.id, user.id, data],
       );
-      response.status(201).json(data);
+      response.status(201).json(postForResponse(data));
     },
   );
   api.post("/social-posts/:id/like", requireUser, async (request, response) => {
     await feature("enableSocialCommunityStream");
     const result = await transaction(pool, async (client) => {
       const post = await client.query(
-        "SELECT data FROM social_posts WHERE id=$1 FOR UPDATE",
+        `SELECT ${publicPostData} AS data FROM social_posts p WHERE p.id=$1 FOR UPDATE`,
         [request.params.id],
       );
       if (!post.rowCount) throw new ApiError(404, "Post not found");

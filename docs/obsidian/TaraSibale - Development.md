@@ -1,6 +1,6 @@
 ---
 tags: [tarasibale/guide]
-reviewed: 2026-11-07
+reviewed: 2026-11-09
 ---
 
 # Development
@@ -52,9 +52,34 @@ schema in the configured database and remove it afterward. They explicitly
 use full mode for their isolated test application, so local portfolio settings
 do not block the workflows under test.
 
-During the initial setup, these checks passed, with two existing React lint
-warnings. That historical result does not establish that future edits pass;
-run the commands again when making relevant code changes.
+## Review and repairs — 2026-11-09
+
+The risk-based review found one medium security issue in optional full mode:
+inline post images could amplify the public catalog response. SQL now projects
+attachment bytes out before transferring rows, and images load individually.
+Integration regressions demonstrate a metadata-sized response with four persisted
+1 MiB attachments, correct image bytes/MIME, malformed-image rejection, and
+consistent create/catalog/like representations. No migration or record rewrite
+was needed. Default portfolio restrictions remain enforced.
+
+The same review repaired map popup loss and unnecessary marker reconstruction,
+day-trip generation, same-day drag ordering, and wrong-port ferry replacements.
+See [[TaraSibale - Feature Flows]] for the current behavior.
+
+Type checking, lint, unit tests, PostgreSQL integration and production build are
+the required verification gates. The test runner needs local socket access; a
+sandbox `EPERM` from tsx IPC or an HTTP listener is an environment failure, not a
+product regression. Dependency audit reported zero advisories on this date.
+Final combined verification: 68 unit/HTTP tests and 25 integration tests passed;
+typecheck, lint and build passed. Lint retains two existing React
+`set-state-in-effect` warnings. Browser checks covered map popup/details,
+incompatible day-trip rejection, early checkout and a 390 px mobile layout with
+no horizontal overflow or console warnings/errors.
+
+Source review is risk-based, not a claim that every line or production deployment
+has been audited. Production exposure, HTTPS/proxy configuration and database
+privileges still require environment-specific review. Never copy credentials
+into review notes.
 
 ## Diagnose the boundary that failed
 
