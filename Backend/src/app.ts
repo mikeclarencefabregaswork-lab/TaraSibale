@@ -31,7 +31,7 @@ export function createApp(
         if (request.method === "GET" || request.method === "HEAD") {
           if (path === "/auth/me") { response.json(null); return; }
           if (path === "/reviews") { response.json([]); return; }
-          if (path === "/catalog") { next(); return; }
+          if (path === "/catalog" || path === "/weather") { next(); return; }
         }
         response.status(403).json({
           error: "Portfolio demo: accounts, uploads, bookings and publishing are disabled. Please use sample data only.",

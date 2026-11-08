@@ -202,12 +202,12 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         <div className="max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
+          <div className="flex items-center justify-between min-h-16 py-2 gap-1.5 sm:gap-4">
             {/* Logo Brand */}
             <div
               onClick={() => setActiveTab("explore")}
-              className="flex items-center gap-2 sm:gap-2.5 cursor-pointer group shrink-0">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white dark:bg-slate-800 p-0.5 shadow-sm dark:shadow-[0_0_15px_rgba(46,196,182,0.4)] ring-2 ring-teal-500/40 group-hover:scale-105 transition-transform shrink-0 flex items-center justify-center overflow-hidden">
+              className="flex min-w-0 items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
+              <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white dark:bg-slate-800 p-0.5 shadow-sm dark:shadow-[0_0_15px_rgba(46,196,182,0.4)] ring-2 ring-teal-500/40 group-hover:scale-105 transition-transform shrink-0 flex items-center justify-center overflow-hidden">
                 <img
                   src="/tarasibale-logo.jpg"
                   alt="TaraSibale Logo"
@@ -215,16 +215,16 @@ export const Header: React.FC<HeaderProps> = ({
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <div className="leading-tight">
+              <div className="min-w-0 leading-tight">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-base sm:text-xl tracking-tight text-slate-900 dark:bg-gradient-to-r dark:from-teal-300 dark:via-cyan-300 dark:to-blue-300 dark:bg-clip-text dark:text-transparent">
+                  <span className="truncate font-extrabold text-sm sm:text-xl tracking-tight text-slate-900 dark:bg-gradient-to-r dark:from-teal-300 dark:via-cyan-300 dark:to-blue-300 dark:bg-clip-text dark:text-transparent">
                     TaraSibale
                   </span>
-                  <span className="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 dark:bg-teal-500/20 dark:text-teal-300 border border-teal-200 dark:border-teal-500/30 font-bold uppercase tracking-wider">
+                  <span className="hidden sm:inline text-[10px] px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 dark:bg-teal-500/20 dark:text-teal-300 border border-teal-200 dark:border-teal-500/30 font-bold uppercase tracking-wider">
                     Romblon
                   </span>
                 </div>
-                <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-400 font-medium tracking-wide">
+                <p className="hidden sm:block text-xs text-slate-600 dark:text-slate-400 font-medium tracking-wide">
                   Sibale Island Tourism
                 </p>
               </div>
@@ -248,7 +248,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Controls & User Credentials on the Right Side */}
             <div
-              className="flex items-center gap-1.5 sm:gap-2.5 relative"
+              className="flex items-center gap-1 sm:gap-2.5 relative ml-auto shrink-0"
               ref={userDropdownRef}>
               {/* Mobile Search Toggle */}
               <button
@@ -357,12 +357,28 @@ export const Header: React.FC<HeaderProps> = ({
                   />
                 </button>
               ) : (
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1 sm:gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setIsDarkMode(!isDarkMode)}
+                    aria-label="Toggle dark mode"
+                    aria-pressed={isDarkMode}
+                    title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+                    className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full border border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200 dark:border-white/15 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500">
+                    {isDarkMode ? (
+                      <Sun className="w-4 h-4" />
+                    ) : (
+                      <Moon className="w-4 h-4" />
+                    )}
+                  </button>
+
                   <button
                     onClick={() => onOpenAuth("login")}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-teal-500/40 bg-teal-500/10 hover:bg-teal-500/20 text-teal-700 dark:text-teal-300 font-extrabold text-xs transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95">
+                    aria-label="Sign In"
+                    title="Sign In"
+                    className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-full border border-teal-500/40 bg-teal-500/10 hover:bg-teal-500/20 text-teal-700 dark:text-teal-300 font-extrabold text-xs transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95">
                     <LogIn className="w-3.5 h-3.5" />
-                    <span>Sign In</span>
+                    <span className="hidden sm:inline">Sign In</span>
                   </button>
 
                   <button

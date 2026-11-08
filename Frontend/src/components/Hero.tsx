@@ -5,10 +5,10 @@ import {
   Navigation,
   ShieldCheck,
   Sparkles,
-  Sun,
   Waves,
 } from "lucide-react";
 import React from "react";
+import { LiveWeather } from "./LiveWeather";
 
 interface HeroProps {
   setActiveTab: (tab: string) => void;
@@ -44,11 +44,9 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
             <Waves className="w-3.5 h-3.5 text-cyan-300" />
             Sibale Island (Maestro de Campo)
           </span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 backdrop-blur-md">
-            <Sun className="w-3.5 h-3.5 text-amber-400" />
-            Live Weather Unavailable
-          </span>
         </div>
+
+        <LiveWeather />
 
         {/* Headline & Description */}
         <div className="max-w-2xl mb-8 space-y-3">

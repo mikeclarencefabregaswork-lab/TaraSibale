@@ -12,6 +12,7 @@ import { hashPassword, verifyPassword } from "./auth.js";
 import * as v from "./validation.js";
 import { createPublishingLimit } from "./publishing.js";
 import { portfolioCatalog } from "./portfolio.js";
+import { createWeatherService } from "./weather.js";
 
 interface UserRow {
   id: string;
@@ -739,13 +740,9 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
           : "I can help you find attractions, stays, ferry reference schedules, and itinerary tools in TaraSibale. This response uses a curated local guide; no live AI provider is configured.";
     response.json({ reply, source: "curated_guide" });
   });
-  api.get("/weather", (_request, response) => {
-    response
-      .status(503)
-      .json({
-        error: "Live weather provider is not configured",
-        source: "unavailable",
-      });
+  const loadWeather = createWeatherService();
+  api.get("/weather", async (_request, response) => {
+    response.json(await loadWeather());
   });
   api.use(
     (
