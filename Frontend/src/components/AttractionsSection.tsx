@@ -1,4 +1,3 @@
-import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import { toast } from "../toastStore";
 import {
   CheckCircle2,
@@ -38,11 +37,32 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
   const [activeModalAttraction, setActiveModalAttraction] =
     useState<Attraction | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const detailsDialogRef = useRef<HTMLDialogElement>(null);
+  const isDetailsOpen = activeModalAttraction !== null;
   const [favorites, setFavorites] = useState<string[]>([]);
   const filterDrag = useRef<{ startX: number; scrollLeft: number } | null>(null);
   const didDragFilters = useRef(false);
   const filterRowRef = useRef<HTMLDivElement>(null);
   const [filterScroll, setFilterScroll] = useState({ left: false, right: false });
+
+  useEffect(() => {
+    const dialog = detailsDialogRef.current;
+    if (!isDetailsOpen || !dialog) return;
+
+    const previousOverflow = document.body.style.overflow;
+    dialog.showModal();
+    document.body.style.overflow = "hidden";
+    return () => {
+      dialog.close();
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isDetailsOpen]);
+
+  const closeDetails = () => {
+    setActiveModalAttraction(null);
+    if (isPlayingAudio) window.speechSynthesis.cancel();
+    setIsPlayingAudio(false);
+  };
 
   useEffect(() => {
     const row = filterRowRef.current;
@@ -379,25 +399,30 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
       )}
 
       {/* Attraction Full Detail Modal */}
-      <SurfacePresence>
       {activeModalAttraction && (
-        <AnimatedSurface className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl overflow-y-auto">
-          <div
-            className={`relative w-full max-w-3xl rounded-3xl border shadow-2xl overflow-hidden my-8 backdrop-blur-2xl ${
+        <dialog
+          ref={detailsDialogRef}
+          aria-labelledby="attraction-details-title"
+          onCancel={(event) => {
+            event.preventDefault();
+            closeDetails();
+          }}
+          onTouchStart={(event) => event.stopPropagation()}
+          className={`fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-3xl overflow-y-auto overscroll-contain rounded-3xl border p-0 shadow-2xl animate-fade-in backdrop:bg-slate-950/80 backdrop:backdrop-blur-xl ${
               isDarkMode
                 ? "bg-[#061e2c]/90 border-white/20 text-slate-100"
                 : "bg-white/95 border-slate-200 text-slate-900"
             }`}>
             {/* Modal Close Button */}
-            <button
-              onClick={() => {
-                setActiveModalAttraction(null);
-                if (isPlayingAudio) window.speechSynthesis.cancel();
-                setIsPlayingAudio(false);
-              }}
-              className="absolute top-4 right-4 z-20 p-2 rounded-full bg-slate-950/70 backdrop-blur-md text-white hover:bg-slate-900 border border-white/10 cursor-pointer">
-              <X className="w-5 h-5" />
-            </button>
+            <div className="sticky top-0 z-20">
+              <button
+                type="button"
+                aria-label="Close attraction details"
+                onClick={closeDetails}
+                className="absolute top-4 right-4 flex size-11 items-center justify-center rounded-full bg-slate-950/70 backdrop-blur-md text-white hover:bg-slate-900 border border-white/10 cursor-pointer">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
             {/* Modal Hero Image */}
             <div className="relative h-72 sm:h-80 overflow-hidden bg-slate-950">
@@ -428,7 +453,7 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
                     {activeModalAttraction.reviewCount} reviews)
                   </span>
                 </div>
-                <h2 className="text-2xl sm:text-4xl font-black text-white">
+                <h2 id="attraction-details-title" className="text-2xl sm:text-4xl font-black text-white">
                   {activeModalAttraction.name}
                 </h2>
                 <div className="flex items-center gap-1.5 text-xs text-slate-300">
@@ -611,7 +636,7 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
                   onClick={() => {
                     const id = activeModalAttraction.id;
                     const name = activeModalAttraction.name;
-                    setActiveModalAttraction(null);
+                    closeDetails();
                     onOpenReviewModal(id, name);
                   }}
                   className="px-4 py-2.5 rounded-xl font-bold text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white dark:border-white/15 flex items-center gap-2 cursor-pointer transition-all">
@@ -631,10 +656,8 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
                 </button>
               </div>
             </div>
-          </div>
-        </AnimatedSurface>
+        </dialog>
       )}
-      </SurfacePresence>
     </div>
   );
 };
