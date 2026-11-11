@@ -3,6 +3,7 @@ import { PORTFOLIO_MODE } from "../portfolio";
 import { Bot, RefreshCw, Send, User, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { api, errorText } from "../api";
+import type { PortfolioGuideAnswer } from "../portfolioGuide";
 
 interface LiveChatBotProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ interface ChatMessage {
   text: string;
   timestamp: string;
   source?: string;
+  references?: PortfolioGuideAnswer["sources"];
+  action?: PortfolioGuideAnswer["action"];
 }
 
 function createChatMessage(
@@ -41,12 +44,15 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
   isOpen,
   onClose,
   isOffline,
+  setActiveTab,
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
     {
       id: "welcome-1",
       sender: "ai",
-      text: "Welcome to the TaraSibale portfolio demo. Use sample questions only; this prototype does not provide live travel advice, bookings or emergency assistance.",
+      text: PORTFOLIO_MODE
+        ? "Ask about Sibale’s beaches, stays, food, Asi phrases or fiestas. The guide uses TaraSibale’s local reference information and keeps your questions in this page."
+        : "Ask about places to visit, stays or travel around Sibale.",
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -60,11 +66,12 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const suggestedQuestions = [
-    "When does the Pinamalayan boat leave?",
-    "Top beaches in Concepcion?",
-    "Where to stay in Bachawan?",
-    "Local dishes & tuba drink?",
-    "Asi dialect greetings",
+    "Which beaches can I visit?",
+    "When is the Sibale town fiesta?",
+    "Where can I stay?",
+    "What local dishes are documented?",
+    "How do I say thank you in Asi?",
+    "How do I check the ferry schedule?",
   ];
 
   useEffect(() => {
@@ -72,8 +79,8 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
   }, [messages, isLoading]);
 
   const handleSendMessage = async (textToSend?: string) => {
-    const prompt = textToSend || inputPrompt;
-    if (!prompt.trim() || isLoading) return;
+    const prompt = (textToSend ?? inputPrompt).trim();
+    if (!prompt || prompt.length > 4000 || isLoading) return;
 
     const userMsg = createChatMessage("user", prompt);
 
@@ -83,7 +90,13 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
 
     try {
       if (PORTFOLIO_MODE) {
-        setMessages(previous => [...previous, createChatMessage("ai", "Portfolio demonstration: explore the Culture section for sourced phrases and food credits, or try a sample itinerary. Routes, sailing times, prices and contacts are not verified for travel. This demo cannot book services or contact guides. Your sample chat stays in this page’s memory and is not sent to the server.", "portfolio_demo")]);
+        const { answerPortfolioGuide } = await import("../portfolioGuide");
+        const { reply, sources, action } = answerPortfolioGuide(prompt);
+        setMessages(previous => [...previous, {
+          ...createChatMessage("ai", reply, "portfolio_demo"),
+          references: sources,
+          action,
+        }]);
         return;
       }
       const data = await api<{ reply: string; source: string }>("/api/chat", {
@@ -142,13 +155,14 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
 
         <button
           onClick={onClose}
+          aria-label="Close island guide"
           className="p-1.5 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer">
           <X className="w-5 h-5" />
         </button>
       </div>
 
       {/* Messages Scroll View */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-3.5 text-xs bg-slate-950/40">
+      <div role="log" aria-label="Guide conversation" className="flex-1 p-4 overflow-y-auto space-y-3.5 text-xs bg-slate-950/40">
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -176,7 +190,17 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
                     ? "bg-amber-500/20 text-amber-100 border border-amber-500/30 rounded-tr-none"
                     : "bg-white/10 border border-white/15 text-slate-100 rounded-tl-none"
                 }`}>
-                {msg.text}
+                <p className="break-words">{msg.text}</p>
+                {msg.references?.map(reference => (
+                  <a key={reference.url} href={reference.url} target="_blank" rel="noreferrer" className="mt-2 block break-words text-teal-200 underline">
+                    {reference.title}
+                  </a>
+                ))}
+                {msg.action && (
+                  <button type="button" onClick={() => { setActiveTab(msg.action!.tab); onClose(); }} className="mt-2 block text-teal-200 underline">
+                    {msg.action.label}
+                  </button>
+                )}
               </div>
             </div>
 
@@ -201,6 +225,7 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
         {suggestedQuestions.map((q, idx) => (
           <button
             key={idx}
+            disabled={isLoading}
             onClick={() => handleSendMessage(q)}
             className="px-2.5 py-1 rounded-full text-[11px] font-semibold border border-white/15 bg-white/10 text-slate-200 hover:bg-teal-500/20 hover:text-teal-300 hover:border-teal-500/40 transition-all cursor-pointer backdrop-blur-md">
             {q}
@@ -218,6 +243,8 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
           className="flex items-center gap-2">
           <input
             type="text"
+            aria-label="Ask about Sibale"
+            maxLength={4000}
             placeholder="Ask anything about Concepcion..."
             value={inputPrompt}
             onChange={(e) => setInputPrompt(e.target.value)}
@@ -225,6 +252,7 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
           />
           <button
             type="submit"
+            aria-label="Send question"
             disabled={!inputPrompt.trim() || isLoading}
             className="p-2 rounded-xl bg-teal-500 hover:bg-teal-400 disabled:opacity-50 text-slate-950 font-bold cursor-pointer transition-all shadow-[0_0_12px_rgba(46,196,182,0.4)]">
             <Send className="w-4 h-4" />
