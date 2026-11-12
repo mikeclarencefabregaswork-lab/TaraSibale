@@ -27,6 +27,8 @@
     "graph:context": "node scripts/enrich-graph.mjs"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^26.6.6",
     "concurrently": "^10.0.6"
   }
 }

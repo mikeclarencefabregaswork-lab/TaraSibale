@@ -17,3 +17,10 @@ graphify-out/
 
 # Unknown-rights original artwork retained locally, excluded from redistribution
 /docs/rights-review/withheld-assets/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
