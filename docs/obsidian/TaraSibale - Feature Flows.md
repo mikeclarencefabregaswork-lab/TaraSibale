@@ -104,6 +104,9 @@ are explicit; weather data is not a sailing clearance.
 
 Continue: [[TaraSibale - Modes and Access]], [[TaraSibale - Code Map]].
 
+See the configuration and refresh behavior for weather and the processing limits
+for community photos. [Weather](../weather.md) · [Community post images](../community-post-images.md)
+
 Symbol references: [[hashPassword()]], [[createApi()]].
 
 Sources: [API and transactions](../../Backend/src/api.ts),

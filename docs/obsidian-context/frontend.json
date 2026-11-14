@@ -175,6 +175,50 @@
     "Frontend/src/assets/images/tarasibale_logo_1789230665804.jpg": {
       "summary": "Stores a bundled raster image asset under the frontend source tree. Current portfolio screens use explicit safe placeholders and the public portfolio mark where specified; this retained file should not be assumed to be displayed or cleared for publication merely because it exists.",
       "guide": "TaraSibale - Code Map"
+    },
+    "Frontend/src/components/LiveWeather.tsx": {
+      "summary": "Shows weather in the Explore hero and opens the sea conditions dialog with hourly wind and wave estimates.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/useLiveWeather.ts": {
+      "summary": "Loads the weather report, refreshes periodically while mounted and supports an immediate retry.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/weather.ts": {
+      "summary": "Formats weather readings and Manila times, handles missing or stale sections and aligns hourly estimates.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/portfolioGuide.ts": {
+      "summary": "Answers portfolio guide questions in the browser using curated responses and links to relevant tabs.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/components/CommunityPostComposer.tsx": {
+      "summary": "Manages community post drafts, optional photo processing, preview and retry after failed publication.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/postImage.ts": {
+      "summary": "Validates file size and dimensions, redraws the selected photo to limit its longest edge and re-encodes a compact raster image.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/itinerary.ts": {
+      "summary": "Builds trip plans around compatible ferry schedules and manages item movement and replacement ferries.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/components/FiestasAndCustoms.tsx": {
+      "summary": "Displays sourced fiesta and customs information grouped by barangay.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Frontend/src/data/barangayFiestas.ts": {
+      "summary": "Contains the typed reference entries for the barangay fiesta directory.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Frontend/src/notificationTimer.ts": {
+      "summary": "Provides the timer used by notification interactions.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Frontend/src/components/SurfacePresence.tsx": {
+      "summary": "Keeps animated surfaces mounted through their exit transition.",
+      "guide": "TaraSibale - UI Components"
     }
   },
   "symbols": {
@@ -470,6 +514,11 @@
     },
     "Frontend/src/toastStore.ts::toastStore.ts": {
       "fileSummary": "Frontend/src/toastStore.ts"
-    }
+    },
+    "Frontend/src/portfolioGuide.ts::answerPortfolioGuide()": "Classifies a sample prompt and returns a curated answer with suggested next actions.",
+    "Frontend/src/postImage.ts::preparePostImage()": "Returns a processed image data URL for submission after enforcing the attachment limits.",
+    "Frontend/src/itinerary.ts::generateItinerary()": "Builds days around arrival and return windows, rejecting incompatible day trips.",
+    "Frontend/src/itinerary.ts::moveItineraryItem()": "Inserts the dragged activity before the chosen drop target.",
+    "Frontend/src/itinerary.ts::findAlternativeFerry()": "Looks for a scheduled or on-time replacement with the same ports."
   }
 }

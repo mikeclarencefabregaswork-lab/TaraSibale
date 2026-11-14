@@ -2,9 +2,18 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { isDeepStrictEqual } from 'node:util';
 
 const digest = (text) => createHash('sha256').update(text).digest('hex');
 const canvasName = '00 TaraSibale - Reading Map.canvas';
+
+function sameCanvas(current, expected) {
+  try {
+    return isDeepStrictEqual(JSON.parse(current), JSON.parse(expected));
+  } catch {
+    return false;
+  }
+}
 
 export function publishGuides({ repository, target, vault, transform = (guide) => guide, extraNotes = [] }) {
   const sourceDirectory = join(repository, 'docs/obsidian');
@@ -19,7 +28,7 @@ export function publishGuides({ repository, target, vault, transform = (guide) =
     const output = join(target, name);
     if (existsSync(output)) {
       const current = readFileSync(output, 'utf8');
-      if (current !== text && digest(current) !== previous[name]) {
+      if (current !== text && digest(current) !== previous[name] && !(name === canvasName && sameCanvas(current, text))) {
         preserved.push(name);
         return;
       }

@@ -107,6 +107,46 @@
     "Backend/test/api.integration.ts": {
       "summary": "Creates an isolated PostgreSQL schema, applies every migration, seeds fixtures, and explicitly disables portfolio mode only for the test app. Subtests verify account/session access, cross-account state isolation and stale-tab protection, server authorship, permissions, catalog provenance and archive retention, reference-only stays, publishing quotas, and session revocation. Booking assertions cover server-calculated pricing, concurrent oversell prevention, adjacent multi-room occupancy, and invalid requests. The schema is dropped in cleanup; portfolio restrictions are independently tested by the unit suite.",
       "guide": "TaraSibale - Development"
+    },
+    "Backend/src/catalog.ts": {
+      "summary": "Maps each catalog kind to its own PostgreSQL table and combines active entries for the existing catalog API.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Backend/scripts/catalog-fixture.ts": {
+      "summary": "Loads the JSON seed fixture and flattens its five content collections into typed insert entries.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Backend/scripts/migration-runner.ts": {
+      "summary": "Applies the current baseline to an empty schema. For legacy installs it applies pending historical migrations and records the equivalent baseline under the schema lock.",
+      "guide": "TaraSibale - Database"
+    },
+    "Backend/migrations/012_baseline.sql": {
+      "summary": "Defines the current PostgreSQL schema for fresh installations, including five catalog tables and their relationships to bookings and reviews.",
+      "guide": "TaraSibale - Database"
+    },
+    "Backend/migration-history/011_split_catalog.sql": {
+      "summary": "Upgrades the legacy shared catalog into five tables and updates booking and review references.",
+      "guide": "TaraSibale - Database"
+    },
+    "Backend/migration-history/010_barangay_fiesta_directory.sql": {
+      "summary": "Adds the sourced barangay fiesta directory to the historical culture catalog.",
+      "guide": "TaraSibale - Attractions and Data"
+    },
+    "Backend/src/weather.ts": {
+      "summary": "Fetches fixed-location Open-Meteo weather and marine readings, checks values and units, and caches successful results for five minutes.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Backend/src/postImage.ts": {
+      "summary": "Validates attached community photos for allowed MIME type, base64 encoding, decoded size and matching raster headers.",
+      "guide": "TaraSibale - Feature Flows"
+    },
+    "Backend/test/weather.test.ts": {
+      "summary": "Tests the weather service with controlled provider responses and a controlled clock.",
+      "guide": "TaraSibale - Development"
+    },
+    "Backend/test/post-image.test.ts": {
+      "summary": "Tests accepted raster data URLs and rejected malformed or oversized attachments.",
+      "guide": "TaraSibale - Development"
     }
   },
   "symbols": {
@@ -266,6 +306,15 @@
     },
     "Backend/test/api.integration.ts::request()": "Sends JSON requests to the isolated full-mode test server with optional session cookie and Origin header. It returns status, parsed response, and cookie metadata so subtests can assert authentication, session flags, access policy, and persisted behavior.",
     "Backend/test/app.test.ts::get()": "Starts a temporary loopback app with an injected readiness probe, fetches one endpoint, and returns its status and JSON body. Cleanup closes the server and idle connections so health and fallback assertions do not require PostgreSQL.",
-    "Backend/test/validation.test.ts::document()": "Wraps supplied fileData in otherwise valid vault-document metadata. Tests vary the encoded content against the same wrapper to isolate decoded-size, MIME support, and malformed-base64 behavior."
+    "Backend/test/validation.test.ts::document()": "Wraps supplied fileData in otherwise valid vault-document metadata. Tests vary the encoded content against the same wrapper to isolate decoded-size, MIME support, and malformed-base64 behavior.",
+    "Backend/src/catalog.ts::catalogEntries()": "Builds a UNION ALL across the five catalog tables and excludes archived entries.",
+    "Backend/src/catalog.ts::hasCatalogIdConflict()": "Checks sibling tables for IDs already in use so the public ID-only contract remains unambiguous.",
+    "Backend/scripts/migration-runner.ts::runMigrations()": "Records applied filenames while the caller owns the transaction and rollback.",
+    "Backend/migrations/012_baseline.sql::user_state": "Stores private itinerary, checklist, notification and document data keyed by account.",
+    "Backend/migrations/012_baseline.sql::attractions": "Stores attraction records with checked JSON payloads and stable IDs.",
+    "Backend/migrations/012_baseline.sql::bookings": "Links reservations directly to accommodations and stores date, status and total constraints.",
+    "Backend/migrations/012_baseline.sql::reviews": "Uses catalog-kind-specific foreign keys to preserve review targets.",
+    "Backend/src/weather.ts::createWeatherService()": "Creates the weather service with shared in-flight refreshes and independent weather and marine results.",
+    "Backend/src/postImage.ts::postImageData": "Zod schema for JPEG, PNG and WebP attachments within the 1 MiB decoded limit."
   }
 }

@@ -232,17 +232,17 @@
           "why": "Start with the baseline for the five content tables, their JSON checks and their foreign-key relationships."
         },
         {
-          "source": "Backend/migration-history/001_initial.sql",
+          "source": "Backend/migrations/012_baseline.sql",
           "symbol": "bookings",
-          "why": "Inspect date checks and the active-inventory index; migration 011 defines the current foreign key."
+          "why": "Inspect date checks, the accommodation foreign key and the active-inventory index."
         },
         {
-          "source": "Backend/migration-history/001_initial.sql",
+          "source": "Backend/migrations/012_baseline.sql",
           "symbol": "user_state",
           "why": "Locate the account-keyed saved planning fields and contrast them with separate booking/message tables."
         },
         {
-          "source": "Backend/migration-history/001_initial.sql",
+          "source": "Backend/migrations/012_baseline.sql",
           "symbol": "sessions",
           "why": "See hashed-token ownership and expiry storage without reading credentials."
         }
@@ -269,6 +269,74 @@
           "source": "Backend/src/db.ts",
           "symbol": "checkDatabase()",
           "why": "Follow the SELECT 1 readiness probe before diagnosing catalog failures."
+        }
+      ]
+    },
+    {
+      "source": "Frontend/src/postImage.ts",
+      "symbol": "preparePostImage()",
+      "name": "Community photo composition",
+      "purpose": "The composer prepares optional raster attachments before submitting a post. The feed uses local image URLs for stored attachments.",
+      "questions": [
+        "How does a photo move from device selection to the feed?"
+      ],
+      "guide": "TaraSibale - Feature Flows",
+      "entries": [
+        {
+          "source": "Frontend/src/postImage.ts",
+          "symbol": "preparePostImage()",
+          "why": "How does a photo move from device selection to the feed?"
+        }
+      ]
+    },
+    {
+      "source": "Frontend/src/weather.ts",
+      "symbol": "hourlyOutlook()",
+      "name": "Weather and sea conditions interface",
+      "purpose": "The Explore hero displays validated weather sections and hourly estimates in Manila time. Missing and stale observations have explicit display states.",
+      "questions": [
+        "How are missing and stale readings presented?"
+      ],
+      "guide": "TaraSibale - Feature Flows",
+      "entries": [
+        {
+          "source": "Frontend/src/weather.ts",
+          "symbol": "hourlyOutlook()",
+          "why": "How are missing and stale readings presented?"
+        }
+      ]
+    },
+    {
+      "source": "Backend/src/weather.ts",
+      "symbol": "createWeatherService()",
+      "name": "Weather provider and cache",
+      "purpose": "The API fetches fixed weather and marine locations, validates provider data and shares concurrent refresh requests. The two provider sections can fail independently.",
+      "questions": [
+        "Where are provider responses validated and cached?"
+      ],
+      "guide": "TaraSibale - Feature Flows",
+      "entries": [
+        {
+          "source": "Backend/src/weather.ts",
+          "symbol": "createWeatherService()",
+          "why": "Where are provider responses validated and cached?"
+        }
+      ]
+    },
+    {
+      "source": "Frontend/src/portfolioGuide.ts",
+      "symbol": "answerPortfolioGuide()",
+      "name": "Portfolio guide and cultural content",
+      "purpose": "The portfolio guide uses curated browser replies and links to app sections. Shared content and interface references connect these entries in the graph.",
+      "questions": [
+        "How does the guide direct a visitor to relevant content?"
+      ],
+      "guide": "TaraSibale - Feature Flows",
+      "entries": [
+        {
+          "source": "Frontend/src/portfolioGuide.ts",
+          "symbol": "answerPortfolioGuide()",
+          "why": "How does the guide direct a visitor to relevant content?"
         }
       ]
     }

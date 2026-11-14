@@ -64,13 +64,14 @@ function destination(node, manifests) {
   if (/tsconfig|\.oxlintrc/.test(file)) return { name: title('Workspace Configuration'), section: 'TypeScript and lint configuration' };
   if (/scripts\//.test(file) && !file.startsWith('Backend/')) return { name: title('Workspace Configuration'), section: file };
   if (/vite\.config/.test(file)) return { name: title('Workspace Configuration'), section: file };
-  if (/\/test\//.test(file)) return { name: title('Development'), section: file };
+  if (/\/test\/|^tarasibale-test\/|^playwright\.config\.ts$|^\.github\/workflows\//.test(file)) return { name: title('Development'), section: file };
   if (/Frontend\/src\/components\/|toastStore/.test(file)) return { name: title('UI Components'), section: file };
   if (file === 'Frontend/src/types.ts') return { name: title('Domain Types'), section: file };
   if (/userState/.test(file)) return { name: title('Saved State'), section: file };
   if (/portfolio|adminDefaults|promote-admin|Backend\/src\/(auth|publishing)\.ts/.test(file)) return { name: title('Modes and Access'), section: file };
-  if (/Backend\/src\/(api|validation)\.ts/.test(file)) return { name: title('API and Validation'), section: file };
-  if (/migrations\/|scripts\/migrate|Backend\/src\/db\.ts/.test(file)) return { name: title('Database'), section: file };
+  if (/Backend\/src\/(api|catalog|validation|postImage|weather)\.ts/.test(file)) return { name: title('API and Validation'), section: file };
+  if (/migration(?:s|-history)\/|scripts\/migrat(?:e|ion-runner)|Backend\/src\/db\.ts/.test(file)) return { name: title('Database'), section: file };
+  if (/^Frontend\/src\/(itinerary|postImage|weather|useLiveWeather|notificationTimer)\.ts$/.test(file)) return { name: title('Feature Flows'), section: file };
   if (/Frontend\/src\/data\/|Backend\/scripts\/(seed|validate-seed)/.test(file)) return { name: title('Attractions and Data'), section: file };
   return { name: title('Architecture'), section: file };
 }

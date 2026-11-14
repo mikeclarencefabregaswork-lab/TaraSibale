@@ -19,6 +19,10 @@ A repository search on the review date found the `ATTRACTIONS` declaration
 but no active source import of that array. It is retained reference material.
 Changing it alone will not update the catalog served by the backend.
 
+The Culture tab groups the directory entries by barangay. The source verifies
+barangay names. Dates and patron saints still need local confirmation.
+[Fiesta source notes](../fiesta-sources.md)
+
 The raw Graphify node records the declaration and its containing file. The
 implementation reference below groups its reviewed explanation with the other
 catalog fixtures, while this guide explains the runtime path.
