@@ -14,6 +14,12 @@ import { createPublishingLimit } from "./publishing.js";
 import { portfolioCatalog } from "./portfolio.js";
 import { createWeatherService } from "./weather.js";
 import { postImageData } from "./postImage.js";
+import {
+  activeCatalogEntry,
+  catalogEntries,
+  catalogTables,
+  hasCatalogIdConflict,
+} from "./catalog.js";
 
 interface UserRow {
   id: string;
@@ -301,14 +307,14 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
     }));
   }
   api.get("/catalog", async (_request, response) => {
-    const [resources, permissions, posts, ratings] = await Promise.all([
+    const [entries, permissions, posts, ratings] = await Promise.all([
       pool.query(
-        "SELECT id,kind,data FROM resources WHERE data->>'isArchived' IS DISTINCT FROM 'true' ORDER BY id",
+        `${catalogEntries()} ORDER BY id`,
       ),
       settings(),
       options.portfolioMode ? Promise.resolve([]) : socialPosts(response.locals.user?.id),
       pool.query(
-        "SELECT target_id,count(*)::int AS count,round(avg((data->>'rating')::numeric),1)::float8 AS rating FROM reviews GROUP BY target_id",
+        "SELECT target_id,target_kind,count(*)::int AS count,round(avg((data->>'rating')::numeric),1)::float8 AS rating FROM reviews GROUP BY target_kind,target_id",
       ),
     ]);
     const grouped: Record<string, unknown[]> = {
@@ -318,9 +324,9 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
       culture: [],
       trail: [],
     };
-    const ratingMap = new Map(ratings.rows.map((row) => [row.target_id, row]));
-    for (const row of resources.rows) {
-      const stats = ratingMap.get(row.id);
+    const ratingMap = new Map(ratings.rows.map((row) => [`${row.target_kind}:${row.target_id}`, row]));
+    for (const row of entries.rows) {
+      const stats = ratingMap.get(`${row.kind}:${row.id}`);
       grouped[row.kind]?.push(
         ["attraction", "accommodation"].includes(row.kind)
           ? {
@@ -434,12 +440,6 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
     async (request, response) => {
       await feature("enablePublicReviews");
       const input = v.review.parse(request.body);
-      const target = await pool.query(
-        "SELECT id FROM resources WHERE id=$1 AND kind IN ('attraction','accommodation') AND data->>'isArchived' IS DISTINCT FROM 'true'",
-        [input.targetId],
-      );
-      if (!target.rowCount)
-        throw new ApiError(404, "Review target does not exist");
       const user = userFrom(response);
       const data = {
         ...input,
@@ -449,10 +449,16 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
         date: new Date().toISOString().slice(0, 10),
         helpfulCount: 0,
       };
-      await pool.query(
-        "INSERT INTO reviews(id,target_id,user_id,data) VALUES($1,$2,$3,$4)",
+      const saved = await pool.query(
+        `INSERT INTO reviews(id,target_id,target_kind,user_id,data)
+         SELECT $1,id,kind,$3,$4 FROM (
+           SELECT id,'attraction' AS kind FROM attractions WHERE id=$2 AND ${activeCatalogEntry}
+           UNION ALL
+           SELECT id,'accommodation' AS kind FROM accommodations WHERE id=$2 AND ${activeCatalogEntry}
+         ) AS target ORDER BY kind LIMIT 1`,
         [data.id, data.targetId, user.id, data],
       );
+      if (!saved.rowCount) throw new ApiError(404, "Review target does not exist");
       response.status(201).json(data);
     },
   );
@@ -482,7 +488,7 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
     const input = v.booking.parse(request.body);
     const result = await transaction(pool, async (client) => {
       const target = await client.query(
-        "SELECT data FROM resources WHERE id=$1 AND kind='accommodation' AND data->>'isArchived' IS DISTINCT FROM 'true' FOR UPDATE",
+        `SELECT data FROM accommodations WHERE id=$1 AND ${activeCatalogEntry} FOR UPDATE`,
         [input.accommodationId],
       );
       if (!target.rowCount)
@@ -682,6 +688,7 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
   api.put("/admin/catalog", async (request, response) => {
     const input = v.catalogUpdate.parse(request.body);
     await transaction(pool, async (client) => {
+      await client.query("SELECT pg_advisory_xact_lock(hashtext('tarasibale-schema'))");
       for (const [key, kind] of [
         ["attractions", "attraction"],
         ["accommodations", "accommodation"],
@@ -689,22 +696,21 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
       ] as const) {
         const items = input[key];
         if (!items) continue;
-        if (new Set(items.map((item) => item.id)).size !== items.length)
-          throw new ApiError(400, "Resource IDs must be unique");
+        const ids = items.map((item) => item.id);
+        if (new Set(ids).size !== ids.length)
+          throw new ApiError(400, "Catalog entry IDs must be unique");
+        if (await hasCatalogIdConflict(client, kind, ids))
+          throw new ApiError(409, "This ID belongs to a different content type");
+        const table = catalogTables[kind];
         for (const item of items) {
-          const result = await client.query(
-            "INSERT INTO resources(id,kind,data) VALUES($1,$2,$3) ON CONFLICT(id) DO UPDATE SET data=excluded.data WHERE resources.kind=excluded.kind RETURNING id",
-            [item.id, kind, item],
+          await client.query(
+            `INSERT INTO ${table}(id,data) VALUES($1,$2) ON CONFLICT(id) DO UPDATE SET data=excluded.data`,
+            [item.id, item],
           );
-          if (!result.rowCount)
-            throw new ApiError(
-              409,
-              "This ID belongs to a different resource type",
-            );
         }
         await client.query(
-          "DELETE FROM resources WHERE kind=$1 AND NOT(id=ANY($2::text[])) AND data->>'isArchived' IS DISTINCT FROM 'true'",
-          [kind, items.map((item) => item.id)],
+          `DELETE FROM ${table} WHERE NOT(id=ANY($1::text[])) AND ${activeCatalogEntry}`,
+          [ids],
         );
       }
     });

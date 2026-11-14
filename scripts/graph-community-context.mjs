@@ -54,8 +54,8 @@ export function buildCommunityContext(graph, rules, descriptions) {
     filePurpose: descriptions.files[node.source_file]?.summary ?? '',
   }]));
   const tours = [
-    { name: 'Follow catalog data', why: 'Read the UI loader, server catalog implementation, and stored resource shape. This is a reading route, not a claim that these are direct call edges.', targets: [['Frontend/src/App.tsx', 'App()'], ['Backend/src/api.ts', 'createApi()'], ['Backend/migrations/001_initial.sql', 'resources']] },
-    { name: 'Understand saved trips', why: 'Start with guest/device persistence, then inspect the account storage table.', targets: [['Frontend/src/userState.tsx', 'useUserStatePersistence()'], ['Backend/migrations/001_initial.sql', 'user_state']] },
+    { name: 'Follow catalog data', why: 'Read the UI loader, server catalog implementation, and stored catalog shape. This is a reading route, not a claim that these are direct call edges.', targets: [['Frontend/src/App.tsx', 'App()'], ['Backend/src/api.ts', 'createApi()'], ['Backend/migrations/012_baseline.sql', 'attractions']] },
+    { name: 'Understand saved trips', why: 'Start with guest/device persistence, then inspect the account storage table.', targets: [['Frontend/src/userState.tsx', 'useUserStatePersistence()'], ['Backend/migration-history/001_initial.sql', 'user_state']] },
     { name: 'Why is signup blocked?', why: 'Inspect the portfolio boundary before diagnosing authentication or database failures.', targets: [['Backend/src/app.ts', 'createApp()'], ['Backend/src/api.ts', 'issueSession()']] },
   ].map(({ targets, ...tour }) => ({ ...tour, nodes: targets.map(([file, label]) => graph.nodes.find((node) => node.source_file === file && node.label === label)?.id).filter(Boolean) }));
   return { communities, nodes, tours };

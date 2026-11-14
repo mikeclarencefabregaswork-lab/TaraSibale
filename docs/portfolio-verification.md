@@ -7,7 +7,7 @@ Outcome: implemented the approved portfolio presentation and collection restrict
 | Independent prototype, no unsupported official affiliation | Global notice, hero/footer, title/meta, printable/copied itinerary and GPX author source reviewed | Implemented |
 | Uncleared imagery withheld without database mutation | Catalog sanitization regression plus running API: portfolioMode=true and placeholder destination image; original objects unchanged in test | Pass |
 | No real account/document collection | Request tests reject writes/private reads before any database query; browser Register shows fictitious example; vault has zero file inputs | Pass |
-| Existing session does not expose private data | Catalog test sends prior session cookie and verifies only resources/settings/aggregate-rating queries; session-status returns null | Pass |
+| Existing session does not expose private data | Catalog test sends prior session cookie and verifies only content/settings/aggregate-rating queries; session-status returns null | Pass |
 | Demo travel information cannot be exported as navigation | Browser GPX and offline-navigation controls disabled; demo guide request visibly states nothing was sent; no remote images loaded on map | Pass |
 | Licensed food remains credited | Rendered Culture food tab shows three food images, source links, two CC0 credits and coconut-jam CC BY-SA 4.0 credit | Pass |
 | Demo chat does not send prompts | Local-only code branch and browser suggested-question response inspected; no related console errors | Pass |

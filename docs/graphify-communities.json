@@ -215,34 +215,34 @@
       ]
     },
     {
-      "source": "Backend/migrations/001_initial.sql",
-      "symbol": "resources",
+      "source": "Backend/migrations/012_baseline.sql",
+      "symbol": "attractions",
       "name": "Relational storage and JSON catalog foundation",
-      "purpose": "The initial migration establishes users/sessions, typed JSON catalog resources, settings, reviews/votes, bookings, groups/messages, social records, verifications and owner-keyed saved state. Foreign keys, indexes and JSON checks keep related identities and core stored shapes consistent. This group combines many tables and helper functions rather than one runtime feature; the initial resource check is historical and later migrations replace it for strict trail pairs and reference-only accommodation nulls.",
+      "purpose": "Five tables hold the attraction, accommodation, ferry, culture and trail catalog. Their JSON checks validate content shapes and IDs. Reviews link to their target table, and bookings link directly to accommodations.",
       "questions": [
         "How do relational owner/target columns agree with IDs stored inside JSON records?",
         "Which relationships preserve catalog targets referenced by bookings or reviews?",
-        "Which later migrations supersede the initial resource constraint?"
+        "Which checks are specific to each catalog table?"
       ],
       "guide": "TaraSibale - Database",
       "entries": [
         {
-          "source": "Backend/migrations/001_initial.sql",
-          "symbol": "resources",
-          "why": "Start with kind/id consistency and the JSON checks, then read migrations 002 and 008 for the current constraint."
+          "source": "Backend/migrations/012_baseline.sql",
+          "symbol": "attractions",
+          "why": "Start with the baseline for the five content tables, their JSON checks and their foreign-key relationships."
         },
         {
-          "source": "Backend/migrations/001_initial.sql",
+          "source": "Backend/migration-history/001_initial.sql",
           "symbol": "bookings",
-          "why": "Inspect accommodation-kind foreign keys, date checks and the active-inventory index."
+          "why": "Inspect date checks and the active-inventory index; migration 011 defines the current foreign key."
         },
         {
-          "source": "Backend/migrations/001_initial.sql",
+          "source": "Backend/migration-history/001_initial.sql",
           "symbol": "user_state",
           "why": "Locate the account-keyed saved planning fields and contrast them with separate booking/message tables."
         },
         {
-          "source": "Backend/migrations/001_initial.sql",
+          "source": "Backend/migration-history/001_initial.sql",
           "symbol": "sessions",
           "why": "See hashed-token ownership and expiry storage without reading credentials."
         }
@@ -353,16 +353,16 @@
         "Why can a component module also export a constant?"
       ]
     },
-    "Backend/migrations/002_strict_trail_coordinates.sql": {
+    "Backend/migration-history/002_strict_trail_coordinates.sql": {
       "name": "Strict trail coordinate pair checks",
-      "purpose": "Replaces the resources kind-specific CHECK so strict JSONPath tests each trail coordinate as a two-element array without lax unwrapping. It preserves the other resource branches; migration 008 later replaces this check again while retaining the strict trail-pair expression. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
+      "purpose": "Introduces strict JSONPath to test each trail coordinate as a two-element array without lax unwrapping. Migration 011 preserves this check on the hiking trails table. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
       "guide": "TaraSibale - Database",
       "questions": [
         "Why did lax JSONPath reject or misread coordinate pairs?",
-        "Does the later resource check preserve this correction?"
+        "Does the hiking trails table preserve this correction?"
       ]
     },
-    "Backend/migrations/003_unavailable_catalog_photo.sql": {
+    "Backend/migration-history/003_unavailable_catalog_photo.sql": {
       "name": "Known broken catalog image replacement",
       "purpose": "Replaces only the known unavailable image URL inside matching resource JSON with the local photo-unavailable asset. The targeted value replacement avoids resetting unrelated catalog content or administrator changes. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
       "guide": "TaraSibale - Database",
@@ -371,7 +371,7 @@
         "Why does this migration avoid reseeding the whole catalog?"
       ]
     },
-    "Backend/migrations/004_sourced_sibale_attractions.sql": {
+    "Backend/migration-history/004_sourced_sibale_attractions.sql": {
       "name": "Sourced attraction records and retained history",
       "purpose": "Archives the former attraction IDs and upserts a new set of sourced destination records with provenance and coordinate-status caveats. Historical targets remain in storage so existing references are not repurposed; the subsequent visitor-copy migration updates presentation text for the new IDs. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
       "guide": "TaraSibale - Database",
@@ -380,7 +380,7 @@
         "Which new attraction pins remain explicitly unconfirmed?"
       ]
     },
-    "Backend/migrations/005_attraction_visitor_copy.sql": {
+    "Backend/migration-history/005_attraction_visitor_copy.sql": {
       "name": "Concise attraction visitor copy",
       "purpose": "Patches descriptions, highlights, entry-fee text and best-time text for the sourced attraction IDs. It merges selected fields into existing JSON, preserving identity, credits and review history rather than replacing complete records. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
       "guide": "TaraSibale - Database",
@@ -389,7 +389,7 @@
         "Why are fees and visit times stated as confirm locally?"
       ]
     },
-    "Backend/migrations/006_sourced_fiestas_and_customs.sql": {
+    "Backend/migration-history/006_sourced_fiestas_and_customs.sql": {
       "name": "Sourced fiestas and cultural customs",
       "purpose": "Archives the former demo event and upserts sourced culture records covering fiestas and customs. Recorded source dates and schedule notes qualify the content; the migration does not create a live event schedule service. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
       "guide": "TaraSibale - Database",
@@ -398,7 +398,7 @@
         "How do event records communicate date and source limitations?"
       ]
     },
-    "Backend/migrations/007_sourced_asi_phrasebook.sql": {
+    "Backend/migration-history/007_sourced_asi_phrasebook.sql": {
       "name": "Sourced Asi phrasebook",
       "purpose": "Archives unsupported demo phrase records and upserts sourced phrasebook culture entries. Phrase, translation and pronunciation text are stored catalog content with evidence metadata rather than generated translation or speech recognition. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
       "guide": "TaraSibale - Database",
@@ -407,7 +407,7 @@
         "How are older unsupported phrase IDs preserved?"
       ]
     },
-    "Backend/migrations/008_sourced_accommodations.sql": {
+    "Backend/migration-history/008_sourced_accommodations.sql": {
       "name": "Reference-only lodging and nullable unknown facts",
       "purpose": "Replaces the resource CHECK to permit JSON null price, guest capacity and coordinates only for reference-only accommodation records, while retaining strict trail coordinate checks. It archives old demo lodgings and upserts sourced reference listings rather than inventing bookable prices or verified availability. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
       "guide": "TaraSibale - Database",
@@ -416,7 +416,7 @@
         "How do existing booking references survive lodging catalog replacement?"
       ]
     },
-    "Backend/migrations/009_sourced_island_foods.sql": {
+    "Backend/migration-history/009_sourced_island_foods.sql": {
       "name": "Sourced island foods and credited imagery",
       "purpose": "Archives unsupported demo food records and upserts three locally documented dish records with source metadata and individually credited representative food photos. The entries describe documented production and explicitly qualify availability; they do not establish current vendors, prices or menus. Applied migrations are historical and immutable; make future changes in a new numbered migration.",
       "guide": "TaraSibale - Database",

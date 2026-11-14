@@ -11,7 +11,7 @@ the default portfolio boundary blocks those requests earlier.
 
 ## Browse a destination
 
-`App.refreshCatalog` → `GET /catalog` → `resources` and review aggregates →
+`App.refreshCatalog` → `GET /catalog` → content tables and review aggregates →
 React collections → `AttractionsSection` filtering → detail dialog.
 
 Opening a card does not create a database record. Search/category filters and

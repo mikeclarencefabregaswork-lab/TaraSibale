@@ -6,6 +6,48 @@ import type { AddressInfo } from 'node:net'
 import { test } from 'node:test'
 import pg from 'pg'
 import { createApp } from '../src/app.js'
+import { catalogTables } from '../src/catalog.js'
+import { catalogFixtureEntries, loadCatalogFixture } from '../scripts/catalog-fixture.js'
+import { runMigrations } from '../scripts/migration-runner.js'
+
+async function migrate(pool: pg.Pool) {
+  const client = await pool.connect()
+  try {
+    await client.query('BEGIN')
+    const changes = await runMigrations(client)
+    await client.query('COMMIT')
+    return changes
+  } catch (error) {
+    await client.query('ROLLBACK')
+    throw error
+  } finally {
+    client.release()
+  }
+}
+
+test('a fresh database uses the current baseline and skips legacy SQL', async () => {
+  const schema = `test_${randomUUID().replaceAll('-', '')}`
+  const admin = new pg.Pool({ connectionString: process.env.DATABASE_URL })
+  await admin.query(`CREATE SCHEMA "${schema}"`)
+  const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, options: `-c search_path=${schema},public` })
+  try {
+    assert.deepEqual(await migrate(pool), [{ name: '012_baseline.sql', action: 'Applied' }])
+    assert.deepEqual(await migrate(pool), [])
+    const { rows } = await pool.query("SELECT table_name FROM information_schema.tables WHERE table_schema = current_schema() ORDER BY table_name")
+    assert.ok(!rows.some(row => row.table_name === 'resources'))
+    for (const table of ['accommodations','attractions','culture_items','ferry_routes','hiking_trails']) {
+      assert.ok(rows.some(row => row.table_name === table))
+    }
+    const catalog = await loadCatalogFixture()
+    for (const { kind, data } of catalogFixtureEntries(catalog)) {
+      await pool.query(`INSERT INTO ${catalogTables[kind]}(id,data) VALUES($1,$2)`, [data.id, data])
+    }
+  } finally {
+    await pool.end()
+    await admin.query(`DROP SCHEMA "${schema}" CASCADE`)
+    await admin.end()
+  }
+})
 
 test('real PostgreSQL API: accounts, isolation, permissions, reviews and booking inventory', async (t) => {
   assert.ok(process.env.DATABASE_URL, 'DATABASE_URL must be configured for integration tests')
@@ -15,14 +57,78 @@ test('real PostgreSQL API: accounts, isolation, permissions, reviews and booking
   const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, options: `-c search_path=${schema},public` })
   let server: ReturnType<ReturnType<typeof createApp>['listen']> | undefined
   try {
-    const migrationDirectory = new URL('../migrations/', import.meta.url)
-    for (const name of (await readdir(migrationDirectory)).filter(name => /^\d+_.*\.sql$/.test(name)).sort()) {
-      await pool.query(await readFile(new URL(name, migrationDirectory), 'utf8'))
-    }
-    const catalog = JSON.parse(await readFile(new URL('../seed/catalog.json', import.meta.url), 'utf8')) as { resources: { id: string; kind: string; data: unknown }[] }
-    for (const item of catalog.resources) await pool.query('INSERT INTO resources(id,kind,data) VALUES($1,$2,$3) ON CONFLICT DO NOTHING', [item.id, item.kind, item.data])
+    const migrationDirectory = new URL('../migration-history/', import.meta.url)
     const stay = { id: 'stay-test', name: 'Test stay', type: 'homestay', pricePerNight: 1000, maxGuests: 2, roomTypes: ['Standard'], availableRoomsCount: 1, availabilityStatus: 'AVAILABLE', isVerifiedPartner: false, coordinates: { lat: 12.9, lng: 121.7 }, rating: 0, reviewCount: 0, image: 'https://example.test/stay.jpg', location: 'Sibale', description: 'A test homestay', contactPhone: '09171234567', amenities: [] }
-    await pool.query('INSERT INTO resources(id,kind,data) VALUES($1,$2,$3)', [stay.id, 'accommodation', stay])
+    const migrations = (await readdir(migrationDirectory)).filter(name => /^\d+_.*\.sql$/.test(name)).sort()
+    const split = '011_split_catalog.sql'
+    await pool.query('CREATE TABLE schema_migrations (version text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())')
+    for (const name of migrations.filter(name => name < split)) {
+      await pool.query(await readFile(new URL(name, migrationDirectory), 'utf8'))
+      await pool.query('INSERT INTO schema_migrations(version) VALUES ($1)', [name])
+    }
+    await t.test('reapplying the barangay directory migration preserves local edits and avoids duplicates', async () => {
+      const client = await pool.connect()
+      try {
+        await client.query('BEGIN')
+        await client.query(`UPDATE resources SET data=jsonb_set(data, '{dateLabel}', '"Local confirmation pending"'::jsonb) WHERE id='culture-fiesta-directory-bachawan'`)
+        const migration = await readFile(new URL('../migration-history/010_barangay_fiesta_directory.sql', import.meta.url), 'utf8')
+        await client.query(migration)
+        await client.query(migration)
+        const saved = await client.query("SELECT data FROM resources WHERE kind='culture' AND data->>'category'='fiesta-directory'")
+        assert.equal(saved.rows.length, 9)
+        assert.equal(saved.rows.find(item => item.data.id === 'culture-fiesta-directory-bachawan')?.data.dateLabel, 'Local confirmation pending')
+      } finally {
+        await client.query('ROLLBACK')
+        client.release()
+      }
+    })
+
+    const catalog = await loadCatalogFixture()
+    for (const kind of ['ferry', 'trail'] as const) {
+      const [item] = catalog[kind]
+      assert.ok(item)
+      await pool.query('INSERT INTO resources(id,kind,data) VALUES($1,$2,$3)', [item.id, kind, item])
+    }
+    const legacyAttraction = { ...JSON.parse(await readFile(new URL('../seed/sourced-attractions.json', import.meta.url), 'utf8'))[0], id: 'legacy-archived', isArchived: true }
+    await pool.query("UPDATE resources SET data = data || '{\"dateLabel\":\"Local confirmation pending\"}'::jsonb WHERE id='culture-fiesta-directory-bachawan'")
+    await pool.query("INSERT INTO resources(id,kind,data) VALUES($1,'attraction',$2),($3,'accommodation',$4)", [legacyAttraction.id, legacyAttraction, stay.id, stay])
+    await pool.query("INSERT INTO users(id,email,name,password_hash,role) VALUES('legacy-user','legacy@example.test','Legacy User','unused','traveler')")
+    await pool.query(`INSERT INTO reviews(id,target_id,user_id,data) VALUES
+      ('legacy-review','legacy-archived','legacy-user','{"id":"legacy-review","targetId":"legacy-archived","comment":"Historical review","rating":4}'),
+      ('legacy-culture-review','culture-fiesta-directory-bachawan','legacy-user','{"id":"legacy-culture-review","targetId":"culture-fiesta-directory-bachawan","comment":"Historical review","rating":4}')`)
+    await pool.query(`INSERT INTO bookings(id,user_id,accommodation_id,check_in,check_out,guests_count,room_type,total_amount,status,data)
+      VALUES('legacy-booking','legacy-user','stay-test','2020-01-01','2020-01-02',1,'Standard',1000,'CONFIRMED','{"id":"legacy-booking","accommodationId":"stay-test"}')`)
+
+    const before = (await pool.query('SELECT id,kind,data FROM resources ORDER BY id')).rows
+    await t.test('catalog split preserves edited and archived data and rewires existing references', async () => {
+      assert.deepEqual(await migrate(pool), [
+        { name: split, action: 'Applied' },
+        { name: '012_baseline.sql', action: 'Recorded' },
+      ])
+      assert.deepEqual(await migrate(pool), [])
+      assert.equal((await pool.query("SELECT to_regclass('resources') AS relation")).rows[0].relation, null)
+      const after = (await pool.query(`
+        SELECT id,'attraction' AS kind,data FROM attractions
+        UNION ALL SELECT id,'accommodation',data FROM accommodations
+        UNION ALL SELECT id,'ferry',data FROM ferry_routes
+        UNION ALL SELECT id,'culture',data FROM culture_items
+        UNION ALL SELECT id,'trail',data FROM hiking_trails
+        ORDER BY id
+      `)).rows
+      assert.deepEqual(after, before)
+      assert.equal((await pool.query("SELECT target_id FROM reviews WHERE id='legacy-review'")).rows[0].target_id, legacyAttraction.id)
+      assert.equal((await pool.query("SELECT accommodation_id FROM bookings WHERE id='legacy-booking'")).rows[0].accommodation_id, stay.id)
+      for (const sql of [
+        "DELETE FROM attractions WHERE id='legacy-archived'",
+        "DELETE FROM accommodations WHERE id='stay-test'",
+        "DELETE FROM culture_items WHERE id='culture-fiesta-directory-bachawan'",
+      ]) await assert.rejects(pool.query(sql), { code: /^(23503|23001)$/ })
+    })
+    await pool.query("DELETE FROM users WHERE id='legacy-user'")
+    await pool.query("UPDATE culture_items SET data = data || '{\"dateLabel\":\"To be confirmed\"}'::jsonb WHERE id='culture-fiesta-directory-bachawan'")
+    for (const { kind, data } of catalogFixtureEntries(catalog)) {
+      await pool.query(`INSERT INTO ${catalogTables[kind]}(id,data) VALUES($1,$2) ON CONFLICT DO NOTHING`, [data.id, data])
+    }
     await pool.query("INSERT INTO travel_groups(id,name) VALUES('group-101','Island travelers')")
     await pool.query("INSERT INTO settings(key,data) VALUES('permissions',$1)", [{ enableGroupChat: true, enableHomestayBooking: true, enablePublicReviews: true, enableSocialCommunityStream: true, enableCloudVault: true, enableAiConcierge: true, requireLoginForReviews: true, allowOnlyVerifiedGuidesToMessage: false, allowOnlyVerifiedHostsToAcceptBookings: false, maintenanceMode: false }])
     // Exercise the full API regardless of the developer's portfolio setting.
@@ -49,21 +155,7 @@ test('real PostgreSQL API: accounts, isolation, permissions, reviews and booking
       assert.ok(result.body.cultureItems.some((item: { id: string }) => item.id === 'culture-event-immaculate-conception'))
       assert.equal(result.body.cultureItems.filter((item: { category: string }) => item.category === 'tradition').length, 2)
     })
-    await t.test('reapplying the barangay directory migration preserves local edits and avoids duplicates', async () => {
-      await pool.query('BEGIN')
-      try {
-        await pool.query(`UPDATE resources SET data=jsonb_set(data, '{dateLabel}', '"Local confirmation pending"'::jsonb) WHERE id='culture-fiesta-directory-bachawan'`)
-        const migration = await readFile(new URL('../migrations/010_barangay_fiesta_directory.sql', import.meta.url), 'utf8')
-        await pool.query(migration)
-        await pool.query(migration)
-        const saved = await pool.query("SELECT data FROM resources WHERE kind='culture' AND data->>'category'='fiesta-directory'")
-        assert.equal(saved.rows.length, 9)
-        assert.equal(saved.rows.find(item => item.data.id === 'culture-fiesta-directory-bachawan')?.data.dateLabel, 'Local confirmation pending')
-      } finally {
-        await pool.query('ROLLBACK')
-      }
-    })
-    await t.test('guest cannot write private resources or access admin', async () => {
+    await t.test('guest cannot book accommodations or access admin', async () => {
       assert.equal((await request('/bookings', 'POST', {})).status, 401)
       assert.equal((await request('/admin/permissions', 'PUT', {})).status, 401)
       assert.equal((await request('/auth/me')).body, null)
@@ -116,6 +208,9 @@ test('real PostgreSQL API: accounts, isolation, permissions, reviews and booking
       const saved = await request('/reviews', 'POST', { ...review, author: 'Forged admin' }, owner)
       assert.equal(saved.status, 201); assert.equal(saved.body.author, 'Owner Tester')
       assert.equal((await request('/reviews')).body.length, 1)
+      const rated = (await request('/catalog')).body.accommodations.find((item: { id: string }) => item.id === review.targetId)
+      assert.equal(rated.rating, 5)
+      assert.equal(rated.reviewCount, 1)
       const helpful = await request(`/reviews/${saved.body.id}/helpful`, 'POST', {}, other)
       assert.equal(helpful.status, 200); assert.equal(helpful.body.helpfulCount, 1)
       assert.equal((await request(`/reviews/${saved.body.id}/helpful`, 'POST', {}, other)).body.helpfulCount, 1)
@@ -201,7 +296,7 @@ test('real PostgreSQL API: accounts, isolation, permissions, reviews and booking
     })
     await t.test('adjacent reservations do not falsely exhaust multi-room availability', async () => {
       const multiRoom = { ...stay, id: 'stay-multi', availableRoomsCount: 2 }
-      await pool.query('INSERT INTO resources(id,kind,data) VALUES($1,$2,$3)', [multiRoom.id, 'accommodation', multiRoom])
+      await pool.query('INSERT INTO accommodations(id,data) VALUES($1,$2)', [multiRoom.id, multiRoom])
       const firstNight = { ...booking, accommodationId: multiRoom.id, checkIn: '2099-02-10', checkOut: '2099-02-11' }
       const secondNight = { ...firstNight, checkIn: '2099-02-11', checkOut: '2099-02-12' }
       assert.equal((await request('/bookings', 'POST', firstNight, owner)).status, 201)
@@ -233,7 +328,7 @@ test('real PostgreSQL API: accounts, isolation, permissions, reviews and booking
     })
     await t.test('unpublished demo places stay out of the catalog and cannot receive new reviews', async () => {
       const archived = { ...stay, id: 'archived-demo', isArchived: true }
-      await pool.query('INSERT INTO resources(id,kind,data) VALUES($1,$2,$3)', [archived.id, 'accommodation', archived])
+      await pool.query('INSERT INTO accommodations(id,data) VALUES($1,$2)', [archived.id, archived])
       const catalog = (await request('/catalog')).body
       assert.equal(catalog.accommodations.some((item: { id: string }) => item.id === archived.id), false)
       assert.equal((await request('/reviews', 'POST', { targetId: archived.id, rating: 5, comment: 'Old demo', tags: [] }, other)).status, 404)
@@ -241,14 +336,22 @@ test('real PostgreSQL API: accounts, isolation, permissions, reviews and booking
     await t.test('catalog edits preserve published source credits and archived referenced history', async () => {
       const sourced = JSON.parse(await readFile(new URL('../seed/sourced-attractions.json', import.meta.url), 'utf8'))
       const old = { ...sourced[0], id: 'archived-attraction', isArchived: true }
-      await pool.query("INSERT INTO resources(id,kind,data) VALUES($1,'attraction',$2)", [old.id, old])
-      await pool.query('INSERT INTO reviews(id,target_id,user_id,data) VALUES($1,$2,$3,$4)', ['historical-review', old.id, ownerId, { id: 'historical-review', targetId: old.id, comment: 'Historical record', rating: 4 }])
+      await pool.query('INSERT INTO attractions(id,data) VALUES($1,$2)', [old.id, old])
+      await pool.query("INSERT INTO reviews(id,target_id,target_kind,user_id,data) VALUES($1,$2,'attraction',$3,$4)", ['historical-review', old.id, ownerId, { id: 'historical-review', targetId: old.id, comment: 'Historical record', rating: 4 }])
       const saved = await request('/admin/catalog', 'PUT', { attractions: sourced }, owner)
       assert.equal(saved.status, 200)
       const result = (await request('/catalog')).body.attractions.find((item: { id: string }) => item.id === sourced[0].id)
       assert.deepEqual(result.photoCredit, sourced[0].photoCredit)
       assert.deepEqual(result.sources, sourced[0].sources)
-      assert.equal((await pool.query('SELECT count(*)::int AS count FROM resources WHERE id=$1', [old.id])).rows[0].count, 1)
+      assert.equal((await pool.query('SELECT count(*)::int AS count FROM attractions WHERE id=$1', [old.id])).rows[0].count, 1)
+    })
+    await t.test('admin catalog writes reject IDs from other content types', async () => {
+      const attraction = (await request('/catalog')).body.attractions[0]
+      const result = await request('/admin/catalog', 'PUT', { attractions: [{ ...attraction, id: stay.id }] }, owner)
+      assert.equal(result.status, 409)
+      const catalog = (await request('/catalog')).body
+      assert.ok(catalog.accommodations.some((item: { id: string }) => item.id === stay.id))
+      assert.ok(catalog.attractions.some((item: { id: string }) => item.id === attraction.id))
     })
     await t.test('reference-only lodgings preserve unknown facts and cannot create reservations', async () => {
       const listings = JSON.parse(await readFile(new URL('../seed/sourced-accommodations.json', import.meta.url), 'utf8'))

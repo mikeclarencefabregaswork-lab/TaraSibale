@@ -41,46 +41,46 @@
       "guide": "TaraSibale - Modes and Access"
     },
     "Backend/scripts/seed.ts": {
-      "summary": "Reads the catalog fixture and inserts resources, permission defaults, and the default travel community under the schema advisory lock. ON CONFLICT DO NOTHING preserves existing records and administrator changes instead of refreshing them from fixtures. Seeding is transactional and complements numbered data migrations rather than replacing them.",
+      "summary": "Reads the catalog fixture and inserts entries into the five content tables, along with permission defaults, and the default travel community under the schema advisory lock. ON CONFLICT DO NOTHING preserves existing records and administrator changes instead of refreshing them from fixtures. Seeding is transactional and complements numbered data migrations rather than replacing them.",
       "guide": "TaraSibale - Database"
     },
     "Backend/scripts/validate-seed.ts": {
       "summary": "Exercises every catalog fixture against actual resource-table checks inside a transaction that is always rolled back. It also attempts four malformed trail-coordinate shapes using savepoints and requires PostgreSQL check-constraint rejection. This validates database compatibility without retaining validation rows or resetting existing data.",
       "guide": "TaraSibale - Development"
     },
-    "Backend/migrations/001_initial.sql": {
-      "summary": "Creates the initial relational schema for accounts, sessions, typed catalog resources, settings, reviews, bookings, community features, verifications, and per-user saved state. JSON helpers and CHECK constraints keep important JSON identifiers and shapes aligned with relational ownership, while foreign keys define deletion behavior. This is the starting contract: migration 002 corrects trail-coordinate checking and migration 008 later permits unknown lodging facts for reference-only records.",
+    "Backend/migration-history/001_initial.sql": {
+      "summary": "Creates the initial relational schema for accounts, sessions, the original catalog, settings, reviews, bookings, community features, verifications, and per-user saved state. JSON helpers and CHECK constraints keep important JSON identifiers and shapes aligned with relational ownership, while foreign keys define deletion behavior. This is the starting contract: migration 002 corrects trail-coordinate checking and migration 008 permits unknown lodging facts for reference-only records, and migration 011 introduces separate content tables.",
       "guide": "TaraSibale - Database"
     },
-    "Backend/migrations/002_strict_trail_coordinates.sql": {
+    "Backend/migration-history/002_strict_trail_coordinates.sql": {
       "summary": "Replaces the resource-kind CHECK to evaluate each trail coordinate pair with strict JSONPath rather than lax implicit unwrapping. The change targets malformed pair lengths and retains the other resource branches of the then-current contract. Migration 008 subsequently replaces this same named constraint while preserving the strict trail rule.",
       "guide": "TaraSibale - Database"
     },
-    "Backend/migrations/003_unavailable_catalog_photo.sql": {
+    "Backend/migration-history/003_unavailable_catalog_photo.sql": {
       "summary": "Replaces one known broken imported image URL with the local unavailable-photo asset wherever that exact fixture URL remains in resource JSON. The targeted replacement preserves unrelated content and different administrator-selected images. It is a historical data repair rather than a general remote-image health check.",
       "guide": "TaraSibale - Attractions and Data"
     },
-    "Backend/migrations/004_sourced_sibale_attractions.sql": {
+    "Backend/migration-history/004_sourced_sibale_attractions.sql": {
       "summary": "Archives six former attraction IDs so historical reviews retain their original targets, then upserts sourced Sibale attraction records. New records carry evidence links, photo provenance, verification dates, and explicit coordinate certainty rather than silently relabeling old demo places. Source-captioned local-preview photographs remain subject to the portfolio presentation filter.",
       "guide": "TaraSibale - Attractions and Data"
     },
-    "Backend/migrations/005_attraction_visitor_copy.sql": {
+    "Backend/migration-history/005_attraction_visitor_copy.sql": {
       "summary": "Patches descriptions, highlights, fee labels, and best-time labels for the sourced attraction IDs introduced earlier. It merges visitor-facing copy into existing resource data so identity, coordinates, evidence, and image provenance stay intact. Current access and fees remain locally confirmable rather than promised live facts.",
       "guide": "TaraSibale - Attractions and Data"
     },
-    "Backend/migrations/006_sourced_fiestas_and_customs.sql": {
-      "summary": "Archives the former demo event and inserts sourced patronal-feast and custom records as culture resources. The entries distinguish the established December 8 feast from historical reports of Biniray, processions, and hospitality. Current-year programs and private invitations remain unverified and are described accordingly.",
+    "Backend/migration-history/006_sourced_fiestas_and_customs.sql": {
+      "summary": "Archives the former demo event and inserts sourced patronal-feast and custom records as culture entries. The entries distinguish the established December 8 feast from historical reports of Biniray, processions, and hospitality. Current-year programs and private invitations remain unverified and are described accordingly.",
       "guide": "TaraSibale - Attractions and Data"
     },
-    "Backend/migrations/007_sourced_asi_phrasebook.sql": {
+    "Backend/migration-history/007_sourced_asi_phrasebook.sql": {
       "summary": "Archives unsupported demo phrases and publishes five contextual Asi expressions drawn from a cited Bantoanon phrasebook. Each culture record carries its use case, English translation, source, and page/dialogue evidence. The descriptions avoid treating a call at a home as a general welcome greeting.",
       "guide": "TaraSibale - Attractions and Data"
     },
-    "Backend/migrations/008_sourced_accommodations.sql": {
+    "Backend/migration-history/008_sourced_accommodations.sql": {
       "summary": "Extends the resource constraint so price, capacity, and coordinates may be JSON null specifically for reference-only accommodations. It archives four demo stays and upserts two historically documented lodgings with explicit uncertainty, empty room inventories, and source evidence. The booking API independently refuses reference-only reservations; these records do not establish current operation or availability.",
       "guide": "TaraSibale - Database"
     },
-    "Backend/migrations/009_sourced_island_foods.sql": {
+    "Backend/migration-history/009_sourced_island_foods.sql": {
       "summary": "Archives unsupported demo dishes and publishes three culture food entries grounded in a December 2025 agriculture report. Local-production evidence is kept separate from current vendor availability and from representative food-photo credits. The three local image assets are also the portfolio catalog image allowlist.",
       "guide": "TaraSibale - Attractions and Data"
     },
@@ -138,7 +138,6 @@
     "Backend/src/server.ts::server": "Holds the listening HTTP server created with the shared PostgreSQL pool and readiness check. Its listen-error and close hooks coordinate connection cleanup.",
     "Backend/scripts/seed.ts::SeedCatalog": "Describes the fixture container as typed resource envelopes and a boolean permission map. It is a TypeScript assertion for the parsed file, while actual resource persistence is checked by PostgreSQL constraints.",
     "Backend/scripts/seed.ts::catalog": "Contains the parsed baseline seed fixture consumed by insert-only setup. Existing resource IDs and permission settings win conflicts so running the script again preserves stored changes.",
-    "Backend/scripts/validate-seed.ts::Resource": "Describes the id, kind, and JSON data envelope for resources exercised by the database validation script. Temporary IDs replace fixture IDs so checks can run without overwriting published rows.",
     "Backend/scripts/validate-seed.ts::catalog": "Supplies every fixture resource for temporary insertion into the live schema’s resource contract. It also provides a trail template for deliberately invalid coordinate cases; all validation writes are rolled back.",
     "Backend/scripts/promote-admin.ts::email": "Selects the existing account to promote from the sole CLI argument after trimming. The SQL comparison is case-insensitive and success requires exactly one matched account.",
     "Backend/src/validation.ts::text()": "Builds trimmed nonempty bounded-string schemas reused throughout request validation. Callers choose limits appropriate to names, IDs, comments, and other domain fields.",
@@ -163,55 +162,53 @@
     "Backend/src/validation.ts::ferry": "Validates bounded reference-route labels, fares, notes, and one of the supported status values. These administrator-editable records do not establish a live maritime data feed.",
     "Backend/src/validation.ts::catalogUpdate": "Allows optional bounded replacement collections for attractions, accommodations, and ferries. The administrator route checks duplicate IDs, rejects cross-kind reuse, and deletes omitted active records for each supplied kind within one transaction.",
     "Backend/src/validation.ts::verification": "Validates administrator-reviewed application details and status for host, guide, or resident applicants. Account existence, role compatibility, and preservation of promoted administrator identity are enforced separately during persistence.",
-    "Backend/migrations/001_initial.sql::users": "Owns persistent account identity, password hashes, role, and verification status. Self-service signup can create only non-admin roles, while session reads retrieve current role data instead of trusting client claims.",
-    "Backend/migrations/001_initial.sql::users_email_lower_unique": "Enforces case-insensitive email uniqueness independently of API normalization. Duplicate signups become database uniqueness errors mapped to a conflict response.",
-    "Backend/migrations/001_initial.sql::sessions": "Owns hashed session tokens linked to users and expiration times, with user deletion cascading to sessions. The API never stores the raw cookie token in this table.",
-    "Backend/migrations/001_initial.sql::sessions_user_id_idx": "Indexes account ownership of sessions, supporting account-linked access and foreign-key cleanup. Authentication itself looks up the token_hash primary key.",
-    "Backend/migrations/001_initial.sql::sessions_expires_at_idx": "Supports expiration-oriented session maintenance. Session issuance removes expired rows, and authentication rejects expired records even before cleanup.",
-    "Backend/migrations/001_initial.sql::jsonb_has_strings()": "Checks that each required JSON key has a string value and coalesces absent keys to false. This prevents a missing field from passing a resource or contribution CHECK through SQL NULL behavior.",
-    "Backend/migrations/001_initial.sql::jsonb_string_array()": "Checks that a JSON value is an array containing only strings, with missing or invalid values failing. Resource highlights, amenities, room types, galleries, and review tags reuse it.",
-    "Backend/migrations/001_initial.sql::resources": "Owns typed catalog records under stable IDs, pairing relational kind with domain JSON. Referential links keep historical reviews and bookings attached to their original records, so later migrations archive unsupported demo IDs instead of repurposing them. Its kind-specific CHECK evolves in migrations 002 and 008, including nullable unknown accommodation facts only for reference-only listings.",
-    "Backend/migrations/001_initial.sql::resources_kind_idx": "Supports selecting or managing resources by kind, as used by catalog grouping and administrator replacement logic. Stable resource IDs still provide the cross-feature reference identity.",
-    "Backend/migrations/001_initial.sql::settings": "Stores JSON settings keyed by name, with the permissions entry required to contain all known boolean flags. Server feature gates parse that persisted object before applying maintenance or capability policy.",
-    "Backend/migrations/001_initial.sql::reviews": "Owns authenticated review contributions tied to catalog resources and users, with matching relational/JSON target identity and integer ratings. Resource deletion is restricted to preserve referenced history, while deleting a user removes that user’s reviews.",
-    "Backend/migrations/001_initial.sql::review_votes": "Records one helpful vote per review/account pair through its composite primary key. Repeated helpful requests are idempotent, and either owning entity’s deletion removes its votes.",
-    "Backend/migrations/001_initial.sql::bookings": "Owns account reservations with typed dates, amount, status, and a matching JSON snapshot. A composite foreign key restricts targets to accommodation resources and preserves referenced catalog history. The API additionally locks the listing and counts occupied rooms per night before insertion.",
-    "Backend/migrations/001_initial.sql::bookings_inventory_idx": "Indexes accommodation/date intervals only for confirmed or pending reservations, matching the inventory query’s occupying statuses. Cancelled bookings do not consume that occupancy set.",
-    "Backend/migrations/001_initial.sql::bookings_user_created_idx": "Supports retrieving an account’s newest reservations without mixing ownership. The API scopes booking reads to the authenticated user rather than a supplied account ID.",
-    "Backend/migrations/001_initial.sql::travel_groups": "Owns named chat communities referenced by membership and message rows. Seeding creates group-101 and signup joins it when present.",
-    "Backend/migrations/001_initial.sql::group_members": "Defines which accounts belong to each travel group, with one membership per group/account pair. Chat reads join through membership and message creation verifies membership before insertion.",
-    "Backend/migrations/001_initial.sql::group_members_user_id_idx": "Supports locating an account’s group memberships for scoped message reads and user-linked cleanup. The group/account primary key separately prevents duplicate membership.",
-    "Backend/migrations/001_initial.sql::messages": "Owns group contributions with relational sender/group links and a matching JSON group ID. Text is bounded and nonempty at the database boundary, while the API supplies trusted sender names, guide badges, and timestamps.",
-    "Backend/migrations/001_initial.sql::social_posts": "Owns community-post JSON and creation order; its account link becomes null on user deletion so published posts can remain. Like totals are derived from social_likes rather than trusted from the stored presentation snapshot.",
-    "Backend/migrations/001_initial.sql::social_likes": "Stores one social-post/account like per composite primary key. The API toggles this relation while locking the post, then recomputes total likes and the caller’s state.",
-    "Backend/migrations/001_initial.sql::verifications": "Owns application/review JSON with optional account linkage and constrained applied roles and decision status. User deletion preserves the application with a null link, while the API prevents historical decisions from revoking a separately promoted administrator identity.",
-    "Backend/migrations/001_initial.sql::user_state": "Owns one private saved-state row per user for notifications, documents, itinerary, and checklists. Database checks enforce top-level JSON shapes and cascading ownership; the API applies detailed bounds, file validation, partial updates, and optional stale-tab account matching.",
-    "Backend/migrations/001_initial.sql::001_initial.sql": {
-      "fileSummary": "Backend/migrations/001_initial.sql"
+    "Backend/migration-history/001_initial.sql::users": "Owns persistent account identity, password hashes, role, and verification status. Self-service signup can create only non-admin roles, while session reads retrieve current role data instead of trusting client claims.",
+    "Backend/migration-history/001_initial.sql::users_email_lower_unique": "Enforces case-insensitive email uniqueness independently of API normalization. Duplicate signups become database uniqueness errors mapped to a conflict response.",
+    "Backend/migration-history/001_initial.sql::sessions": "Owns hashed session tokens linked to users and expiration times, with user deletion cascading to sessions. The API never stores the raw cookie token in this table.",
+    "Backend/migration-history/001_initial.sql::sessions_user_id_idx": "Indexes account ownership of sessions, supporting account-linked access and foreign-key cleanup. Authentication itself looks up the token_hash primary key.",
+    "Backend/migration-history/001_initial.sql::sessions_expires_at_idx": "Supports expiration-oriented session maintenance. Session issuance removes expired rows, and authentication rejects expired records even before cleanup.",
+    "Backend/migration-history/001_initial.sql::jsonb_has_strings()": "Checks that each required JSON key has a string value and coalesces absent keys to false. This prevents a missing field from passing a resource or contribution CHECK through SQL NULL behavior.",
+    "Backend/migration-history/001_initial.sql::jsonb_string_array()": "Checks that a JSON value is an array containing only strings, with missing or invalid values failing. Resource highlights, amenities, room types, galleries, and review tags reuse it.",
+    "Backend/migration-history/001_initial.sql::settings": "Stores JSON settings keyed by name, with the permissions entry required to contain all known boolean flags. Server feature gates parse that persisted object before applying maintenance or capability policy.",
+    "Backend/migration-history/001_initial.sql::reviews": "Owns authenticated review contributions tied to catalog entries and users, with matching relational/JSON target identity and integer ratings. Catalog entry deletion is restricted to preserve referenced history, while deleting a user removes that user’s reviews.",
+    "Backend/migration-history/001_initial.sql::review_votes": "Records one helpful vote per review/account pair through its composite primary key. Repeated helpful requests are idempotent, and either owning entity’s deletion removes its votes.",
+    "Backend/migration-history/001_initial.sql::bookings": "Owns account reservations with typed dates, amount, status, and a matching JSON snapshot. Migration 011 links bookings directly to accommodations and preserves referenced catalog history. The API additionally locks the listing and counts occupied rooms per night before insertion.",
+    "Backend/migration-history/001_initial.sql::bookings_inventory_idx": "Indexes accommodation/date intervals only for confirmed or pending reservations, matching the inventory query’s occupying statuses. Cancelled bookings do not consume that occupancy set.",
+    "Backend/migration-history/001_initial.sql::bookings_user_created_idx": "Supports retrieving an account’s newest reservations without mixing ownership. The API scopes booking reads to the authenticated user rather than a supplied account ID.",
+    "Backend/migration-history/001_initial.sql::travel_groups": "Owns named chat communities referenced by membership and message rows. Seeding creates group-101 and signup joins it when present.",
+    "Backend/migration-history/001_initial.sql::group_members": "Defines which accounts belong to each travel group, with one membership per group/account pair. Chat reads join through membership and message creation verifies membership before insertion.",
+    "Backend/migration-history/001_initial.sql::group_members_user_id_idx": "Supports locating an account’s group memberships for scoped message reads and user-linked cleanup. The group/account primary key separately prevents duplicate membership.",
+    "Backend/migration-history/001_initial.sql::messages": "Owns group contributions with relational sender/group links and a matching JSON group ID. Text is bounded and nonempty at the database boundary, while the API supplies trusted sender names, guide badges, and timestamps.",
+    "Backend/migration-history/001_initial.sql::social_posts": "Owns community-post JSON and creation order; its account link becomes null on user deletion so published posts can remain. Like totals are derived from social_likes rather than trusted from the stored presentation snapshot.",
+    "Backend/migration-history/001_initial.sql::social_likes": "Stores one social-post/account like per composite primary key. The API toggles this relation while locking the post, then recomputes total likes and the caller’s state.",
+    "Backend/migration-history/001_initial.sql::verifications": "Owns application/review JSON with optional account linkage and constrained applied roles and decision status. User deletion preserves the application with a null link, while the API prevents historical decisions from revoking a separately promoted administrator identity.",
+    "Backend/migration-history/001_initial.sql::user_state": "Owns one private saved-state row per user for notifications, documents, itinerary, and checklists. Database checks enforce top-level JSON shapes and cascading ownership; the API applies detailed bounds, file validation, partial updates, and optional stale-tab account matching.",
+    "Backend/migration-history/001_initial.sql::001_initial.sql": {
+      "fileSummary": "Backend/migration-history/001_initial.sql"
     },
-    "Backend/migrations/002_strict_trail_coordinates.sql::002_strict_trail_coordinates.sql": {
-      "fileSummary": "Backend/migrations/002_strict_trail_coordinates.sql"
+    "Backend/migration-history/002_strict_trail_coordinates.sql::002_strict_trail_coordinates.sql": {
+      "fileSummary": "Backend/migration-history/002_strict_trail_coordinates.sql"
     },
-    "Backend/migrations/003_unavailable_catalog_photo.sql::003_unavailable_catalog_photo.sql": {
-      "fileSummary": "Backend/migrations/003_unavailable_catalog_photo.sql"
+    "Backend/migration-history/003_unavailable_catalog_photo.sql::003_unavailable_catalog_photo.sql": {
+      "fileSummary": "Backend/migration-history/003_unavailable_catalog_photo.sql"
     },
-    "Backend/migrations/004_sourced_sibale_attractions.sql::004_sourced_sibale_attractions.sql": {
-      "fileSummary": "Backend/migrations/004_sourced_sibale_attractions.sql"
+    "Backend/migration-history/004_sourced_sibale_attractions.sql::004_sourced_sibale_attractions.sql": {
+      "fileSummary": "Backend/migration-history/004_sourced_sibale_attractions.sql"
     },
-    "Backend/migrations/005_attraction_visitor_copy.sql::005_attraction_visitor_copy.sql": {
-      "fileSummary": "Backend/migrations/005_attraction_visitor_copy.sql"
+    "Backend/migration-history/005_attraction_visitor_copy.sql::005_attraction_visitor_copy.sql": {
+      "fileSummary": "Backend/migration-history/005_attraction_visitor_copy.sql"
     },
-    "Backend/migrations/006_sourced_fiestas_and_customs.sql::006_sourced_fiestas_and_customs.sql": {
-      "fileSummary": "Backend/migrations/006_sourced_fiestas_and_customs.sql"
+    "Backend/migration-history/006_sourced_fiestas_and_customs.sql::006_sourced_fiestas_and_customs.sql": {
+      "fileSummary": "Backend/migration-history/006_sourced_fiestas_and_customs.sql"
     },
-    "Backend/migrations/007_sourced_asi_phrasebook.sql::007_sourced_asi_phrasebook.sql": {
-      "fileSummary": "Backend/migrations/007_sourced_asi_phrasebook.sql"
+    "Backend/migration-history/007_sourced_asi_phrasebook.sql::007_sourced_asi_phrasebook.sql": {
+      "fileSummary": "Backend/migration-history/007_sourced_asi_phrasebook.sql"
     },
-    "Backend/migrations/008_sourced_accommodations.sql::008_sourced_accommodations.sql": {
-      "fileSummary": "Backend/migrations/008_sourced_accommodations.sql"
+    "Backend/migration-history/008_sourced_accommodations.sql::008_sourced_accommodations.sql": {
+      "fileSummary": "Backend/migration-history/008_sourced_accommodations.sql"
     },
-    "Backend/migrations/009_sourced_island_foods.sql::009_sourced_island_foods.sql": {
-      "fileSummary": "Backend/migrations/009_sourced_island_foods.sql"
+    "Backend/migration-history/009_sourced_island_foods.sql::009_sourced_island_foods.sql": {
+      "fileSummary": "Backend/migration-history/009_sourced_island_foods.sql"
     },
     "Backend/scripts/migrate.ts::migrate.ts": {
       "fileSummary": "Backend/scripts/migrate.ts"

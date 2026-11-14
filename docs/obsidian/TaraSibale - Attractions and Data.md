@@ -27,7 +27,7 @@ catalog fixtures, while this guide explains the runtime path.
 
 ```mermaid
 flowchart TD
-  Seed[Backend seed catalog JSON] -->|insert missing records| Rows[(resources table)]
+  Seed[Backend seed catalog JSON] -->|insert missing records| Rows[(attractions table)]
   Migrations[Numbered migrations] -->|schema and sourced catalog changes| Rows
   Rows --> Catalog[GET /api/catalog]
   Catalog --> Transform[Portfolio presentation transform when enabled]
@@ -46,7 +46,7 @@ state for the current visit; that favorite toggle is not an account database wri
 | --- | --- | --- |
 | Frontend reference arrays | Typed reference content retained in source | The source file; not the active API catalog |
 | `Backend/seed/catalog.json` | Input for missing reference records | Future inserts from the seed command; existing IDs are preserved |
-| PostgreSQL `resources.data` | Runtime catalog payload | What the API reads, subject to archive filtering and portfolio presentation |
+| PostgreSQL `attractions.data` | Runtime catalog payload | What the API reads, subject to archive filtering and portfolio presentation |
 
 The migration history also contains deliberate sourced-content updates. The
 seed script uses `ON CONFLICT DO NOTHING`; rerunning it does not replace an
@@ -78,4 +78,4 @@ Sources: [reference array](../../Frontend/src/data/concepcionData.ts),
 [attraction UI](../../Frontend/src/components/AttractionsSection.tsx),
 [catalog handler](../../Backend/src/api.ts), [seed script](../../Backend/scripts/seed.ts),
 [seed data](../../Backend/seed/catalog.json), [attraction source notes](../attraction-sources.md),
-[lodging migration](../../Backend/migrations/008_sourced_accommodations.sql).
+[lodging migration](../../Backend/migration-history/008_sourced_accommodations.sql).

@@ -42,11 +42,10 @@ test("fiestas view includes a barangay directory in addition to documented celeb
 test("frontend, canonical seed and migration publish the same directory records", async () => {
   const source = JSON.parse(await readFile(new URL("../../Backend/seed/barangay-fiestas.json", import.meta.url), "utf8"));
   const catalog = JSON.parse(await readFile(new URL("../../Backend/seed/catalog.json", import.meta.url), "utf8"));
-  const migration = await readFile(new URL("../../Backend/migrations/010_barangay_fiesta_directory.sql", import.meta.url), "utf8");
+  const migration = await readFile(new URL("../../Backend/migration-history/010_barangay_fiesta_directory.sql", import.meta.url), "utf8");
   const embedded = migration.match(/\$barangays\$([\s\S]*?)\$barangays\$/)?.[1];
   assert.ok(embedded, "Migration must contain its immutable directory snapshot");
   assert.deepEqual(JSON.parse(embedded), source);
   assert.deepEqual(CULTURE_ITEMS.filter(item => item.category === "fiesta-directory"), source);
-  assert.deepEqual(catalog.resources.filter((item: { data: { category: string } }) => item.data.category === "fiesta-directory")
-    .map((item: { data: unknown }) => item.data), source);
+  assert.deepEqual(catalog.culture.filter((item: { category: string }) => item.category === "fiesta-directory"), source);
 });

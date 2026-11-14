@@ -31,8 +31,8 @@ already deployed production service.
    or saved preference and starts with empty catalog collections.
 2. `refreshCatalog` requests `/api/catalog` and `/api/reviews`. Separately,
    `/api/auth/me` determines whether a session belongs to a user.
-3. The API reads non-archived `resources`, permissions from `settings`, and
-   review aggregates. It groups resources into attractions, stays, ferries,
+3. The API reads non-archived entries from five catalog tables, permissions from `settings`, and
+   review aggregates. It groups entries into attractions, stays, ferries,
    culture, and trails.
 4. In portfolio mode, the server transforms the outgoing catalog for the demo.
    Stored records remain intact. Public reviews are returned as an empty list.

@@ -48,7 +48,7 @@ test("portfolio catalog ignores pre-existing session cookies and never reads pub
   const queries: string[] = [];
   const database = { query: async (sql: string) => {
     queries.push(sql);
-    if (sql.includes("FROM resources")) return { rows: [{ id: "beach-1", kind: "attraction", data: { name: "Beach", image: "https://example.com/uncleared.jpg" } }] };
+    if (sql.includes("FROM attractions")) return { rows: [{ id: "beach-1", kind: "attraction", data: { name: "Beach", image: "https://example.com/uncleared.jpg" } }] };
     if (sql.includes("FROM settings") || sql.includes("FROM reviews")) return { rows: [] };
     throw new Error("Unexpected query: " + sql);
   } } as unknown as Pool;
