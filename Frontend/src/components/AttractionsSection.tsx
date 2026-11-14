@@ -270,7 +270,7 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
                     <div className="relative h-52 overflow-hidden bg-slate-900/40">
                       <img
                         src={item.image}
-                        alt={item.image === "/assets/portfolio-placeholder.svg" ? `Portfolio placeholder for ${item.name}; not a destination photo` : item.name}
+                        alt={item.image === "/assets/portfolio-placeholder.svg" ? `Image placeholder for ${item.name}; not a destination photo` : item.name}
                         loading="lazy"
                         referrerPolicy="no-referrer"
                         onError={(event) => {
@@ -428,7 +428,7 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
             <div className="relative h-72 sm:h-80 overflow-hidden bg-slate-950">
               <img
                 src={activeModalAttraction.image}
-                alt={activeModalAttraction.image === "/assets/portfolio-placeholder.svg" ? `Portfolio placeholder for ${activeModalAttraction.name}; not a destination photo` : activeModalAttraction.name}
+                alt={activeModalAttraction.image === "/assets/portfolio-placeholder.svg" ? `Image placeholder for ${activeModalAttraction.name}; not a destination photo` : activeModalAttraction.name}
                 referrerPolicy="no-referrer"
                 onError={(event) => {
                   if (

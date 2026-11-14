@@ -26,7 +26,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
               <span className="font-black text-lg text-white">TaraSibale</span>
             </div>
             <p className="text-xs leading-relaxed text-slate-300/80">
-              An independent portfolio prototype exploring travel tools for
+              An independent travel guide for
               Concepcion on Sibale Island (Maestro de Campo), Province of
               Romblon, Philippines.
             </p>
@@ -56,7 +56,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
                 <button
                   onClick={() => setActiveTab("stay")}
                   className="hover:text-teal-300 transition-colors cursor-pointer">
-                  • Sample Stays
+                  • Places to Stay
                 </button>
               </li>
               <li>
@@ -70,7 +70,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
                 <button
                   onClick={() => setActiveTab("auth")}
                   className="hover:text-teal-300 transition-colors cursor-pointer font-bold text-teal-400">
-                  • About Demo Accounts
+                  • My Account
                 </button>
               </li>
             </ul>
@@ -83,7 +83,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
             </h4>
             <ul className="space-y-1.5 text-slate-300/80">
               <li>• Main Access: Pinamalayan Port (Mindoro)</li>
-              <li>• Travel times: illustrative only</li>
+              <li>• Confirm ferry schedules before traveling</li>
               <li>• Confirm connectivity locally</li>
               <li>• Currency: Philippine Peso (Bring Cash)</li>
             </ul>
@@ -94,13 +94,13 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
             <h4 className="font-extrabold text-teal-300 uppercase tracking-wider mb-2">
               Emergency Information
             </h4>
-            <p className="text-slate-300/80">Emergency contacts are withheld until verified. This prototype is not an emergency service.</p>
+            <p className="text-slate-300/80">Get current emergency contact numbers from local authorities before traveling.</p>
           </div>
         </div>
 
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <p>
-            © {year} TaraSibale portfolio project. Third-party materials retain their respective rights. No municipal affiliation claimed.
+            © {year} TaraSibale. Third-party materials retain their respective rights. No municipal affiliation claimed.
           </p>
           <div className="flex items-center gap-1 text-slate-300">
             <span>Crafted with</span>

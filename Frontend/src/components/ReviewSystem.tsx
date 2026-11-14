@@ -119,9 +119,6 @@ export const ReviewSystem: React.FC<ReviewSystemProps> = ({
               Traveler Reviews & Community Ratings
             </h2>
           </div>
-          <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 mt-1 font-medium">
-            Portfolio review interface. Public submissions are disabled; no real visitor feedback is claimed.
-          </p>
         </div>
 
         <button

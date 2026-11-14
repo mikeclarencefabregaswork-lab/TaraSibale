@@ -39,10 +39,6 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
       <div className="relative max-w-7xl mx-auto px-6 py-12 sm:py-20 lg:py-24 flex flex-col items-start justify-between min-h-[460px]">
         {/* Top Pills */}
         <div role="group" aria-label="Island overview" className="flex flex-wrap items-center gap-2 mb-4">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-teal-500/20 text-teal-300 border border-teal-500/40 backdrop-blur-md shadow-[0_0_10px_rgba(46,196,182,0.2)]">
-            <Sparkles className="w-3.5 h-3.5 text-teal-400" />
-            TaraSibale • Portfolio Prototype
-          </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-cyan-200 border border-white/20 backdrop-blur-md">
             <Waves className="w-3.5 h-3.5 text-cyan-300" />
             Sibale Island (Maestro de Campo)
@@ -90,7 +86,7 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
             onClick={() => setActiveTab("stay")}
             className="min-h-[48px] flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm bg-white/10 hover:bg-white/20 text-slate-100 border border-white/20 backdrop-blur-md hover:scale-[1.02] transition-all cursor-pointer">
             <Compass className="w-4 h-4 text-cyan-300 shrink-0" />
-            <span>View Sample Stays</span>
+            <span>Explore Stays</span>
           </button>
 
           <button

@@ -1,4 +1,4 @@
-TaraSibale portfolio — third-party frontend runtime notices
+TaraSibale third-party frontend runtime notices
 Generated from installed packages; preserve with distributed builds.
 Food-photo credits are displayed individually in the Culture section.
 

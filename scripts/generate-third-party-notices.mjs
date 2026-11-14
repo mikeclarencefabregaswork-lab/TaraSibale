@@ -26,5 +26,5 @@ function visit(name, parent = root) {
 }
 // Frontend runtime entry points; their installed runtime dependencies are included recursively.
 for (const name of ['react', 'react-dom', 'leaflet', 'lucide-react', 'motion']) visit(name);
-writeFileSync(join(root, 'Frontend/public/THIRD_PARTY_NOTICES.txt'), 'TaraSibale portfolio — third-party frontend runtime notices\nGenerated from installed packages; preserve with distributed builds.\nFood-photo credits are displayed individually in the Culture section.\n\n' + sections.sort().join('\n\n' + '='.repeat(72) + '\n\n'));
+writeFileSync(join(root, 'Frontend/public/THIRD_PARTY_NOTICES.txt'), 'TaraSibale third-party frontend runtime notices\nGenerated from installed packages; preserve with distributed builds.\nFood-photo credits are displayed individually in the Culture section.\n\n' + sections.sort().join('\n\n' + '='.repeat(72) + '\n\n'));
 console.log(`Generated notices for ${visited.size} runtime packages.`);

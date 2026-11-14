@@ -287,7 +287,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
 
   // Copy text summary to clipboard
   const handleCopySummary = async () => {
-    let summary = `PORTFOLIO SAMPLE — SIBALE ISLAND TRIP ITINERARY (${days.length} Days)\n\n`;
+    let summary = `SIBALE ISLAND TRIP ITINERARY (${days.length} Days)\n\n`;
     days.forEach((day) => {
       summary += `📅 ${day.title.toUpperCase()}\n`;
       day.items.forEach((item, idx) => {
@@ -296,7 +296,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
       });
       summary += "\n";
     });
-    summary += "PORTFOLIO SAMPLE ONLY. Not verified for navigation, reservations or emergency use.\n";
+    summary += "Confirm routes, transport schedules, and reservations before traveling.\n";
     summary += `Prepared with Tara Sibale! App\n`;
 
     try {
@@ -321,7 +321,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
               Tara Sibale!
             </h1>
             <p className="text-sm font-semibold text-slate-600">
-              Portfolio Sample Itinerary — Not a Travel or Navigation Pass
+              Sibale Island Trip Itinerary
             </p>
             <p className="text-xs text-slate-500 mt-1">
               Municipality of Concepcion (Maestro de Campo), Romblon,
@@ -333,7 +333,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
               {days.length}-DAY EXPEDITION
             </span>
             <p className="text-xs text-slate-500 mt-2">
-              Emergency Hotline: Contact withheld — demo only
+              Confirm routes, schedules, and reservations before traveling.
             </p>
           </div>
         </div>
@@ -1012,11 +1012,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
               📞 Municipal Assistance
             </h4>
             <p>
-              Concepcion Police Station: Contact withheld — demo only
-              <br />
-              Rural Health Unit (RHU): Contact withheld — demo only
-              <br />
-              Tourism Desk: Contact withheld — demo only
+              Get current emergency and tourism contact numbers from local authorities before traveling.
             </p>
           </div>
         </div>

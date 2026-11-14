@@ -222,7 +222,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   }, [isMobileSheetExpanded, isFullscreen]);
   const [selectedPin, setSelectedPin] = useState<{
     id: string;
-    type: "attraction" | "stay" | "port" | "emergency" | "trailhead";
+    type: "attraction" | "stay" | "port" | "trailhead";
     name: string;
     categoryLabel: string;
     lat: number;
@@ -281,7 +281,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       setShowPortsLayer(true);
       setShowAttractionsLayer(true);
       showToast(
-        "Switched to Town Navigator (Standard Street + Homestays + Emergency)",
+        "Switched to Town Navigator (Standard Street + Homestays + Ports)",
       );
     }
   };
@@ -356,7 +356,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       );
     }
 
-    // Ports & Emergency Services
+    // Ports
     if (showPortsLayer) {
       pins.push(
         {
@@ -374,23 +374,6 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             "Passenger Boat Jetty",
             "Tourism Registry Desk",
             "Habal-Habal Terminal",
-          ],
-        },
-        {
-          id: "emergency-rhu",
-          type: "emergency" as const,
-          name: "Concepcion Rural Health Unit & MDRRMO",
-          categoryLabel: "EMERGENCY & MEDICAL",
-          lat: 12.9242,
-          lng: 121.7075,
-          image:
-            "/assets/portfolio-placeholder.svg",
-          description:
-            "Unverified clinic example; service hours and emergency contacts are not supplied by this prototype. Contact withheld — demo only.",
-          highlights: [
-            "24/7 First Aid",
-            "Disaster Response Command",
-            "Coast Guard Substation",
           ],
         },
       );
@@ -452,8 +435,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           pin.rawObject.category === "landmark"
         );
       if (activeCategory === "stay") return pin.type === "stay";
-      if (activeCategory === "emergency")
-        return pin.type === "emergency" || pin.type === "port";
+      if (activeCategory === "port") return pin.type === "port";
       return true;
     });
   }, [mapPins, activeCategory, searchPinQuery]);
@@ -698,9 +680,6 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       } else if (pin.type === "port") {
         badgeColor = "bg-cyan-500 text-white";
         iconSymbol = "⚓";
-      } else if (pin.type === "emergency") {
-        badgeColor = "bg-red-600 text-white animate-pulse";
-        iconSymbol = "🚨";
       } else if (
         pin.rawObject &&
         "category" in pin.rawObject &&
@@ -887,16 +866,11 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
   // Offline Save Bundle
   const handleSaveOfflineMap = () => {
-    if (PORTFOLIO_MODE) { showToast("Offline navigation exports are unavailable for unverified demo routes."); return; }
+    if (PORTFOLIO_MODE) { showToast("Offline map downloads are disabled in this mode."); return; }
     const offlinePackage = {
       timestamp: new Date().toISOString(),
       mapPins,
       hikingTrails: hikingTrails,
-      emergencyHotlines: {
-        rhu: "Contact withheld — demo only",
-        coastGuard: "Contact withheld — demo only",
-        tourismOffice: "Contact withheld — demo only",
-      },
     };
     localStorage.setItem(
       "concepcion_offline_map_cached",
@@ -911,13 +885,13 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
   // GPX Download
   const handleExportTrailGPX = (trail: HikingTrail) => {
-    if (PORTFOLIO_MODE) { showToast("GPX downloads are unavailable: sample routes are not verified for navigation."); return; }
+    if (PORTFOLIO_MODE) { showToast("GPX downloads are disabled in this mode."); return; }
     const gpxData = `<?xml version="1.0" encoding="UTF-8"?>
-<gpx version="1.1" creator="TaraSibale - Concepcion Romblon Tourism" xmlns="http://www.topografix.com/GPX/1/1">
+<gpx version="1.1" creator="TaraSibale" xmlns="http://www.topografix.com/GPX/1/1">
   <metadata>
     <name>${escapeHtml(trail.name)}</name>
-    <desc>${escapeHtml(trail.description)}</desc>
-    <author><name>TaraSibale Independent Portfolio</name></author>
+    <desc>${escapeHtml(trail.description)} Route data is unverified. Confirm conditions locally before setting out.</desc>
+    <author><name>TaraSibale</name></author>
     <time>${new Date().toISOString()}</time>
   </metadata>
   <trk>
@@ -1021,14 +995,14 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             <div className="flex items-center gap-2 flex-wrap">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
               <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                Sibale Island Map • Portfolio Demonstration
+                Sibale Island Map
               </h2>
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-teal-500/20 text-teal-800 dark:text-teal-300 border border-teal-500/30">
                 12.924°N, 121.709°E • Concepcion, Romblon
               </span>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-300">
-              Explore satellite, terrain and street maps with unverified sample routes. Not for navigation. Try map controls and sample route animations.
+              Explore satellite, terrain, and street maps. Confirm routes locally before relying on them for navigation.
             </p>
           </div>
 
@@ -1093,7 +1067,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             {/* Offline Bundle Button */}
             <button
               disabled={PORTFOLIO_MODE}
-              title="Unverified sample routes: offline navigation export unavailable"
+              title="Save map pins and trail descriptions. Map tiles require internet."
               onClick={handleSaveOfflineMap}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 offlineMapSaved
@@ -1106,7 +1080,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                 <Download className="w-3.5 h-3.5" />
               )}
               <span className="hidden sm:inline">
-                {offlineMapSaved ? "Offline Bundle Ready" : "Navigation Export Unavailable"}
+                {offlineMapSaved ? "Offline Bundle Ready" : PORTFOLIO_MODE ? "Offline Save Unavailable" : "Save Map Data"}
               </span>
             </button>
           </div>
@@ -1125,7 +1099,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               { id: "beach", label: "🏖️ Beaches" },
               { id: "landmark", label: "🏛️ Heritage" },
               { id: "stay", label: "🏡 Homestays" },
-              { id: "emergency", label: "🚨 Ports & Clinic" },
+              { id: "port", label: "⚓ Ports" },
             ].map((cat) => (
               <button
                 key={cat.id}
@@ -1181,7 +1155,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                 Maestro de Campo (Sibale)
               </span>
               <span className="text-[10px] text-teal-300 font-mono truncate block sm:inline">
-                Sample elevation • {MAP_STYLES[activeTileStyle].name}
+                Estimated elevation • {MAP_STYLES[activeTileStyle].name}
               </span>
             </div>
           </div>
@@ -1470,16 +1444,16 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                     </div>
                   </label>
 
-                  {/* Ports & Emergency */}
+                  {/* Ports */}
                   <label className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition-all">
                     <div className="flex items-center gap-2">
                       <span className="text-base">⚓</span>
                       <div>
                         <div className="text-xs font-bold text-white">
-                          Ports & Emergency Clinic
+                          Passenger Ports
                         </div>
                         <div className="text-[10px] text-slate-400">
-                          Concepcion jetty & RHU triage
+                          Concepcion passenger jetty
                         </div>
                       </div>
                     </div>
@@ -1527,7 +1501,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                   <button
                     onClick={() => applyPreset("town")}
                     className="p-2 rounded-xl bg-white/5 hover:bg-teal-500/20 text-slate-200 hover:text-teal-300 border border-white/10 text-center transition-all cursor-pointer"
-                    title="Switch to Standard Street + Homestays + Emergency">
+                    title="Switch to Standard Street + Homestays + Ports">
                     <span className="text-sm block">🗺️</span>
                     <span className="text-[10px] font-bold block mt-0.5">
                       Town
@@ -1760,7 +1734,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-teal-200 flex items-center gap-1.5">
                         <Footprints className="w-4 h-4 text-teal-400" />
-                        Sample Trek Animation
+                        Trail Animation
                       </span>
                       <span className="text-[11px] font-mono text-teal-300">
                         {simulatedDistance} / {selectedTrail.distanceKm} km (
@@ -1845,24 +1819,14 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                   </div>
 
                   {/* Actions */}
-                  <div className="grid grid-cols-2 gap-2 pt-1 pb-4">
+                  <div className="pt-1 pb-4">
                     <button
                       disabled={PORTFOLIO_MODE}
-                      title="Sample route: navigation download unavailable"
+                      title="Route data is unverified. Confirm conditions locally."
                       onClick={() => handleExportTrailGPX(selectedTrail)}
                       className="min-h-[44px] py-2 px-3 rounded-xl bg-slate-900 text-teal-300 border border-teal-500/40 hover:bg-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all">
                       <Download className="w-3.5 h-3.5" />
-                      <span>GPX Unavailable</span>
-                    </button>
-                    <button
-                      onClick={() =>
-                        showToast(
-                          `Demo only: no guide request was sent for ${selectedTrail.name}.`,
-                        )
-                      }
-                      className="min-h-[44px] py-2 px-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-[0_0_12px_rgba(46,196,182,0.4)] cursor-pointer transition-all">
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      <span>Demo Guide Request</span>
+                      <span>{PORTFOLIO_MODE ? "GPX Unavailable" : "Download GPX"}</span>
                     </button>
                   </div>
                 </div>
@@ -2056,7 +2020,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-teal-900 dark:text-teal-200 flex items-center gap-1.5">
                       <Footprints className="w-4 h-4 text-teal-500" />
-                      Sample Trek Animation
+                      Trail Animation
                     </span>
                     <span className="text-[11px] font-mono text-teal-700 dark:text-teal-300">
                       {simulatedDistance} / {selectedTrail.distanceKm} km (
@@ -2194,25 +2158,14 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                 </div>
 
                 {/* Trail Actions */}
-                <div className="grid grid-cols-2 gap-2 pt-2">
+                <div className="pt-2">
                   <button
                     disabled={PORTFOLIO_MODE}
-                      title="Sample route: navigation download unavailable"
-                      onClick={() => handleExportTrailGPX(selectedTrail)}
+                    title="Route data is unverified. Confirm conditions locally."
+                    onClick={() => handleExportTrailGPX(selectedTrail)}
                     className="py-2.5 px-3 rounded-xl bg-slate-900 text-teal-300 border border-teal-500/40 hover:bg-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all">
                     <Download className="w-3.5 h-3.5" />
-                    <span>GPX Unavailable</span>
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      showToast(
-                        `Demo only: no guide request was sent for ${selectedTrail.name}.`,
-                      )
-                    }
-                    className="py-2.5 px-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-[0_0_12px_rgba(46,196,182,0.4)] cursor-pointer transition-all">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>Demo Guide Request</span>
+                    <span>{PORTFOLIO_MODE ? "GPX Unavailable" : "Download GPX"}</span>
                   </button>
                 </div>
               </div>
@@ -2413,8 +2366,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               Sibale Island Hiking & Trekking Routes Directory
             </h3>
             <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
-              Select any trekking route below to center on the map, view the
-              sample elevation profile. Navigation downloads are unavailable.
+              Select a route to locate it on the map and view its estimated elevation profile.
             </p>
           </div>
 

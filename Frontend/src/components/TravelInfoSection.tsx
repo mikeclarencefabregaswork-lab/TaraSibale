@@ -68,8 +68,7 @@ export const TravelInfoSection: React.FC<TravelInfoSectionProps> = ({
           </h2>
         </div>
         <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 mt-1 font-medium">
-          Daily passenger boat timetables, island transport rentals, emergency
-          sample schedules and packing guides.
+          Ferry timetable references, island transport information, and packing guides.
         </p>
       </div>
 
@@ -191,11 +190,11 @@ export const TravelInfoSection: React.FC<TravelInfoSectionProps> = ({
           <div className="flex items-center gap-2">
             <ShieldAlert className="w-5 h-5 text-rose-500 dark:text-rose-400" />
             <h3 className="font-black text-lg text-slate-900 dark:text-white">
-              Emergency contacts withheld
+              Emergency contacts
             </h3>
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-300">
-            This portfolio does not provide verified emergency contacts. Obtain current numbers directly from the relevant local authorities before traveling.
+            Get current emergency contact numbers from local authorities before traveling.
           </p>
         </div>
       </div>

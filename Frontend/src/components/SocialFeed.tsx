@@ -55,9 +55,6 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
               Community Traveler Stream
             </h2>
           </div>
-          <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 mt-1 font-medium">
-            Portfolio community-feed interface. Public submissions are disabled.
-          </p>
         </div>
 
         <button
