@@ -66,7 +66,7 @@ npm run build
 
 `npm test` does not need PostgreSQL. The integration suite uses `Backend/.env` and requires permission to create a temporary schema. It disables portfolio mode only for its test app and removes its test schema afterward.
 
-The [Playwright workflow](.github/workflows/playwright.yml) currently runs example tests against the Playwright website. It does not exercise TaraSibale in a browser.
+The Playwright smoke test starts Vite and Express in portfolio mode on ports 5173 and 3001. With those ports free and the local database migrated and seeded as above, run `npx playwright install chromium` once, then `npx playwright test` from the repository root. The [Playwright workflow](.github/workflows/playwright.yml) migrates and seeds a temporary PostgreSQL service for each run and requires no repository secrets.
 
 ## Graphify and Obsidian
 
