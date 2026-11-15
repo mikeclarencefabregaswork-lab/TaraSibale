@@ -1,6 +1,6 @@
 import pg from "pg";
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString = process.env.DATABASE_URL ?? process.env.SUPABASE_DB_URL;
 if (!connectionString) {
   throw new Error(
     "DATABASE_URL is required. Copy Backend/.env.example to Backend/.env and configure PostgreSQL.",
@@ -12,7 +12,7 @@ export const pool = new pg.Pool({
   connectionTimeoutMillis: 3000,
   query_timeout: 3000,
   statement_timeout: 3000,
-  max: 10,
+  max: process.env.SUPABASE_DB_URL ? 2 : 10,
 });
 
 pool.on("error", () => {

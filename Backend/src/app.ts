@@ -1,11 +1,11 @@
 import express from "express";
 import type { Pool } from "pg";
-import { createApi } from "./api.js";
+import { createApi, type ApiOptions } from "./api.js";
 
 export function createApp(
   checkDatabase: () => Promise<void>,
   database?: Pool,
-  options: { portfolioMode?: boolean } = {},
+  options: ApiOptions = {},
 ) {
   const app = express();
   app.disable("x-powered-by");
@@ -38,7 +38,7 @@ export function createApp(
         });
       });
     }
-    app.use("/api", createApi(database, { portfolioMode }));
+    app.use("/api", createApi(database, { ...options, portfolioMode }));
   }
 
   app.use((_request, response) => {

@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import express, {
   Router,
   type Request,
@@ -112,7 +113,15 @@ async function transaction<T>(
   }
 }
 
-export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {}) {
+export interface ApiOptions {
+  portfolioMode?: boolean;
+  appOrigin?: string;
+  secureCookies?: boolean;
+}
+
+export function createApi(pool: Pool, options: ApiOptions = {}) {
+  const appOrigin = options.appOrigin ?? process.env.APP_ORIGIN;
+  const secureCookies = options.secureCookies ?? process.env.NODE_ENV === "production";
   const api = Router();
   api.use(express.json({ limit: "6mb" }));
   api.use((_request, response, next) => {
@@ -129,7 +138,7 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
         "http://127.0.0.1:5173",
         "http://localhost:4173",
         "http://127.0.0.1:4173",
-        ...(process.env.APP_ORIGIN ? [process.env.APP_ORIGIN] : []),
+        ...(appOrigin ? [appOrigin] : []),
       ]);
       if (
         request.headers["sec-fetch-site"] === "cross-site" ||
@@ -204,7 +213,7 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
     response.cookie(cookieName, token, {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      secure: secureCookies,
       path: "/api",
       ...(remember ? { maxAge: milliseconds } : {}),
     });
@@ -270,11 +279,9 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
       [input.email],
     );
     const user = result.rows[0];
-    dummyHash ??= hashPassword(randomBytes(32).toString("hex"));
-    const valid = await verifyPassword(
-      input.password,
-      user?.password_hash ?? (await dummyHash),
-    );
+    const hash = user?.password_hash ??
+      await (dummyHash ??= hashPassword(randomBytes(32).toString("hex")));
+    const valid = await verifyPassword(input.password, hash);
     if (!user || !valid)
       throw new ApiError(401, "Email or password is incorrect");
     await issueSession(request, response, user, input.rememberMe);
@@ -290,7 +297,7 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
       path: "/api",
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      secure: secureCookies,
     });
     response.sendStatus(204);
   });
@@ -820,7 +827,10 @@ export function createApi(pool: Pool, options: { portfolioMode?: boolean } = {})
           .json({ error: "Data does not meet database constraints" });
         return;
       }
-      console.error("API operation failed", { code: code ?? "unavailable" });
+      console.error("API operation failed", {
+        code: code ?? "unavailable",
+        name: error instanceof Error ? error.name : "UnknownError",
+      });
       response
         .status(503)
         .json({
