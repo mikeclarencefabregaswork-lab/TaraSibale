@@ -24,6 +24,9 @@ export const Hero: React.FC<HeroProps> = ({ setActiveTab, onOpenAiChat }) => {
     <div className="relative overflow-hidden rounded-3xl mb-8 border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-2xl bg-white/10 dark:bg-slate-900/60 text-white">
       <img
         src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&auto=format&fit=crop&q=80"
+        srcSet="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=480&auto=format&fit=crop&q=80 480w, https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80 800w, https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=80 1200w, https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&auto=format&fit=crop&q=80 1600w, https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=2400&auto=format&fit=crop&q=80 2400w"
+        sizes="(min-width: 1280px) 1200px, calc(100vw - 2rem)"
+        fetchPriority="high" width={1600} height={900}
         alt="Illustrative tropical beach"
         referrerPolicy="no-referrer"
         className="absolute inset-0 h-full w-full object-cover"

@@ -1,3 +1,5 @@
+import { ThemeControl } from "./ThemeControl";
+import type { ThemePreference } from "../theme";
 import {
   Bell,
   BookOpen,
@@ -10,29 +12,28 @@ import {
   LogIn,
   LogOut,
   Map,
-  Moon,
   MoreHorizontal,
   Palmtree,
   Search,
   ShieldAlert,
   ShieldCheck,
   Star,
-  Sun,
   UserPlus,
   Users,
   Wifi,
   WifiOff,
 } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useId, useState } from "react";
 import { AppNotification, UserProfile } from "../types";
 import { NotificationCenter } from "./NotificationCenter";
-import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
+import { Popover } from "./Popover";
 
 interface HeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   isDarkMode: boolean;
-  setIsDarkMode: (val: boolean) => void;
+  themePreference: ThemePreference;
+  setThemePreference: (value: ThemePreference) => void;
   isOffline: boolean;
   setIsOffline: (val: boolean) => void;
   searchQuery: string;
@@ -49,7 +50,8 @@ export const Header: React.FC<HeaderProps> = ({
   activeTab,
   setActiveTab,
   isDarkMode,
-  setIsDarkMode,
+  themePreference,
+  setThemePreference,
   isOffline,
   setIsOffline,
   searchQuery,
@@ -77,39 +79,13 @@ export const Header: React.FC<HeaderProps> = ({
     (n) => !n.read,
   ).length;
 
-  const userDropdownRef = useRef<HTMLDivElement>(null);
-  const moreDropdownRef = useRef<HTMLDivElement>(null);
-  const notificationRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        userDropdownRef.current &&
-        !userDropdownRef.current.contains(event.target as Node)
-      ) {
-        setUserMenuOpen(false);
-      }
-      if (
-        moreDropdownRef.current &&
-        !moreDropdownRef.current.contains(event.target as Node)
-      ) {
-        setMoreDropdownOpen(false);
-      }
-      if (
-        notificationRef.current &&
-        !notificationRef.current.contains(event.target as Node)
-      ) {
-        setShowNotificationCenter(false);
-      }
-    };
-    if (userMenuOpen || moreDropdownOpen || showNotificationCenter) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [userMenuOpen, moreDropdownOpen, showNotificationCenter]);
+  const instanceId = useId();
+  const notificationTriggerId = `${instanceId}-notifications-trigger`;
+  const notificationPanelId = `${instanceId}-notifications`;
+  const profileTriggerId = `${instanceId}-profile-trigger`;
+  const profilePanelId = `${instanceId}-profile`;
+  const toolsTriggerId = `${instanceId}-tools-trigger`;
+  const toolsPanelId = `${instanceId}-tools`;
 
   // Primary top navigation shortcuts (concise, high-intent pill tabs)
   const desktopNavItems = [
@@ -197,7 +173,8 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between min-h-16 py-2 gap-1.5 sm:gap-4">
             {/* Logo Brand */}
-            <div
+            <a
+              href="#explore" aria-label="TaraSibale home"
               onClick={() => setActiveTab("explore")}
               className="flex min-w-0 items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
               <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white dark:bg-slate-800 p-0.5 shadow-sm dark:shadow-[0_0_15px_rgba(46,196,182,0.4)] ring-2 ring-teal-500/40 group-hover:scale-105 transition-transform shrink-0 flex items-center justify-center overflow-hidden">
@@ -221,7 +198,7 @@ export const Header: React.FC<HeaderProps> = ({
                   Sibale Island Tourism
                 </p>
               </div>
-            </div>
+            </a>
 
             {/* Desktop Search Bar */}
             <div className="hidden md:flex flex-1 max-w-md relative">
@@ -242,7 +219,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Controls & User Credentials on the Right Side */}
             <div
               className="flex items-center gap-1 sm:gap-2.5 relative ml-auto shrink-0"
-              ref={userDropdownRef}>
+             >
               {/* Mobile Search Toggle */}
               <button
                 onClick={() => setShowMobileSearch(!showMobileSearch)}
@@ -256,9 +233,10 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
 
               {/* Island Notifications Bell (General & Personal) */}
-              <div className="relative" ref={notificationRef}>
+              <div className="relative">
                 <button
                   type="button"
+                  id={notificationTriggerId} aria-controls={notificationPanelId}
                   onClick={() =>
                     setShowNotificationCenter((open) => !open)
                   }
@@ -286,6 +264,7 @@ export const Header: React.FC<HeaderProps> = ({
 
                 {/* Anchored Dropdown Popover */}
                 <NotificationCenter
+                  id={notificationPanelId} triggerId={notificationTriggerId} onOpenChange={setShowNotificationCenter}
                   isOpen={showNotificationCenter}
                   onClose={() => setShowNotificationCenter(false)}
                   activeTab={activeTab}
@@ -302,6 +281,7 @@ export const Header: React.FC<HeaderProps> = ({
               {currentUser ? (
                 /* User Credentials & Settings Dropdown Trigger Button */
                 <button
+                  id={profileTriggerId} aria-controls={profilePanelId} aria-expanded={userMenuOpen}
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className={`flex items-center gap-2.5 sm:gap-3 pl-2 sm:pl-2.5 pr-3.5 sm:pr-4 py-1.5 rounded-full border transition-all cursor-pointer shadow-sm no-underline hover:no-underline focus:outline-none select-none ${
                     userMenuOpen
@@ -351,19 +331,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
               ) : (
                 <div className="flex items-center gap-1 sm:gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setIsDarkMode(!isDarkMode)}
-                    aria-label="Toggle dark mode"
-                    aria-pressed={isDarkMode}
-                    title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-                    className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full border border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200 dark:border-white/15 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500">
-                    {isDarkMode ? (
-                      <Sun className="w-4 h-4" />
-                    ) : (
-                      <Moon className="w-4 h-4" />
-                    )}
-                  </button>
+                  <ThemeControl value={themePreference} onChange={setThemePreference} />
 
                   <button
                     onClick={() => onOpenAuth("login")}
@@ -384,9 +352,9 @@ export const Header: React.FC<HeaderProps> = ({
               )}
 
               {/* User Credentials Dropdown Menu */}
-              {userMenuOpen && currentUser && (
-                <div
-                  className={`absolute right-0 top-full mt-2 z-[100] w-72 sm:w-80 rounded-2xl border p-4 animate-fade-in shadow-[0_20px_50px_rgba(0,0,0,0.22)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] ${
+              {currentUser && (
+                <Popover id={profilePanelId} triggerId={profileTriggerId} open={userMenuOpen} onOpenChange={setUserMenuOpen}
+                  className={`w-72 sm:w-80 rounded-2xl border p-4 animate-fade-in shadow-[0_20px_50px_rgba(0,0,0,0.22)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] ${
                     isDarkMode
                       ? "bg-[#0b2d40] border-slate-700/80 text-slate-100"
                       : "bg-white border-slate-200 text-slate-900"
@@ -473,46 +441,8 @@ export const Header: React.FC<HeaderProps> = ({
                       </div>
                     </div>
 
-                    {/* Night Mode (Dark Mode) Toggle Option */}
-                    <div
-                      onClick={() => setIsDarkMode(!isDarkMode)}
-                      className={`flex items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer select-none no-underline hover:no-underline ${
-                        isDarkMode
-                          ? "bg-slate-800/80 border-slate-700 text-slate-100 hover:bg-slate-800"
-                          : "bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-800"
-                      }`}>
-                      <div className="flex items-center gap-2.5">
-                        <div
-                          className={`p-1.5 rounded-lg ${isDarkMode ? "bg-amber-400/20 text-amber-300" : "bg-slate-300 text-slate-700"}`}>
-                          {isDarkMode ? (
-                            <Moon className="w-4 h-4" />
-                          ) : (
-                            <Sun className="w-4 h-4" />
-                          )}
-                        </div>
-                        <div>
-                          <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                            <span>Night Mode</span>
-                            <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-teal-500/20 text-teal-800 dark:text-teal-300">
-                              {isDarkMode ? "Dark" : "Light"}
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                            {isDarkMode
-                              ? "Eye-safe night mode active"
-                              : "Clean daytime light palette"}
-                          </p>
-                        </div>
-                      </div>
+                    <ThemeControl value={themePreference} onChange={setThemePreference} />
 
-                      {/* Custom Switch pill */}
-                      <div
-                        className={`w-9 h-5 rounded-full p-0.5 transition-colors ${isDarkMode ? "bg-teal-500" : "bg-slate-300 dark:bg-slate-700"}`}>
-                        <div
-                          className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${isDarkMode ? "translate-x-4" : "translate-x-0"}`}
-                        />
-                      </div>
-                    </div>
                   </div>
 
                   {/* Quick User Shortcuts */}
@@ -592,7 +522,7 @@ export const Header: React.FC<HeaderProps> = ({
                       <span>Log Out of Sibale Account</span>
                     </button>
                   </div>
-                </div>
+                </Popover>
               )}
             </div>
           </div>
@@ -619,7 +549,7 @@ export const Header: React.FC<HeaderProps> = ({
           )}
 
           {/* Desktop Navigation Tabs - Sleek Rounded Pills with Active Glow */}
-          <nav className="hidden md:flex items-center justify-center py-2 border-t border-slate-200/80 dark:border-white/10 relative select-none">
+          <nav aria-label="Primary" className="hidden md:flex items-center justify-center py-2 border-t border-slate-200/80 dark:border-white/10 relative select-none">
             <div className="flex items-center justify-center gap-1.5 lg:gap-2 flex-wrap">
               {desktopNavItems.map((item) => {
                 const Icon = item.icon;
@@ -627,6 +557,7 @@ export const Header: React.FC<HeaderProps> = ({
                 return (
                   <button
                     key={item.id}
+                    aria-current={isActive ? "page" : undefined}
                     onClick={() => {
                       setActiveTab(item.id);
                       setMoreDropdownOpen(false);
@@ -655,11 +586,12 @@ export const Header: React.FC<HeaderProps> = ({
               })}
 
               {/* More Dropdown Pill */}
-              <div className="relative" ref={moreDropdownRef}>
+              <div className="relative">
                 <button
+                  id={toolsTriggerId}
                   onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
                   aria-expanded={moreDropdownOpen}
-                  aria-controls="island-tools-menu"
+                  aria-controls={toolsPanelId}
                   className={`flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-full text-xs lg:text-sm font-bold transition-all duration-200 whitespace-nowrap cursor-pointer shrink-0 border select-none ${
                     isMoreActive
                       ? "bg-teal-500 text-slate-950 border-teal-400 font-black shadow-[0_0_15px_rgba(46,196,182,0.4)] ring-1 ring-teal-400/50"
@@ -683,11 +615,9 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
 
                 {/* Dropdown Menu */}
-                <SurfacePresence>
-                {moreDropdownOpen && (
-                  <AnimatedSurface
-                    id="island-tools-menu"
-                    className={`absolute right-0 top-full mt-2 z-50 w-72 max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-12rem)] overflow-y-auto overscroll-contain rounded-2xl border p-2 animate-fade-in shadow-2xl backdrop-blur-2xl ${
+                  <Popover
+                    id={toolsPanelId} triggerId={toolsTriggerId} open={moreDropdownOpen} onOpenChange={setMoreDropdownOpen}
+                    className={`w-72 rounded-2xl border p-2 animate-fade-in shadow-2xl backdrop-blur-2xl ${
                       isDarkMode
                         ? "bg-[#0b2d40]/98 border-slate-700/80 text-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
                         : "bg-white/98 border-slate-200 text-slate-900 shadow-xl"
@@ -734,9 +664,7 @@ export const Header: React.FC<HeaderProps> = ({
                         );
                       })}
                     </div>
-                  </AnimatedSurface>
-                )}
-                </SurfacePresence>
+                  </Popover>
               </div>
             </div>
           </nav>

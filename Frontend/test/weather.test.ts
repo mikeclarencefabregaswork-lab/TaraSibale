@@ -3,7 +3,7 @@ import { afterEach, test } from "node:test";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Hero } from "../src/components/Hero.tsx";
-import { WeatherSummary, WeatherView } from "../src/components/LiveWeather.tsx";
+import { WeatherDialog, WeatherSummary, WeatherView } from "../src/components/LiveWeather.tsx";
 import { fetchWeather, hourlyOutlook, manilaTime, measurement, sectionStatus } from "../src/weather.ts";
 import type { WeatherReport } from "../src/weather.ts";
 
@@ -30,11 +30,26 @@ test("hero groups the loading summary with its badges and offers weather details
     setActiveTab: () => {}, onOpenAiChat: () => {}, isDarkMode: false,
   }));
   assert.match(html, /Loading weather/);
-  assert.match(html, /Ferry safety not assessed/);
   assert.match(html, /aria-label="Island overview"[^>]*>[\s\S]*?Sibale Island \(Maestro de Campo\)[\s\S]*?Loading weather[\s\S]*?<\/div>/);
   assert.match(html, /<button[^>]*aria-haspopup="dialog"[^>]*>[\s\S]*?Weather &amp; sea conditions<\/span>/);
-  assert.match(html, /<dialog[^>]*aria-labelledby="weather-dialog-title"/);
+  const details = renderToStaticMarkup(React.createElement(WeatherDialog, {
+    open: true, onClose: () => {},
+  }, React.createElement(WeatherView, { loading: true, onRetry: () => {} })));
+  assert.match(details, /<dialog[^>]*aria-labelledby="weather-dialog-title"/);
+  assert.match(details, /Ferry safety not assessed/);
   assert.doesNotMatch(html, /<details>/);
+});
+
+test("hero offers responsive candidates at high priority without lazy loading", () => {
+  const html = renderToStaticMarkup(React.createElement(Hero, {
+    setActiveTab: () => {}, onOpenAiChat: () => {}, isDarkMode: false,
+  }));
+  const image = html.match(/<img[^>]*alt="Illustrative tropical beach"[^>]*>/)?.[0];
+  assert.ok(image);
+  assert.match(image, /srcSet="[^"]*480w[^"]*1600w/);
+  assert.match(image, /sizes="/);
+  assert.match(image, /fetchPriority="high"/i);
+  assert.doesNotMatch(image, /loading="lazy"/);
 });
 
 test("weather panel renders sea estimates, units, credits and official warnings without ferry clearance", () => {

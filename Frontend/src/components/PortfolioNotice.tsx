@@ -16,7 +16,9 @@ export function PortfolioNotice() {
             <p>User content must be owned or appropriately licensed, factual and respectful. Public posting is disabled; there is no active booking, guide dispatch or municipal service.</p>
             <p><a className="underline" href="/THIRD_PARTY_NOTICES.txt" target="_blank" rel="noreferrer">Third-party software notices</a> · TaraSibale project logo; third-party photographs retain their own rights.</p>
             <button type="button" className="rounded-lg border border-current px-3 py-2" onClick={() => {
-              for (const key of ["tara_sibale_portfolio_state", "tara_sibale_theme", "tara_sibale_active_tab", "concepcion_offline_map_cached"]) localStorage.removeItem(key);
+              try {
+                for (const key of ["tara_sibale_portfolio_state", "tara_sibale_theme", "tara_sibale_active_tab", "concepcion_offline_map_cached"]) localStorage.removeItem(key);
+              } catch { /* Storage may be blocked; reloading still resets in-memory choices. */ }
               setReset(true);
               window.location.reload();
             }}>Clear this browser’s demo preferences</button>

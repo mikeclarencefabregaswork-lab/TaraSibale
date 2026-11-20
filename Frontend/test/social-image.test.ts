@@ -24,7 +24,7 @@ test("caption-only posts do not render an empty photo or broken image", () => {
 test("composer offers an optional raster file picker instead of stock-photo presets", () => {
   const html = renderToStaticMarkup(React.createElement(SurfacePresence, null,
     React.createElement(CommunityPostComposer, { isDarkMode: false, onClose: () => {}, onAddPost: async () => textPost })));
-  assert.match(html, /role="dialog"/);
+  assert.match(html, /<dialog[^>]*aria-labelledby="community-composer-title"/);
   assert.match(html, /Photo \(optional\)/);
   assert.match(html, /type="file" accept="image\/jpeg,image\/png,image\/webp"/);
   assert.match(html, /5 MiB/);

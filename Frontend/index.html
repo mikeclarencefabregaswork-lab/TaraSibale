@@ -2,8 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="color-scheme" content="light dark" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TaraSibale | Sibale Island Travel Guide</title>
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link
+      rel="preload"
+      as="image"
+      fetchpriority="high"
+      imagesrcset="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=480&auto=format&fit=crop&q=80 480w, https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80 800w, https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=80 1200w, https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&auto=format&fit=crop&q=80 1600w, https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=2400&auto=format&fit=crop&q=80 2400w"
+      imagesizes="(min-width: 1280px) 1200px, calc(100vw - 2rem)" />
     <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/tarasibale-logo.jpg" />
     <meta
@@ -20,6 +28,8 @@
       (function () {
         try {
           var theme = localStorage.getItem("tara_sibale_theme");
+          document.querySelector('meta[name="color-scheme"]').content =
+            theme === "light" || theme === "dark" ? theme : "light dark";
           var isDark =
             theme === "dark" ||
             (!theme &&

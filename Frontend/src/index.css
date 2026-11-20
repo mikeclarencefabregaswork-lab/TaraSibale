@@ -5,6 +5,52 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+dialog:modal { overscroll-behavior: contain; }
+dialog::backdrop { overflow: hidden; overscroll-behavior: contain; }
+
+.native-modal--sheet { margin-block: auto 1rem; }
+.island-guide-popover {
+  position: fixed;
+  inset: auto 1rem 5rem auto;
+  margin: 0;
+}
+.native-popover {
+  box-sizing: border-box;
+  max-inline-size: calc(100% - 2rem);
+  max-block-size: calc(100dvh - 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.anchored-popover { position: fixed; inset: 0; margin: auto; }
+@supports (position-area: block-end) {
+  .anchored-popover {
+    inset: auto;
+    margin: 0.5rem;
+    position-area: block-end span-inline-start;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  }
+}
+@supports not selector(:popover-open) {
+  .native-popover { position: fixed; inset: 1rem; margin: auto; }
+  .native-popover[data-fallback-open="false"] { display: none; }
+}
+.native-popover[data-popover-fallback] { position: fixed; inset: 1rem; margin: auto; }
+.native-popover[data-popover-fallback][data-fallback-open="true"] { display: block; }
+.native-popover[data-popover-fallback][data-fallback-open="false"] { display: none; }
+
+.skip-link {
+  position: fixed;
+  inset-block-start: 0.5rem;
+  inset-inline-start: 0.5rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--color-teal-700);
+  color: white;
+}
+.skip-link:focus { transform: none; }
+
 /* Modern Leaflet custom styles */
 .leaflet-popup-content-wrapper {
   background: rgba(11, 45, 64, 0.95) !important;

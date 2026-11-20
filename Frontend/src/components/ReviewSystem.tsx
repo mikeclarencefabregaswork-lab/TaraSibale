@@ -1,4 +1,4 @@
-import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
+import { ModalDialog } from "./ModalDialog";
 import { CheckCircle, Filter, Plus, Star, ThumbsUp, X } from "lucide-react";
 import React, { useState } from "react";
 import { api, errorText } from "../api";
@@ -230,9 +230,8 @@ export const ReviewSystem: React.FC<ReviewSystemProps> = ({
       </div>
 
       {/* Write Review Modal */}
-      <SurfacePresence>
       {showWriteModal && (
-        <AnimatedSurface className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl overflow-y-auto">
+        <ModalDialog labelledBy="review-dialog-title" maxWidth="32rem" onClose={() => setShowWriteModal(false)}>
           <div
             className={`relative w-full max-w-lg rounded-3xl border shadow-2xl p-6 space-y-4 backdrop-blur-2xl ${
               isDarkMode
@@ -240,11 +239,12 @@ export const ReviewSystem: React.FC<ReviewSystemProps> = ({
                 : "bg-white/95 border-slate-200 text-slate-800"
             }`}>
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/10">
-              <h3 className="font-extrabold text-lg text-slate-900 dark:text-white">
+              <h3 id="review-dialog-title" className="font-extrabold text-lg text-slate-900 dark:text-white">
                 Write a Review for Concepcion
               </h3>
               <button
                 onClick={() => setShowWriteModal(false)}
+                aria-label="Close review form" autoFocus
                 className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white cursor-pointer">
                 <X className="w-5 h-5" />
               </button>
@@ -391,9 +391,8 @@ export const ReviewSystem: React.FC<ReviewSystemProps> = ({
               </div>
             </form>
           </div>
-        </AnimatedSurface>
+        </ModalDialog>
       )}
-      </SurfacePresence>
     </div>
   );
 };

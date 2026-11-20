@@ -1,3 +1,4 @@
+import { readPreference, useTheme } from "./theme";
 import { PORTFOLIO_MODE } from "./portfolio";
 import { PortfolioNotice } from "./components/PortfolioNotice";
 import { toast } from "./toastStore";
@@ -6,8 +7,6 @@ import { PageSkeleton } from "./components/Skeletons";
 import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { api, errorText } from "./api";
 import { AttractionsSection } from "./components/AttractionsSection";
-import { AuthModal } from "./components/AuthModal";
-import { AuthPage } from "./components/AuthPage";
 import { BookingSection } from "./components/BookingSection";
 import { BottomNavBar } from "./components/BottomNavBar";
 import {
@@ -17,10 +16,8 @@ import {
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
-import { LiveChatBot } from "./components/LiveChatBot";
 import { MaritimeSimulatorBar } from "./components/MaritimeSimulatorBar";
 import { PullToRefresh } from "./components/PullToRefresh";
-import { ReviewSystem } from "./components/ReviewSystem";
 import type { CultureItem, HikingTrail } from "./types";
 import {
   UserStateContext,
@@ -45,6 +42,10 @@ import {
   VerificationApplicant,
 } from "./types";
 
+const AuthModal = lazy(() => import("./components/AuthModal").then(module => ({ default: module.AuthModal })));
+const AuthPage = lazy(() => import("./components/AuthPage").then(module => ({ default: module.AuthPage })));
+const LiveChatBot = lazy(() => import("./components/LiveChatBot").then(module => ({ default: module.LiveChatBot })));
+const ReviewSystem = lazy(() => import("./components/ReviewSystem").then(module => ({ default: module.ReviewSystem })));
 const AdminPage = lazy(() =>
   import("./components/AdminPage").then((module) => ({
     default: module.AdminPage,
@@ -115,7 +116,7 @@ const getInitialTab = (): string => {
     if (hash && VALID_TABS.includes(hash)) {
       return hash;
     }
-    const saved = localStorage.getItem("tara_sibale_active_tab");
+    const saved = readPreference("tara_sibale_active_tab");
     if (saved && VALID_TABS.includes(saved)) {
       return saved;
     }
@@ -123,20 +124,9 @@ const getInitialTab = (): string => {
   return "explore";
 };
 
-const getInitialDarkMode = (): boolean => {
-  if (typeof window !== "undefined") {
-    const savedTheme = localStorage.getItem("tara_sibale_theme");
-    if (savedTheme !== null) {
-      return savedTheme === "dark";
-    }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  }
-  return false;
-};
-
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>(getInitialTab);
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(getInitialDarkMode);
+  const { isDarkMode, themePreference, setThemePreference } = useTheme();
   const [isMobileNavVisible, setIsMobileNavVisible] = useState<boolean>(true);
   const [isOffline, setIsOffline] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -177,6 +167,21 @@ export default function App() {
   // App Notifications State (General & Personal)
 
   const [isAiChatOpen, setIsAiChatOpen] = useState<boolean>(false);
+  const [guideRequested, setGuideRequested] = useState(false);
+  const guideInvoker = useRef<HTMLElement | null>(null);
+  const openGuide = () => {
+    guideInvoker.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setGuideRequested(true);
+    setIsAiChatOpen(true);
+  };
+  const closeGuide = (restoreFocus = true) => {
+    const invoker = guideInvoker.current;
+    guideInvoker.current = null;
+    setIsAiChatOpen(false);
+    if (restoreFocus) requestAnimationFrame(() => {
+      if (!guideInvoker.current && invoker?.isConnected) invoker.focus();
+    });
+  };
   const [preSelectedReviewTarget, setPreSelectedReviewTarget] = useState<
     string | null
   >(null);
@@ -199,19 +204,34 @@ export default function App() {
     };
   }, []);
 
-  // Sync dark class with document element and localStorage
+  const previousTab = useRef(activeTab);
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    try {
-      localStorage.setItem("tara_sibale_theme", isDarkMode ? "dark" : "light");
-    } catch {
-      // ignore in restrictive environments
-    }
-  }, [isDarkMode]);
+    const titles: Record<string, string> = {
+      itinerary: "Itinerary", map: "Map", stay: "Stays", guide: "Culture", travel: "Travel information",
+      group: "Travel groups", documents: "Document vault", social: "Community", reviews: "Reviews",
+      admin: "Administration", auth: "Account", login: "Sign in", signup: "Sign up",
+    };
+    document.title = activeTab === "explore" ? "TaraSibale | Sibale Island Travel Guide"
+      : `${titles[activeTab] ?? "Explore"} | TaraSibale`;
+    if (previousTab.current === activeTab) return;
+    previousTab.current = activeTab;
+    const main = document.getElementById("main-content");
+    if (!main) return;
+    const focusContent = () => {
+      const content = main.querySelector(".page-ready");
+      if (!content) return false;
+      const heading = Array.from(content.querySelectorAll<HTMLElement>("h1, h2, h3"))
+        .find(element => element.getClientRects().length > 0 && getComputedStyle(element).visibility !== "hidden");
+      const target = heading ?? main;
+      target.tabIndex = -1;
+      target.focus();
+      return document.activeElement === target;
+    };
+    const observer = new MutationObserver(() => { if (focusContent()) observer.disconnect(); });
+    observer.observe(main, { childList: true, subtree: true });
+    if (focusContent()) observer.disconnect();
+    return () => observer.disconnect();
+  }, [activeTab]);
 
   // Synchronize activeTab with URL hash and localStorage
   useEffect(() => {
@@ -581,6 +601,10 @@ export default function App() {
             ? "dark bg-[#061e2c] text-slate-100 selection:bg-teal-500 selection:text-slate-950"
             : "bg-shell text-slate-900 selection:bg-teal-600 selection:text-white"
         }`}>
+        <a className="skip-link" href="#main-content" onClick={event => {
+          event.preventDefault();
+          document.getElementById("main-content")?.focus();
+        }}>Skip to main content</a>
         {/* Ambient Frosted Glass Background Lighting Orbs - Active in Dark Mode Only */}
         <div className="hidden dark:block fixed top-[-10%] left-[-10%] w-[500px] sm:w-[650px] h-[500px] sm:h-[650px] bg-teal-500/20 rounded-full blur-[120px] pointer-events-none z-0 animate-float-slow" />
         <div className="hidden dark:block fixed bottom-[-10%] right-[-10%] w-[600px] sm:w-[750px] h-[600px] sm:h-[750px] bg-blue-600/20 rounded-full blur-[140px] pointer-events-none z-0" />
@@ -619,7 +643,8 @@ export default function App() {
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             isDarkMode={isDarkMode}
-            setIsDarkMode={setIsDarkMode}
+            themePreference={themePreference}
+            setThemePreference={setThemePreference}
             isOffline={isOffline}
             setIsOffline={setIsOffline}
             searchQuery={searchQuery}
@@ -639,7 +664,7 @@ export default function App() {
           {/* Pull-to-refresh mobile wrapper for dynamic content */}
           <PullToRefresh onRefresh={handlePullToRefresh}>
             {/* Main Container - Centered max-w-7xl for high readability and balanced margins on wide displays */}
-            <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 xl:px-10 pt-6">
+            <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 xl:px-10 pt-6">
               <div key={activeTab} className="page-transition">
                 <Suspense fallback={<PageSkeleton tab={activeTab} />}>
                   {!["auth", "login", "signup"].includes(activeTab) &&
@@ -669,7 +694,7 @@ export default function App() {
                         <div className="space-y-10">
                           <Hero
                             setActiveTab={setActiveTab}
-                            onOpenAiChat={() => setIsAiChatOpen(true)}
+                            onOpenAiChat={openGuide}
                             isDarkMode={isDarkMode}
                           />
 
@@ -690,6 +715,7 @@ export default function App() {
                             isLoading={isLoadingContent}
                           />
 
+                          <Suspense fallback={<p role="status">Loading reviews…</p>}>
                           <ReviewSystem
                             key={`${currentUser?.id || "guest"}-${preSelectedReviewTarget || "reviews"}`}
                             reviews={reviews}
@@ -707,6 +733,7 @@ export default function App() {
                             }}
                             preSelectedTargetId={preSelectedReviewTarget}
                           />
+                          </Suspense>
                         </div>
                       )}
 
@@ -869,9 +896,10 @@ export default function App() {
           </PullToRefresh>
 
           {/* Floating AI Concierge Trigger Button */}
-          {!isAiChatOpen && (
             <button
-              onClick={() => setIsAiChatOpen(true)}
+              hidden={isAiChatOpen}
+              aria-expanded={isAiChatOpen} aria-controls="island-guide-panel"
+              onClick={openGuide}
               className={`fixed ${isMobileNavVisible ? "bottom-20" : "bottom-5"} md:bottom-6 right-4 z-40 pl-2.5 pr-4 py-2 rounded-full bg-gradient-to-r from-teal-700 via-teal-600 to-cyan-700 text-white shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer flex items-center gap-2 font-extrabold text-xs border border-white/20 backdrop-blur-md`}>
               <div className="w-7 h-7 rounded-full bg-white p-0.5 shadow-md flex items-center justify-center shrink-0 overflow-hidden">
                 <img
@@ -884,18 +912,21 @@ export default function App() {
               <span className="hidden sm:inline">Ask TaraSibale Guide</span>
               <span className="sm:hidden">Island Guide</span>
             </button>
-          )}
 
           {/* Floating AI Chat Window */}
+          {guideRequested && <Suspense fallback={<p role="status" className="fixed bottom-24 right-4 z-50 rounded-xl bg-slate-900 p-4 text-white">Loading island guide…</p>}>
           <LiveChatBot
             isOpen={isAiChatOpen}
-            onClose={() => setIsAiChatOpen(false)}
+            onClose={closeGuide}
             isDarkMode={isDarkMode}
             isOffline={isOffline}
             setActiveTab={setActiveTab}
           />
 
+          </Suspense>}
+
           {/* Auth Modal (Triggered anywhere from header or buttons) */}
+          {isAuthModalOpen && <Suspense fallback={<p role="status" className="fixed bottom-24 right-4 z-50 rounded-xl bg-slate-900 p-4 text-white">Loading account information…</p>}>
           <AuthModal
             key={authModalMode}
             isOpen={isAuthModalOpen}
@@ -904,6 +935,8 @@ export default function App() {
             onLoginSuccess={handleLoginSuccess}
             isDarkMode={isDarkMode}
           />
+
+          </Suspense>}
 
           {/* Interactive Maritime Status Simulator Bar */}
           {currentUser?.role === "admin" && (

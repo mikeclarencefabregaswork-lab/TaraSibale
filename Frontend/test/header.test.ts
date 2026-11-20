@@ -5,12 +5,13 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { Header } from "../src/components/Header.tsx";
 
 for (const isDarkMode of [false, true]) {
-  test(`signed-out visitors can access the theme button in ${isDarkMode ? "dark" : "light"} mode`, () => {
+  test(`signed-out visitors can choose system, light or dark in ${isDarkMode ? "dark" : "light"} mode`, () => {
     const html = renderToStaticMarkup(React.createElement(Header, {
       activeTab: "explore",
       setActiveTab: () => {},
       isDarkMode,
-      setIsDarkMode: () => {},
+      themePreference: "system",
+      setThemePreference: () => {},
       isOffline: false,
       setIsOffline: () => {},
       searchQuery: "",
@@ -20,8 +21,11 @@ for (const isDarkMode of [false, true]) {
       onOpenAuth: () => {},
       onLogout: () => {},
     }));
-    assert.match(html, /<button[^>]*aria-label="Toggle dark mode"/);
-    assert.match(html, new RegExp(`aria-pressed="${isDarkMode}"`));
+    assert.match(html, /<button[^>]*aria-label="Appearance"/);
+    assert.match(html, /<input(?=[^>]*type="radio")(?=[^>]*value="system")(?=[^>]*checked="")[^>]*>/);
+    assert.match(html, /type="radio"[^>]*value="light"/);
+    assert.match(html, /type="radio"[^>]*value="dark"/);
+    assert.doesNotMatch(html, /<select/);
     assert.match(html, /Sign In/);
   });
 }

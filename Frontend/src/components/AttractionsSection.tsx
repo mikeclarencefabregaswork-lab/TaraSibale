@@ -1,3 +1,4 @@
+import { ModalDialog } from "./ModalDialog";
 import { toast } from "../toastStore";
 import {
   CheckCircle2,
@@ -37,26 +38,11 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
   const [activeModalAttraction, setActiveModalAttraction] =
     useState<Attraction | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const detailsDialogRef = useRef<HTMLDialogElement>(null);
-  const isDetailsOpen = activeModalAttraction !== null;
   const [favorites, setFavorites] = useState<string[]>([]);
   const filterDrag = useRef<{ startX: number; scrollLeft: number } | null>(null);
   const didDragFilters = useRef(false);
   const filterRowRef = useRef<HTMLDivElement>(null);
   const [filterScroll, setFilterScroll] = useState({ left: false, right: false });
-
-  useEffect(() => {
-    const dialog = detailsDialogRef.current;
-    if (!isDetailsOpen || !dialog) return;
-
-    const previousOverflow = document.body.style.overflow;
-    dialog.showModal();
-    document.body.style.overflow = "hidden";
-    return () => {
-      dialog.close();
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [isDetailsOpen]);
 
   const closeDetails = () => {
     setActiveModalAttraction(null);
@@ -400,15 +386,10 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
 
       {/* Attraction Full Detail Modal */}
       {activeModalAttraction && (
-        <dialog
-          ref={detailsDialogRef}
-          aria-labelledby="attraction-details-title"
-          onCancel={(event) => {
-            event.preventDefault();
-            closeDetails();
-          }}
-          onTouchStart={(event) => event.stopPropagation()}
-          className={`fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-3xl overflow-y-auto overscroll-contain rounded-3xl border p-0 shadow-2xl animate-fade-in backdrop:bg-slate-950/80 backdrop:backdrop-blur-xl ${
+        <ModalDialog labelledBy="attraction-details-title" maxWidth="48rem" onClose={closeDetails}>
+          <div
+            onTouchStart={(event) => event.stopPropagation()}
+            className={`rounded-3xl border shadow-2xl ${
               isDarkMode
                 ? "bg-[#061e2c]/90 border-white/20 text-slate-100"
                 : "bg-white/95 border-slate-200 text-slate-900"
@@ -656,7 +637,8 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
                 </button>
               </div>
             </div>
-        </dialog>
+          </div>
+        </ModalDialog>
       )}
     </div>
   );

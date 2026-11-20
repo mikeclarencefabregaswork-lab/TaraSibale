@@ -1,3 +1,4 @@
+import { Popover } from "./Popover";
 import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import {
   Bell,
@@ -15,10 +16,11 @@ import {
   User,
   X,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AppNotification, NotificationCategory, UserProfile } from "../types";
 
 interface NotificationCenterProps {
+  id: string; triggerId: string; onOpenChange: (open: boolean) => void;
   isOpen: boolean;
   onClose: () => void;
   activeTab: string;
@@ -31,6 +33,7 @@ interface NotificationCenterProps {
 }
 
 export const NotificationCenter: React.FC<NotificationCenterProps> = ({
+  id, triggerId, onOpenChange,
   isOpen,
   onClose,
   setActiveTab,
@@ -42,20 +45,6 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] =
     useState<NotificationCategory>("general");
-  // Header owns outside-click dismissal for both the panel and its trigger.
-
-  // Escape key closes modal
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
-
-
   // Filter notifications by category
   const generalList = notifications.filter((n) => n.category === "general");
   const personalList = notifications.filter((n) => n.category === "personal");
@@ -141,15 +130,15 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   };
 
   return (
-    <SurfacePresence>
-    {isOpen && <AnimatedSurface
-      className={`fixed left-3 right-3 top-20 mx-auto z-50 w-auto max-w-[440px] max-h-[calc(100dvh-7rem)] flex flex-col sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2.5 sm:w-[420px] sm:max-h-[calc(100dvh-9rem)] rounded-3xl border shadow-2xl backdrop-blur-2xl transition-all duration-200 isolate select-none overflow-hidden ${
+    <Popover id={id} triggerId={triggerId} open={isOpen} onOpenChange={onOpenChange}
+      className={`w-[420px] rounded-3xl border shadow-2xl backdrop-blur-2xl transition-all duration-200 isolate select-none overflow-hidden ${
         isDarkMode
           ? "bg-[#0b2d40]/98 border-slate-700/80 text-slate-100 shadow-[0_25px_60px_rgba(0,0,0,0.85)]"
           : "bg-white/98 border-slate-200 text-slate-900 shadow-2xl"
       }`}
       role="dialog"
-      aria-label="Notification Center">
+      label="Notification Center">
+      <div className="flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden">
       {/* Header bar */}
       <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-slate-200/80 dark:border-white/10">
         <div className="flex items-center gap-2.5">
@@ -389,7 +378,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           Ferry Timetables →
         </button>
       </div>
-    </AnimatedSurface>}
-    </SurfacePresence>
+      </div>
+    </Popover>
   );
 };

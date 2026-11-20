@@ -1,4 +1,4 @@
-import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
+import { Popover } from "./Popover";
 import { PORTFOLIO_MODE } from "../portfolio";
 import { Bot, RefreshCw, Send, User, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
@@ -7,7 +7,7 @@ import type { PortfolioGuideAnswer } from "../portfolioGuide";
 
 interface LiveChatBotProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose: (restoreFocus?: boolean) => void;
   isDarkMode: boolean;
   isOffline: boolean;
   setActiveTab: (tab: string) => void;
@@ -64,6 +64,11 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
   const [inputPrompt, setInputPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const promptRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen) promptRef.current?.focus();
+  }, [isOpen]);
 
   const suggestedQuestions = [
     "Which beaches can I visit?",
@@ -126,8 +131,9 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
 
 
   return (
-    <SurfacePresence>
-    {isOpen && <AnimatedSurface className="fixed bottom-20 sm:bottom-6 right-2 sm:right-6 z-50 w-[calc(100vw-1rem)] sm:w-96 max-w-sm h-[calc(100dvh-130px)] sm:h-[540px] max-h-[600px] rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] border border-white/20 dark:border-white/15 bg-slate-900/95 backdrop-blur-2xl text-white flex flex-col overflow-hidden transition-all animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <Popover id="island-guide-panel" open={isOpen} onOpenChange={() => {}} persistent role="dialog" label="TaraSibale Island Guide"
+      className="island-guide-popover w-96 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] border border-white/20 dark:border-white/15 bg-slate-900/95 backdrop-blur-2xl text-white overflow-hidden">
+      <div className="flex h-[min(540px,calc(100dvh-8rem))] flex-col">
       <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/10 backdrop-blur-md">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-full bg-white p-0.5 flex items-center justify-center shadow-[0_0_12px_rgba(46,196,182,0.4)] ring-2 ring-teal-400/60 shrink-0 overflow-hidden">
@@ -154,7 +160,7 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
         </div>
 
         <button
-          onClick={onClose}
+          onClick={() => onClose()}
           aria-label="Close island guide"
           className="p-1.5 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer">
           <X className="w-5 h-5" />
@@ -197,7 +203,7 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
                   </a>
                 ))}
                 {msg.action && (
-                  <button type="button" onClick={() => { setActiveTab(msg.action!.tab); onClose(); }} className="mt-2 block text-teal-200 underline">
+                  <button type="button" onClick={() => { setActiveTab(msg.action!.tab); onClose(false); }} className="mt-2 block text-teal-200 underline">
                     {msg.action.label}
                   </button>
                 )}
@@ -242,6 +248,7 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
           }}
           className="flex items-center gap-2">
           <input
+            ref={promptRef}
             type="text"
             aria-label="Ask about Sibale"
             maxLength={4000}
@@ -259,7 +266,7 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
           </button>
         </form>
       </div>
-    </AnimatedSurface>}
-    </SurfacePresence>
+      </div>
+    </Popover>
   );
 };

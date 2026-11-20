@@ -1,4 +1,5 @@
-import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
+import { isSubmitKey } from "../keyboard";
+import { ModalDialog } from "./ModalDialog";
 import { toast } from "../toastStore";
 import {
   Activity,
@@ -1667,11 +1668,10 @@ export function AdminPage({
       {/* ========================================================================= */}
       {/* MODAL: ADD / EDIT LANDMARK */}
       {/* ========================================================================= */}
-      <SurfacePresence>
       {isLandmarkModalOpen && (
-        <AnimatedSurface className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
+        <ModalDialog label={editingLandmarkId ? "Edit Island Landmark" : "Add New Sibale Landmark"} onClose={() => setIsLandmarkModalOpen(false)}>
           <div
-            className={`w-full max-w-2xl rounded-3xl border shadow-2xl p-6 sm:p-8 my-8 max-h-[90vh] overflow-y-auto transition-all ${
+            className={`w-full max-w-2xl rounded-3xl border shadow-2xl p-6 sm:p-8 transition-all ${
               isDarkMode
                 ? "bg-[#0b2d40] border-slate-700 text-slate-100"
                 : "bg-white border-slate-300 text-slate-900"
@@ -1695,6 +1695,7 @@ export function AdminPage({
               </div>
               <button
                 onClick={() => setIsLandmarkModalOpen(false)}
+                aria-label="Close editor" autoFocus
                 className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer">
                 <XCircle className="w-5 h-5" />
               </button>
@@ -1933,7 +1934,7 @@ export function AdminPage({
                     value={lmHighlightInput}
                     onChange={(e) => setLmHighlightInput(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
+                      if (isSubmitKey(e.nativeEvent)) {
                         e.preventDefault();
                         handleAddHighlightTag();
                       }
@@ -2000,18 +2001,16 @@ export function AdminPage({
               </div>
             </form>
           </div>
-        </AnimatedSurface>
+        </ModalDialog>
       )}
-      </SurfacePresence>
 
       {/* ========================================================================= */}
       {/* MODAL: ADD / EDIT ACCOMMODATION */}
       {/* ========================================================================= */}
-      <SurfacePresence>
       {isAccModalOpen && (
-        <AnimatedSurface className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
+        <ModalDialog label={editingAccId ? "Edit Accommodation" : "Register New Accommodation"} onClose={() => setIsAccModalOpen(false)}>
           <div
-            className={`w-full max-w-2xl rounded-3xl border shadow-2xl p-6 sm:p-8 my-8 max-h-[90vh] overflow-y-auto transition-all ${
+            className={`w-full max-w-2xl rounded-3xl border shadow-2xl p-6 sm:p-8 transition-all ${
               isDarkMode
                 ? "bg-[#0b2d40] border-slate-700 text-slate-100"
                 : "bg-white border-slate-300 text-slate-900"
@@ -2034,6 +2033,7 @@ export function AdminPage({
               </div>
               <button
                 onClick={() => setIsAccModalOpen(false)}
+                aria-label="Close editor" autoFocus
                 className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer">
                 <XCircle className="w-5 h-5" />
               </button>
@@ -2279,9 +2279,8 @@ export function AdminPage({
               </div>
             </form>
           </div>
-        </AnimatedSurface>
+        </ModalDialog>
       )}
-      </SurfacePresence>
     </div>
   );
 }

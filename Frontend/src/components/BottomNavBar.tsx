@@ -1,4 +1,4 @@
-import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
+import { ModalDialog } from "./ModalDialog";
 import {
   BookOpen,
   Calendar,
@@ -167,16 +167,8 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   return (
     <>
       {/* Mobile "More" Slide-up Drawer */}
-      <SurfacePresence>
       {showMoreMenu && (
-        <AnimatedSurface className="md:hidden fixed inset-0 z-50 flex flex-col justify-end p-3 sm:p-4">
-          {/* Backdrop */}
-          <div
-            onClick={() => setShowMoreMenu(false)}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-            aria-hidden="true"
-          />
-
+        <ModalDialog labelledBy="mobile-tools-title" sheet onClose={() => setShowMoreMenu(false)}>
           {/* Drawer Sheet */}
           <div
             className={`relative z-10 w-full rounded-3xl border shadow-2xl p-5 pb-8 max-h-[80dvh] overflow-y-auto transition-transform ${
@@ -191,7 +183,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
                   <MoreHorizontal className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold">All Island Tools</h3>
+                  <h3 id="mobile-tools-title" className="text-base font-extrabold">All Island Tools</h3>
                   <p className="text-xs text-slate-400">
                     Essential services & traveler community
                   </p>
@@ -200,7 +192,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
               <button
                 onClick={() => setShowMoreMenu(false)}
                 className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
-                aria-label="Close sheet">
+                aria-label="Close sheet" autoFocus>
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -245,9 +237,8 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
               })}
             </div>
           </div>
-        </AnimatedSurface>
+        </ModalDialog>
       )}
-      </SurfacePresence>
 
       {/* Main Fixed Bottom Navigation Bar with Smooth Slide & Opacity Transition */}
       <nav

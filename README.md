@@ -66,7 +66,9 @@ npm run build
 
 `npm test` does not need PostgreSQL. The integration suite uses `Backend/.env` and requires permission to create a temporary schema. It disables portfolio mode only for its test app and removes its test schema afterward.
 
-The Playwright smoke test starts Vite and Express in portfolio mode on ports 5173 and 3001. With those ports free and the local database migrated and seeded as above, run `npx playwright install chromium` once, then `npx playwright test` from the repository root. The [Playwright workflow](.github/workflows/playwright.yml) migrates and seeds a temporary PostgreSQL service for each run and requires no repository secrets.
+The Playwright regressions start Vite and Express in portfolio mode on ports 5173 and 3001. With those ports free and the local database migrated and seeded as above, run `npx playwright install --with-deps chromium firefox webkit` once, then `npx playwright test` from the repository root. To run only Chromium locally, use `npx playwright test --project=chromium`. The suite covers desktop Chromium, Firefox, WebKit and mobile Chromium, including keyboard dialogs, storage denial, system theme changes and navigation. The [Playwright workflow](.github/workflows/playwright.yml) also runs all workspace checks, migrates and seeds a temporary PostgreSQL service for each run, and requires no repository secrets.
+
+Color scheme can follow **System**, **Light**, or **Dark**. System mode follows operating system changes without storing an override. Explicit choices synchronize between tabs; if browser storage is blocked, the current choice still works for the open page.
 
 ## Graphify and Obsidian
 

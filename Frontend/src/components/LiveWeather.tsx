@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
+import { ModalDialog } from "./ModalDialog";
 import { RefreshCw, Waves, X } from "lucide-react";
 import { condition, hourlyOutlook, manilaTime, measurement, sectionStatus } from "../weather";
 import type { WeatherReport, WeatherSection } from "../weather";
@@ -90,21 +91,9 @@ export function WeatherView({ report, loading, failed, now, onRetry }: WeatherSt
 export function WeatherDialog({ open, onClose, children }: {
   open: boolean; onClose: () => void; children: React.ReactNode;
 }) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!open || !dialog) return;
-    const previousOverflow = document.body.style.overflow;
-    dialog.showModal();
-    document.body.style.overflow = "hidden";
-    return () => {
-      dialog.close();
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [open]);
-  return <dialog ref={dialogRef} aria-labelledby="weather-dialog-title" onClose={onClose}
-    onClick={event => { if (event.target === event.currentTarget) onClose(); }}
-    className="weather-dialog fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%-2rem)] max-w-3xl overflow-y-auto rounded-2xl border border-cyan-200/25 bg-[#0b2d40] p-0 text-white shadow-2xl backdrop:bg-slate-950/75 backdrop:backdrop-blur-sm">
+  if (!open) return null;
+  return <ModalDialog labelledBy="weather-dialog-title" maxWidth="48rem" onClose={onClose}>
+    <div className="weather-dialog rounded-2xl border border-cyan-200/25 bg-[#0b2d40] text-white">
     <div className="p-4 sm:p-6">
       <div className="mb-4 flex items-center justify-between gap-4">
         <h2 id="weather-dialog-title" className="text-lg font-extrabold">Weather &amp; sea conditions</h2>
@@ -114,5 +103,6 @@ export function WeatherDialog({ open, onClose, children }: {
       </div>
       {children}
     </div>
-  </dialog>;
+    </div>
+  </ModalDialog>;
 }

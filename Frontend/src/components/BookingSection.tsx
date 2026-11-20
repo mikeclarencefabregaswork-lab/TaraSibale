@@ -1,4 +1,4 @@
-import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
+import { ModalDialog } from "./ModalDialog";
 import {
   Calendar,
   CheckCircle,
@@ -303,6 +303,7 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
                   <div className="relative h-60 overflow-hidden bg-slate-900/40">
                     <img
                       src={stay.image}
+                      loading="lazy" decoding="async"
                       alt={
                         stay.image === "/assets/photo-unavailable.svg"
                           ? "Property photo not verified"
@@ -443,17 +444,17 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
       )}
 
       {/* Booking Form Modal */}
-      <SurfacePresence>
       {activeStayModal && (
-        <AnimatedSurface className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl overflow-y-auto">
+        <ModalDialog labelledBy="booking-dialog-title" maxWidth="36rem" onClose={() => setActiveStayModal(null)}>
           <div
-            className={`relative w-full max-w-xl rounded-3xl border shadow-2xl overflow-hidden my-8 backdrop-blur-2xl ${
+            className={`relative w-full max-w-xl rounded-3xl border shadow-2xl overflow-hidden backdrop-blur-2xl ${
               isDarkMode
                 ? "bg-[#061e2c]/90 border-white/20 text-slate-100"
                 : "bg-white/85 border-white/40 text-slate-800"
             }`}>
             <button
               onClick={() => setActiveStayModal(null)}
+              aria-label="Close booking form" autoFocus
               className="absolute top-4 right-4 z-20 p-2 rounded-full bg-slate-950/70 border border-white/10 text-white hover:bg-slate-900 cursor-pointer">
               <X className="w-5 h-5" />
             </button>
@@ -462,7 +463,7 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
               <span className="text-xs font-black text-teal-700 dark:text-teal-400 uppercase tracking-widest">
                 Reserving Accommodation
               </span>
-              <h3 className="text-xl font-black mt-0.5 text-slate-900 dark:text-white">
+              <h3 id="booking-dialog-title" className="text-xl font-black mt-0.5 text-slate-900 dark:text-white">
                 {activeStayModal.name}
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-300">
@@ -621,9 +622,8 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
               </div>
             </form>
           </div>
-        </AnimatedSurface>
+        </ModalDialog>
       )}
-      </SurfacePresence>
     </div>
   );
 };

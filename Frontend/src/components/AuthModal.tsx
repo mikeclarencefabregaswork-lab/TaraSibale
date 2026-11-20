@@ -1,4 +1,4 @@
-import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
+import { ModalDialog } from "./ModalDialog";
 import { PORTFOLIO_MODE } from "../portfolio";
 import { PortfolioCollectionNotice } from "./PortfolioNotice";
 import {
@@ -19,7 +19,7 @@ import {
   UserPlus,
   X,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import { api, errorText } from "../api";
 import { UserProfile } from "../types";
 
@@ -32,7 +32,7 @@ interface AuthModalProps {
 }
 
 export function AuthModal(props: AuthModalProps) {
-  return <SurfacePresence>{props.isOpen && <AuthModalContent key={props.initialMode} {...props} />}</SurfacePresence>;
+  return props.isOpen ? <ModalDialog label={PORTFOLIO_MODE ? "Portfolio account information" : "TaraSibale account"} onClose={props.onClose}><AuthModalContent key={props.initialMode} {...props} /></ModalDialog> : null;
 }
 
 function AuthModalContent({
@@ -43,6 +43,7 @@ function AuthModalContent({
   onLoginSuccess,
 }: AuthModalProps) {
   const [mode, setMode] = useState<"login" | "signup">(initialMode);
+  const formId = useId();
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -64,9 +65,7 @@ function AuthModalContent({
   const [agreedPledge, setAgreedPledge] = useState(true);
 
   if (!isOpen) return null;
-  if (PORTFOLIO_MODE) return <AnimatedSurface role="dialog" aria-modal="true" aria-label="Portfolio account information" className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4" onClick={onClose}>
-    <div className="w-full max-w-2xl" onClick={event => event.stopPropagation()}><PortfolioCollectionNotice onContinue={onClose} /></div>
-  </AnimatedSurface>;
+  if (PORTFOLIO_MODE) return <PortfolioCollectionNotice onContinue={onClose} />;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,7 +126,7 @@ function AuthModalContent({
   };
 
   return (
-    <AnimatedSurface className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-md animate-fade-in overflow-y-auto">
+    <div className="flex items-center justify-center">
       <div
         className={`relative w-full max-w-lg rounded-3xl border shadow-2xl overflow-hidden my-auto max-h-[92dvh] flex flex-col transition-all ${
           isDarkMode
@@ -164,7 +163,7 @@ function AuthModalContent({
             <button
               onClick={onClose}
               className="min-h-[44px] min-w-[44px] flex items-center justify-center p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-              title="Close modal">
+              aria-label="Close account dialog" autoFocus title="Close modal">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -226,12 +225,13 @@ function AuthModalContent({
           {mode === "login" && (
             <form onSubmit={handleLogin} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor={`${formId}-loginEmail`} className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Email Address
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
+                    id={`${formId}-loginEmail`} name="loginEmail" autoComplete="username"
                     type="email"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
@@ -248,7 +248,7 @@ function AuthModalContent({
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  <label htmlFor={`${formId}-loginPassword`} className="text-xs font-bold text-slate-700 dark:text-slate-300">
                     Password
                   </label>
                   <button
@@ -265,6 +265,7 @@ function AuthModalContent({
                 <div className="relative">
                   <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
+                    id={`${formId}-loginPassword`} name="loginPassword" autoComplete="current-password"
                     type={showPassword ? "text" : "password"}
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
@@ -278,6 +279,8 @@ function AuthModalContent({
                   />
                   <button
                     type="button"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-pressed={showPassword}
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
                     {showPassword ? (
@@ -342,12 +345,13 @@ function AuthModalContent({
           {mode === "signup" && (
             <form onSubmit={handleSignUp} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor={`${formId}-fullName`} className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Full Name
                 </label>
                 <div className="relative">
                   <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
+                    id={`${formId}-fullName`} name="fullName" autoComplete="name"
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
@@ -363,12 +367,13 @@ function AuthModalContent({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor={`${formId}-signupEmail`} className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Email Address
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
+                    id={`${formId}-signupEmail`} name="signupEmail" autoComplete="email"
                     type="email"
                     value={signupEmail}
                     onChange={(e) => setSignupEmail(e.target.value)}
@@ -385,9 +390,9 @@ function AuthModalContent({
 
               {/* Role / Traveler Type */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <p className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   I am visiting as / registering as:
-                </label>
+                </p>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     {
@@ -417,7 +422,8 @@ function AuthModalContent({
                       <button
                         key={r.id}
                         type="button"
-                        onClick={() => setRole(r.id as any)}
+                        aria-pressed={isSelected}
+                        onClick={() => setRole(r.id as typeof role)}
                         className={`p-2 rounded-xl border text-left flex items-center gap-2 transition-all cursor-pointer ${
                           isSelected
                             ? "bg-teal-500/20 border-teal-500 text-teal-950 dark:text-teal-200 font-bold shadow-sm"
@@ -439,12 +445,13 @@ function AuthModalContent({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor={`${formId}-signupPassword`} className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Password
                   </label>
                   <div className="relative">
                     <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
+                    id={`${formId}-signupPassword`} name="signupPassword" autoComplete="new-password"
                       type={showPassword ? "text" : "password"}
                       value={signupPassword}
                       onChange={(e) => setSignupPassword(e.target.value)}
@@ -460,12 +467,13 @@ function AuthModalContent({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor={`${formId}-confirmPassword`} className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Confirm Password
                   </label>
                   <div className="relative">
                     <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
+                    id={`${formId}-confirmPassword`} name="confirmPassword" autoComplete="new-password"
                       type={showPassword ? "text" : "password"}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
@@ -533,6 +541,6 @@ function AuthModalContent({
           )}
         </div>
       </div>
-    </AnimatedSurface>
+    </div>
   );
 }

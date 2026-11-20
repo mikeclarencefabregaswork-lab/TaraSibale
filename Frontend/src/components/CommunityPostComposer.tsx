@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { errorText } from "../api";
 import { preparePostImage } from "../postImage";
 import type { SocialPost, SocialPostDraft } from "../types";
-import { AnimatedSurface } from "./SurfacePresence";
+import { ModalDialog } from "./ModalDialog";
 
 interface Props {
   isDarkMode: boolean;
@@ -20,14 +20,11 @@ export function CommunityPostComposer({ isDarkMode, onAddPost, onClose }: Props)
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string>();
   const lifecycle = useRef({ active: true, version: 0 });
-  const dialog = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const life = lifecycle.current;
     life.active = true;
-    const before = document.activeElement as HTMLElement | null;
-    dialog.current?.querySelector("textarea")?.focus();
-    return () => { life.active = false; life.version++; before?.focus(); };
+    return () => { life.active = false; life.version++; };
   }, []);
 
   const clearImage = () => {
@@ -81,17 +78,8 @@ export function CommunityPostComposer({ isDarkMode, onAddPost, onClose }: Props)
       if (lifecycle.current.active) setSubmitting(false);
     }
   };
-  const keyboard = (event: React.KeyboardEvent) => {
-    if (event.key === "Escape") { event.stopPropagation(); close(); }
-    if (event.key !== "Tab") return;
-    const controls = dialog.current?.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), textarea:not([disabled])');
-    const first = controls?.[0], last = controls?.[controls.length - 1];
-    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
-    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
-  };
-
-  return <AnimatedSurface className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-xl p-4 flex items-start justify-center">
-    <div ref={dialog} role="dialog" aria-modal="true" aria-labelledby="community-composer-title" onKeyDown={keyboard}
+  return <ModalDialog labelledBy="community-composer-title" maxWidth="32rem" onClose={close} dismissible={!submitting}>
+    <div
       className={`relative my-auto w-full max-w-lg rounded-3xl border shadow-2xl p-5 sm:p-6 space-y-4 backdrop-blur-2xl ${isDarkMode ? "bg-[#061e2c]/95 border-white/20 text-slate-100" : "bg-white border-slate-200 text-slate-800"}`}>
       <div className="flex items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-white/10">
         <h3 id="community-composer-title" className="font-extrabold text-lg text-slate-900 dark:text-white">Share Your Concepcion Experience</h3>
@@ -101,7 +89,7 @@ export function CommunityPostComposer({ isDarkMode, onAddPost, onClose }: Props)
         {error && <p role="alert" className="rounded-xl bg-rose-100 p-3 text-rose-900">{error}</p>}
         <div>
           <label htmlFor="community-caption" className="block font-bold mb-1">Caption / Story *</label>
-          <textarea id="community-caption" required maxLength={4000} rows={3} value={caption} disabled={submitting} onChange={event => setCaption(event.target.value)} placeholder="Share your island moment…" className="w-full p-3 rounded-xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-white/10 text-slate-900 dark:text-white focus:outline-none focus:border-teal-500" />
+          <textarea autoFocus id="community-caption" required maxLength={4000} rows={3} value={caption} disabled={submitting} onChange={event => setCaption(event.target.value)} placeholder="Share your island moment…" className="w-full p-3 rounded-xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-white/10 text-slate-900 dark:text-white focus:outline-none focus:border-teal-500" />
         </div>
         <div>
           <label htmlFor="community-location" className="block font-bold mb-1">Location Tag *</label>
@@ -126,5 +114,5 @@ export function CommunityPostComposer({ isDarkMode, onAddPost, onClose }: Props)
         </div>
       </form>
     </div>
-  </AnimatedSurface>;
+  </ModalDialog>;
 }

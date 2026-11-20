@@ -21,7 +21,7 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import { api, errorText } from "../api";
 import { UserProfile } from "../types";
 
@@ -43,6 +43,7 @@ export function AuthPage({
   setActiveTab,
 }: AuthPageProps) {
   const [authMode, setAuthMode] = useState<"login" | "signup">(initialMode);
+  const formId = useId();
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -302,12 +303,13 @@ export function AuthPage({
           {authMode === "login" ? (
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor={`${formId}-loginEmail`} className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                   Email Address
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
+                    id={`${formId}-loginEmail`} name="loginEmail" autoComplete="username"
                     type="email"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
@@ -324,7 +326,7 @@ export function AuthPage({
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  <label htmlFor={`${formId}-loginPassword`} className="text-xs font-bold text-slate-700 dark:text-slate-300">
                     Password
                   </label>
                   <button
@@ -341,6 +343,7 @@ export function AuthPage({
                 <div className="relative">
                   <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
+                    id={`${formId}-loginPassword`} name="loginPassword" autoComplete="current-password"
                     type={showPassword ? "text" : "password"}
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
@@ -354,6 +357,8 @@ export function AuthPage({
                   />
                   <button
                     type="button"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-pressed={showPassword}
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
                     {showPassword ? (
@@ -395,12 +400,13 @@ export function AuthPage({
           ) : (
             <form onSubmit={handleSignUp} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor={`${formId}-fullName`} className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                   Full Legal Name / Display Name
                 </label>
                 <div className="relative">
                   <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
+                    id={`${formId}-fullName`} name="fullName" autoComplete="name"
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
@@ -416,12 +422,13 @@ export function AuthPage({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor={`${formId}-signupEmail`} className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                   Email Address
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
+                    id={`${formId}-signupEmail`} name="signupEmail" autoComplete="email"
                     type="email"
                     value={signupEmail}
                     onChange={(e) => setSignupEmail(e.target.value)}
@@ -469,7 +476,8 @@ export function AuthPage({
                       <button
                         key={r.id}
                         type="button"
-                        onClick={() => setRole(r.id as any)}
+                        aria-pressed={isSelected}
+                        onClick={() => setRole(r.id as typeof role)}
                         className={`p-2.5 rounded-xl border text-left flex items-center gap-2 transition-all cursor-pointer ${
                           isSelected
                             ? "bg-teal-500/20 border-teal-500 text-teal-950 dark:text-teal-200 font-bold shadow-sm"
@@ -489,12 +497,13 @@ export function AuthPage({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label htmlFor={`${formId}-signupPassword`} className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                     Password
                   </label>
                   <div className="relative">
                     <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
+                    id={`${formId}-signupPassword`} name="signupPassword" autoComplete="new-password"
                       type={showPassword ? "text" : "password"}
                       value={signupPassword}
                       onChange={(e) => setSignupPassword(e.target.value)}
@@ -510,12 +519,13 @@ export function AuthPage({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label htmlFor={`${formId}-confirmPassword`} className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                     Confirm Password
                   </label>
                   <div className="relative">
                     <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
+                    id={`${formId}-confirmPassword`} name="confirmPassword" autoComplete="new-password"
                       type={showPassword ? "text" : "password"}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
