@@ -201,7 +201,7 @@ export const Header: React.FC<HeaderProps> = ({
             </a>
 
             {/* Desktop Search Bar */}
-            <div className="hidden md:flex flex-1 max-w-md relative">
+            <div className="hidden md:flex flex-1 min-w-0 relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-teal-400/80" />
               <input
                 type="text"
