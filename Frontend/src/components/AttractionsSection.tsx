@@ -101,8 +101,27 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
 
   const toggleFavorite = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    const removing = favorites.includes(id);
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const button = e.currentTarget;
+      for (const animation of button.getAnimations()) {
+        if (animation.id === "favorite-feedback") animation.cancel();
+      }
+      const animation = button.animate(
+        removing
+          ? [{ transform: "scale(1)" }, { transform: "scale(0.85)" }, { transform: "scale(1)" }]
+          : [
+              { transform: "scale(1)", boxShadow: "0 0 0 0 rgb(244 63 94 / 50%)" },
+              { transform: "scale(1.2)", boxShadow: "0 0 0 5px rgb(244 63 94 / 25%)" },
+              { transform: "scale(0.95)", boxShadow: "0 0 0 9px rgb(244 63 94 / 0%)" },
+              { transform: "scale(1)", boxShadow: "0 0 0 10px rgb(244 63 94 / 0%)" },
+            ],
+        { duration: removing ? 180 : 380, easing: "ease-out" },
+      );
+      animation.id = "favorite-feedback";
+    }
     toast.info(
-      favorites.includes(id)
+      removing
         ? "Removed from favorites for this visit."
         : "Added to favorites for this visit.",
     );
