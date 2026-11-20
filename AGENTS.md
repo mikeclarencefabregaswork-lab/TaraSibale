@@ -1,5 +1,6 @@
 # TaraSibale workspace
 
+- Work directly on `main`. Never create Git branches or add Git remotes.
 - React/TypeScript frontend: `Frontend/`; Express/TypeScript API: `Backend/`.
 - Use root npm workspace commands. Checks: `npm run typecheck`, `npm run lint`,
   `npm test`, `npm run test:integration`, and `npm run build`.
