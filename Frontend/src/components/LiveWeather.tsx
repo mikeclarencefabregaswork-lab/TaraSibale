@@ -93,7 +93,7 @@ export function WeatherDialog({ open, onClose, children }: {
 }) {
   if (!open) return null;
   return <ModalDialog labelledBy="weather-dialog-title" maxWidth="48rem" onClose={onClose}>
-    <div className="weather-dialog rounded-2xl border border-cyan-200/25 bg-[#0b2d40] text-white">
+    <div className="rounded-2xl border border-cyan-200/25 bg-[#0b2d40] text-white">
     <div className="p-4 sm:p-6">
       <div className="mb-4 flex items-center justify-between gap-4">
         <h2 id="weather-dialog-title" className="text-lg font-extrabold">Weather &amp; sea conditions</h2>

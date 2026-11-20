@@ -1,5 +1,44 @@
 import { expect, test } from "@playwright/test";
 
+test("weather dialog paints its content and supports refresh and dismissal", async ({ page }, testInfo) => {
+  const timestamp = new Date().toISOString();
+  const section = {
+    status: "available", validAt: timestamp, retrievedAt: timestamp,
+    location: { name: "Sibale", latitude: 12.913, longitude: 121.72 },
+    grid: null, current: {}, hourly: [],
+  };
+  let requests = 0;
+  await page.route("**/api/weather", route => {
+    requests++;
+    return route.fulfill({ json: {
+      source: "Open-Meteo",
+      weather: { ...section, current: { temperature_2m: 29, weather_code: 3 } },
+      marine: { ...section, current: { wave_height: 2.5, wave_period: 8 } },
+    } });
+  });
+  await page.goto("/#explore");
+  const trigger = page.getByRole("button", { name: "Weather & sea conditions" });
+  await trigger.click();
+  const dialog = page.getByRole("dialog", { name: "Weather & sea conditions" });
+  const heading = dialog.getByRole("heading", { name: "Sibale weather", exact: true });
+  await expect(dialog).toBeVisible();
+  // Visibility assertions alone allow opacity: 0 on a content ancestor.
+  await expect.poll(() => heading.evaluate(node => node.checkVisibility({ checkOpacity: true }))).toBe(true);
+  await expect(dialog.getByText("29.0 °C", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("2.5 m", { exact: true })).toBeVisible();
+  await dialog.screenshot({ path: testInfo.outputPath("weather-dialog.png") });
+  const previousRequests = requests;
+  await dialog.getByRole("button", { name: "Refresh weather", exact: true }).click();
+  await expect.poll(() => requests).toBeGreaterThan(previousRequests);
+  await dialog.getByRole("button", { name: "Close weather details" }).click();
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+});
+
 async function openFixture(page: import("@playwright/test").Page) {
   await page.route("**/overlay-fixture", route => route.fulfill({
     contentType: "text/html",
