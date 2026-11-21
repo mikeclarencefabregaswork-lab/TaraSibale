@@ -1,3 +1,4 @@
+import { CloseButton } from "./CloseButton";
 import { SlidingPanel } from "./SlidingPanel";
 import { ModalDialog } from "./ModalDialog";
 import { PORTFOLIO_MODE } from "../portfolio";
@@ -18,7 +19,6 @@ import {
   ShieldCheck,
   User,
   UserPlus,
-  X,
 } from "lucide-react";
 import React, { useId, useState } from "react";
 import { api, errorText } from "../api";
@@ -66,7 +66,7 @@ function AuthModalContent({
   const [agreedPledge, setAgreedPledge] = useState(true);
 
   if (!isOpen) return null;
-  if (PORTFOLIO_MODE) return <PortfolioCollectionNotice onContinue={onClose} />;
+  if (PORTFOLIO_MODE) return <PortfolioCollectionNotice onContinue={onClose} onClose={onClose} />;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,12 +161,7 @@ function AuthModalContent({
               </div>
             </div>
 
-            <button
-              onClick={onClose}
-              className="min-h-[44px] min-w-[44px] flex items-center justify-center p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-              aria-label="Close account dialog" autoFocus title="Close modal">
-              <X className="w-5 h-5" />
-            </button>
+            <CloseButton label="Close account dialog" tone="inverse" onClick={onClose} autoFocus />
           </div>
 
           {/* Mode Switch Tabs */}

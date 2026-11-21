@@ -1,6 +1,7 @@
+import { CloseButton } from "./CloseButton";
 import { SurfacePresence } from "./SurfacePresence";
 import { ModalDialog } from "./ModalDialog";
-import { CheckCircle, Filter, Plus, Star, ThumbsUp, X } from "lucide-react";
+import { CheckCircle, Filter, Plus, Star, ThumbsUp } from "lucide-react";
 import React, { useState } from "react";
 import { api, errorText } from "../api";
 import { Accommodation, Attraction, Review } from "../types";
@@ -243,12 +244,7 @@ export const ReviewSystem: React.FC<ReviewSystemProps> = ({
               <h3 id="review-dialog-title" className="font-extrabold text-lg text-slate-900 dark:text-white">
                 Write a Review for Concepcion
               </h3>
-              <button
-                onClick={() => setShowWriteModal(false)}
-                aria-label="Close review form" autoFocus
-                className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white cursor-pointer">
-                <X className="w-5 h-5" />
-              </button>
+              <CloseButton label="Close review form" onClick={() => setShowWriteModal(false)} autoFocus />
             </div>
 
             <form onSubmit={handleFormSubmit} className="space-y-4 text-xs">

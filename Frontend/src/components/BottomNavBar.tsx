@@ -1,3 +1,4 @@
+import { CloseButton } from "./CloseButton";
 import { ModalDialog } from "./ModalDialog";
 import { SurfacePresence } from "./SurfacePresence";
 import {
@@ -13,7 +14,6 @@ import {
   ShieldCheck,
   Star,
   Users,
-  X,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -190,12 +190,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setShowMoreMenu(false)}
-                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
-                aria-label="Close sheet" autoFocus>
-                <X className="w-5 h-5" />
-              </button>
+              <CloseButton label="Close sheet" onClick={() => setShowMoreMenu(false)} autoFocus />
             </div>
 
             {/* Grid of Secondary Features */}

@@ -1,6 +1,7 @@
+import { CloseButton } from "./CloseButton";
 import { Popover } from "./Popover";
 import { PORTFOLIO_MODE } from "../portfolio";
-import { Bot, RefreshCw, Send, User, X } from "lucide-react";
+import { Bot, RefreshCw, Send, User } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { api, errorText } from "../api";
 import type { PortfolioGuideAnswer } from "../portfolioGuide";
@@ -159,12 +160,7 @@ export const LiveChatBot: React.FC<LiveChatBotProps> = ({
           </div>
         </div>
 
-        <button
-          onClick={() => onClose()}
-          aria-label="Close island guide"
-          className="p-1.5 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer">
-          <X className="w-5 h-5" />
-        </button>
+        <CloseButton label="Close island guide" tone="inverse" onClick={() => onClose()} />
       </div>
 
       {/* Messages Scroll View */}

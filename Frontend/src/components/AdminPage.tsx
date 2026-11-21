@@ -1,3 +1,4 @@
+import { CloseButton } from "./CloseButton";
 import { useConfirmation } from "./useConfirmation";
 import { SlidingPanel } from "./SlidingPanel";
 import { SurfacePresence } from "./SurfacePresence";
@@ -1700,12 +1701,7 @@ export function AdminPage({
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setIsLandmarkModalOpen(false)}
-                aria-label="Close editor" autoFocus
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer">
-                <XCircle className="w-5 h-5" />
-              </button>
+              <CloseButton label="Close editor" onClick={() => setIsLandmarkModalOpen(false)} autoFocus />
             </div>
 
             <form onSubmit={handleSaveLandmark} className="space-y-4">
@@ -2038,12 +2034,7 @@ export function AdminPage({
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setIsAccModalOpen(false)}
-                aria-label="Close editor" autoFocus
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer">
-                <XCircle className="w-5 h-5" />
-              </button>
+              <CloseButton label="Close editor" onClick={() => setIsAccModalOpen(false)} autoFocus />
             </div>
 
             <form onSubmit={handleSaveAccommodation} className="space-y-4">

@@ -1,3 +1,4 @@
+import { CloseButton } from "./CloseButton";
 import { SurfacePresence } from "./SurfacePresence";
 import { SlidingFilterHighlight } from "./SlidingFilterHighlight";
 import { SlidingPanel } from "./SlidingPanel";
@@ -9,7 +10,6 @@ import {
   Home,
   MapPin,
   Star,
-  X,
 } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { errorText } from "../api";
@@ -209,11 +209,7 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
       {/* Confirmed Booking Voucher Banner Alert if just booked */}
       {confirmedVoucher && (
         <div className="p-6 rounded-3xl bg-teal-500/15 border border-teal-500/40 text-slate-900 dark:text-white backdrop-blur-2xl shadow-2xl relative space-y-4">
-          <button
-            onClick={() => setConfirmedVoucher(null)}
-            className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 dark:text-teal-300 dark:hover:text-white cursor-pointer">
-            <X className="w-5 h-5" />
-          </button>
+          <CloseButton label="Dismiss booking voucher" className="absolute top-4 right-4" onClick={() => setConfirmedVoucher(null)} />
 
           <div className="flex items-center gap-3">
             <div className="p-3 rounded-2xl bg-teal-500 text-slate-950 font-bold shadow-[0_0_15px_rgba(46,196,182,0.4)]">
@@ -461,14 +457,9 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
                 ? "bg-[#061e2c]/90 border-white/20 text-slate-100"
                 : "bg-white/85 border-white/40 text-slate-800"
             }`}>
-            <button
-              onClick={() => setActiveStayModal(null)}
-              aria-label="Close booking form" autoFocus
-              className="absolute top-4 right-4 z-20 p-2 rounded-full bg-slate-950/70 border border-white/10 text-white hover:bg-slate-900 cursor-pointer">
-              <X className="w-5 h-5" />
-            </button>
+            <CloseButton label="Close booking form" tone="inverse" className="absolute top-4 right-4 z-20" onClick={() => setActiveStayModal(null)} autoFocus />
 
-            <div className="p-6 border-b border-slate-200 dark:border-white/10">
+            <div className="p-6 pr-20 border-b border-slate-200 dark:border-white/10">
               <span className="text-xs font-black text-teal-700 dark:text-teal-400 uppercase tracking-widest">
                 Reserving Accommodation
               </span>

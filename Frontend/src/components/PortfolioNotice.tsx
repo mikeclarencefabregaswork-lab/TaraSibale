@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CloseButton } from "./CloseButton";
 
 export function PortfolioNotice() {
   const [reset, setReset] = useState(false);
@@ -30,9 +31,12 @@ export function PortfolioNotice() {
   );
 }
 
-export function PortfolioCollectionNotice({ kind = "account", onContinue }: { kind?: "account" | "documents"; onContinue?: () => void }) {
+export function PortfolioCollectionNotice({ kind = "account", onContinue, onClose }: { kind?: "account" | "documents"; onContinue?: () => void; onClose?: () => void }) {
   return <section className="mx-auto max-w-2xl rounded-3xl border border-teal-500/30 bg-white p-6 text-slate-900 shadow-lg dark:bg-slate-900 dark:text-white">
-    <h2 className="text-xl font-bold">{kind === "documents" ? "Sample document vault" : "Explore without an account"}</h2>
+    <div className="flex items-start justify-between gap-3">
+      <h2 className="text-xl font-bold">{kind === "documents" ? "Sample document vault" : "Explore without an account"}</h2>
+      {onClose && <CloseButton label="Close account dialog" onClick={onClose} autoFocus />}
+    </div>
     <p className="mt-3 text-sm">This is a portfolio demonstration. {kind === "documents" ? "File selection and uploads are disabled. Do not provide IDs, tickets or personal documents." : "Login and registration are disabled. No email address or password is needed."}</p>
     <div className="my-4 rounded-xl border border-dashed border-teal-500/50 p-4">
       <p className="font-semibold">{kind === "documents" ? "SAMPLE TICKET — DEMO ONLY" : "Sample traveler: Alex Demo"}</p>

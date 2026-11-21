@@ -1,10 +1,10 @@
+import { CloseButton } from "./CloseButton";
 import {
   AlertTriangle,
   Calendar,
   RefreshCw,
   Ship,
   Waves,
-  X,
 } from "lucide-react";
 import React from "react";
 import { FerryRoute } from "../types";
@@ -154,13 +154,7 @@ export const FerryAlertBanner: React.FC<FerryAlertBannerProps> = ({
               </button>
             )}
 
-            <button
-              onClick={onDismiss}
-              aria-label="Dismiss maritime alert"
-              className="min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
-              title="Dismiss alert">
-              <X className="w-4 h-4" />
-            </button>
+            <CloseButton label="Dismiss maritime alert" tone="inverse" onClick={onDismiss} />
           </div>
         </div>
       </div>

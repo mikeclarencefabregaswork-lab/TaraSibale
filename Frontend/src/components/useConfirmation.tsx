@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ModalDialog } from "./ModalDialog";
 import { SurfacePresence } from "./SurfacePresence";
+import { CloseButton } from "./CloseButton";
 
 /** App-owned confirmations share the same animation and keyboard behavior. */
 export function useConfirmation() {
@@ -20,7 +21,10 @@ export function useConfirmation() {
   });
   const dialog = <SurfacePresence>{message && <ModalDialog label="Confirm removal" maxWidth="28rem" onClose={() => finish(false)}>
     <div className="rounded-3xl border border-slate-200 bg-white p-6 text-slate-900 dark:border-white/15 dark:bg-[#0b2d40] dark:text-white">
-      <h2 className="text-lg font-bold">Confirm removal</h2>
+      <div className="flex items-start justify-between gap-3">
+        <h2 className="text-lg font-bold">Confirm removal</h2>
+        <CloseButton label="Close confirmation" onClick={() => finish(false)} />
+      </div>
       <p className="mt-3 text-sm">{message}</p>
       <div className="mt-6 flex justify-end gap-3">
         <button type="button" autoFocus onClick={() => finish(false)} className="min-h-11 rounded-xl border border-slate-300 px-4 dark:border-white/20">Cancel</button>

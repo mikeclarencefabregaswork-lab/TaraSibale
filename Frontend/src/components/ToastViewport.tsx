@@ -1,7 +1,8 @@
+import { CloseButton } from "./CloseButton";
 import React from "react";
 import { NotificationTimer } from "../notificationTimer";
 import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
-import { CheckCircle2, AlertCircle, Info, X } from "lucide-react";
+import { CheckCircle2, AlertCircle, Info } from "lucide-react";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import {
   dismissToast,
@@ -60,13 +61,7 @@ function ToastCard({ item }: { item: ToastMessage }): React.ReactElement {
           {paused ? "Paused" : `Closes in ${Math.ceil(remaining / 1000)}s`}
         </span>
       </p>
-      <button
-        type="button"
-        onClick={() => dismissToast(item.id)}
-        aria-label="Dismiss notification"
-        className="-m-1 rounded-lg p-2 hover:bg-slate-500/10">
-        <X aria-hidden="true" className="h-4 w-4" />
-      </button>
+      <CloseButton label="Dismiss notification" className="-m-1" onClick={() => dismissToast(item.id)} />
       <div className="absolute inset-x-0 bottom-0 h-1 bg-slate-500/15"
         role="progressbar" aria-label={paused ? "Notification dismissal paused" : "Time until notification closes"}
         aria-valuemin={0} aria-valuemax={Math.ceil(duration / 1000)} aria-valuenow={Math.ceil(remaining / 1000)}

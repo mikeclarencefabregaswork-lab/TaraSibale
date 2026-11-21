@@ -1,7 +1,8 @@
+import { CloseButton } from "./CloseButton";
 import { SurfacePresence } from "./SurfacePresence";
 import React from "react";
 import { ModalDialog } from "./ModalDialog";
-import { RefreshCw, Waves, X } from "lucide-react";
+import { RefreshCw, Waves } from "lucide-react";
 import { condition, hourlyOutlook, manilaTime, measurement, sectionStatus } from "../weather";
 import type { WeatherReport, WeatherSection } from "../weather";
 
@@ -97,9 +98,7 @@ export function WeatherDialog({ open, onClose, children }: {
     <div className="p-4 sm:p-6">
       <div className="mb-4 flex items-center justify-between gap-4">
         <h2 id="weather-dialog-title" className="text-lg font-extrabold">Weather &amp; sea conditions</h2>
-        <button type="button" autoFocus onClick={onClose} aria-label="Close weather details" className="flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/20 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-200">
-          <X className="h-5 w-5" aria-hidden="true" />
-        </button>
+        <CloseButton label="Close weather details" tone="inverse" autoFocus onClick={onClose} />
       </div>
       {children}
     </div>

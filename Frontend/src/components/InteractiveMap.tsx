@@ -1,3 +1,5 @@
+import { CloseButton } from "./CloseButton";
+import { GoogleSatelliteViewer } from "./GoogleSatelliteViewer";
 import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import { PORTFOLIO_MODE } from "../portfolio";
 const escapeHtml = (value: unknown) =>
@@ -38,7 +40,6 @@ import {
   Signal,
   Sparkles,
   TrendingUp,
-  X,
 } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -162,7 +163,46 @@ const MAP_STYLES: Record<TileStyleKey, TileStyleConfig> = {
   },
 };
 
-export const InteractiveMap: React.FC<InteractiveMapProps> = ({
+export const InteractiveMap: React.FC<InteractiveMapProps> = (props) => {
+  const [viewer, setViewer] = useState<"google" | "interactive">("google");
+  const [hasOpenedInteractive, setHasOpenedInteractive] = useState(false);
+
+  return (
+    <div className="space-y-6">
+      <div role="group" aria-label="Map viewer" className="flex flex-wrap gap-2">
+        {([
+          ["google", "Google Satellite"],
+          ["interactive", "Trails & Places"],
+        ] as const).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={viewer === value}
+            onClick={() => {
+              if (value === "interactive") setHasOpenedInteractive(true);
+              setViewer(value);
+            }}
+            className={`min-h-11 rounded-xl border px-4 py-2 text-xs font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 ${
+              viewer === value
+                ? "border-teal-500 bg-teal-500 text-slate-950"
+                : "border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
+            }`}>
+            {label}
+          </button>
+        ))}
+      </div>
+      <div hidden={viewer !== "google"}>
+        <GoogleSatelliteViewer isOffline={props.isOffline} />
+      </div>
+      {/* Mount on first use, then keep searches, selections and map position. */}
+      <div hidden={viewer !== "interactive"}>
+        {hasOpenedInteractive && <TrailsMap {...props} isVisible={viewer === "interactive"} />}
+      </div>
+    </div>
+  );
+};
+
+const TrailsMap: React.FC<InteractiveMapProps & { isVisible: boolean }> = ({
   attractions,
   hikingTrails,
   accommodations,
@@ -170,6 +210,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   onSelectAttraction,
   onSelectAccommodation,
   isOffline,
+  isVisible,
 }) => {
   // Map Container & Instance Refs
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -220,7 +261,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       if (mapInstanceRef.current === map) map.invalidateSize();
     }, 320);
     return () => window.clearTimeout(timer);
-  }, [isMobileSheetExpanded, isFullscreen]);
+  }, [isMobileSheetExpanded, isFullscreen, isVisible]);
   const [selectedPin, setSelectedPin] = useState<{
     id: string;
     type: "attraction" | "stay" | "port" | "trailhead";
@@ -1228,12 +1269,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setIsLayerControlOpen(false)}
-                  className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-all cursor-pointer"
-                  title="Close layers panel">
-                  <X className="w-4 h-4" />
-                </button>
+                <CloseButton label="Close layers panel" tone="inverse" onClick={() => setIsLayerControlOpen(false)} autoFocus />
               </div>
 
               {/* Section 1: Base Map Views */}

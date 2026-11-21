@@ -1,4 +1,5 @@
-import { ImagePlus, X } from "lucide-react";
+import { CloseButton } from "./CloseButton";
+import { ImagePlus } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { errorText } from "../api";
 import { preparePostImage } from "../postImage";
@@ -83,7 +84,7 @@ export function CommunityPostComposer({ isDarkMode, onAddPost, onClose }: Props)
       className={`relative my-auto w-full max-w-lg rounded-3xl border shadow-2xl p-5 sm:p-6 space-y-4 backdrop-blur-2xl ${isDarkMode ? "bg-[#061e2c]/95 border-white/20 text-slate-100" : "bg-white border-slate-200 text-slate-800"}`}>
       <div className="flex items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-white/10">
         <h3 id="community-composer-title" className="font-extrabold text-lg text-slate-900 dark:text-white">Share Your Concepcion Experience</h3>
-        <button type="button" onClick={close} disabled={submitting} aria-label="Close post composer" className="shrink-0 min-h-11 min-w-11 flex items-center justify-center rounded-lg hover:bg-slate-500/10 disabled:opacity-50"><X className="w-5 h-5" /></button>
+        <CloseButton label="Close post composer" onClick={close} disabled={submitting} />
       </div>
       <form onSubmit={submit} className="space-y-4 text-xs">
         {error && <p role="alert" className="rounded-xl bg-rose-100 p-3 text-rose-900">{error}</p>}

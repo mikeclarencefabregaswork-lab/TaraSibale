@@ -1,3 +1,4 @@
+import { CloseButton } from "./CloseButton";
 import { SurfacePresence } from "./SurfacePresence";
 import { SlidingFilterHighlight } from "./SlidingFilterHighlight";
 import { SlidingPanel } from "./SlidingPanel";
@@ -16,7 +17,6 @@ import {
   Star,
   Volume2,
   VolumeX,
-  X,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Attraction } from "../types";
@@ -422,13 +422,7 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
             }`}>
             {/* Modal Close Button */}
             <div className="sticky top-0 z-20">
-              <button
-                type="button"
-                aria-label="Close attraction details"
-                onClick={closeDetails}
-                className="absolute top-4 right-4 flex size-11 items-center justify-center rounded-full bg-slate-950/70 backdrop-blur-md text-white hover:bg-slate-900 border border-white/10 cursor-pointer">
-                <X className="w-5 h-5" />
-              </button>
+              <CloseButton label="Close attraction details" tone="inverse" className="absolute top-4 right-4" onClick={closeDetails} />
             </div>
 
             {/* Modal Hero Image */}

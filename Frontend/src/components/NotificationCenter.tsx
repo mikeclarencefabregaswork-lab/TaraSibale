@@ -1,3 +1,4 @@
+import { CloseButton } from "./CloseButton";
 import { Popover } from "./Popover";
 import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import {
@@ -14,7 +15,6 @@ import {
   MessageSquare,
   ShieldAlert,
   User,
-  X,
 } from "lucide-react";
 import React, { useState } from "react";
 import { AppNotification, NotificationCategory, UserProfile } from "../types";
@@ -156,12 +156,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         </div>
 
         <div className="flex items-center gap-1">
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
-            title="Close notifications">
-            <X className="w-4 h-4" />
-          </button>
+          <CloseButton label="Close notifications" onClick={onClose} />
         </div>
       </div>
 
@@ -301,7 +296,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   </div>
 
                   {/* Text content */}
-                  <div className="min-w-0 flex-1 pr-6">
+                  <div className="min-w-0 flex-1 pr-20">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="font-bold text-xs text-slate-900 dark:text-white leading-tight">
                         {item.title}
@@ -316,7 +311,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                     </p>
 
                     {/* Metadata line with typographic separators (anti-slop clean unboxed text) */}
-                    <div className="flex items-center gap-1.5 mt-2 text-[10px] text-slate-400 dark:text-slate-400 font-medium">
+                    <div className="flex flex-wrap items-center gap-1.5 mt-2 text-[10px] text-slate-400 dark:text-slate-400 font-medium">
                       <span>{item.timestamp}</span>
                       <span aria-hidden="true">·</span>
                       <span className="capitalize">
@@ -346,12 +341,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                       <Check className="w-3.5 h-3.5" />
                     </button>
 
-                    <button
-                      onClick={(e) => handleDismiss(item.id, e)}
-                      title="Dismiss notification"
-                      className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors">
-                      <X className="w-3.5 h-3.5" />
-                    </button>
+                    <CloseButton label="Dismiss notification" onClick={(e) => handleDismiss(item.id, e)} />
                   </div>
                 </div>
               </AnimatedSurface>
