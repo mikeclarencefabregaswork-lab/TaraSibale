@@ -1,4 +1,6 @@
+import { SurfacePresence } from "./components/SurfacePresence";
 import { readPreference, useTheme } from "./theme";
+import { pageSlideDirection } from "./navigation";
 import { PORTFOLIO_MODE } from "./portfolio";
 import { PortfolioNotice } from "./components/PortfolioNotice";
 import { toast } from "./toastStore";
@@ -125,7 +127,17 @@ const getInitialTab = (): string => {
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<string>(getInitialTab);
+  const [navigation, setNavigation] = useState(() => ({
+    tab: getInitialTab(),
+    direction: 0 as -1 | 0 | 1,
+  }));
+  const activeTab = navigation.tab;
+  const setActiveTab = useCallback((tab: string) => {
+    setNavigation(current => current.tab === tab ? current : {
+      tab,
+      direction: pageSlideDirection(current.tab, tab),
+    });
+  }, []);
   const { isDarkMode, themePreference, setThemePreference } = useTheme();
   const [isMobileNavVisible, setIsMobileNavVisible] = useState<boolean>(true);
   const [isOffline, setIsOffline] = useState<boolean>(false);
@@ -260,7 +272,7 @@ export default function App() {
 
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
+  }, [setActiveTab]);
 
   const [hikingTrails, setHikingTrails] = useState<HikingTrail[]>([]);
   const catalogGeneration = useRef(0);
@@ -581,11 +593,11 @@ export default function App() {
   const handleOpenReviewForAttraction = useCallback((attractionId: string) => {
     setPreSelectedReviewTarget(attractionId);
     setActiveTab("reviews");
-  }, []);
+  }, [setActiveTab]);
   const handleMapAttraction = useCallback((attraction: Attraction) => {
     handleOpenReviewForAttraction(attraction.id);
   }, [handleOpenReviewForAttraction]);
-  const handleMapAccommodation = useCallback(() => setActiveTab("stay"), []);
+  const handleMapAccommodation = useCallback(() => setActiveTab("stay"), [setActiveTab]);
 
   return (
     <UserStateContext.Provider
@@ -665,7 +677,7 @@ export default function App() {
           <PullToRefresh onRefresh={handlePullToRefresh}>
             {/* Main Container - Centered max-w-7xl for high readability and balanced margins on wide displays */}
             <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 xl:px-10 pt-6">
-              <div key={activeTab} className="page-transition">
+              <div key={activeTab} className="page-transition" data-slide-direction={navigation.direction}>
                 <Suspense fallback={<PageSkeleton tab={activeTab} />}>
                   {!["auth", "login", "signup"].includes(activeTab) &&
                   !apiError &&
@@ -926,7 +938,7 @@ export default function App() {
           </Suspense>}
 
           {/* Auth Modal (Triggered anywhere from header or buttons) */}
-          {isAuthModalOpen && <Suspense fallback={<p role="status" className="fixed bottom-24 right-4 z-50 rounded-xl bg-slate-900 p-4 text-white">Loading account information…</p>}>
+          <SurfacePresence>{isAuthModalOpen && <Suspense fallback={<p role="status" className="fixed bottom-24 right-4 z-50 rounded-xl bg-slate-900 p-4 text-white">Loading account information…</p>}>
           <AuthModal
             key={authModalMode}
             isOpen={isAuthModalOpen}
@@ -936,7 +948,7 @@ export default function App() {
             isDarkMode={isDarkMode}
           />
 
-          </Suspense>}
+          </Suspense>}</SurfacePresence>
 
           {/* Interactive Maritime Status Simulator Bar */}
           {currentUser?.role === "admin" && (

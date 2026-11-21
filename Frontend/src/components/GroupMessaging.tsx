@@ -1,3 +1,4 @@
+import { SlidingPanel } from "./SlidingPanel";
 import { CheckSquare, Send, ShieldCheck, Square, Users } from "lucide-react";
 import React, { useState } from "react";
 import { errorText } from "../api";
@@ -138,6 +139,7 @@ export const GroupMessaging: React.FC<GroupMessagingProps> = ({
         </div>
       </div>
 
+      <SlidingPanel tab={activeSubTab} order={["chat", "checklist", "expenses"]}>
       {/* TEAM CHAT VIEW */}
       {activeSubTab === "chat" && (
         <div className="rounded-3xl border border-slate-200/90 dark:border-white/15 bg-white/85 dark:bg-slate-900/60 backdrop-blur-xl overflow-hidden text-slate-900 dark:text-white flex flex-col h-[520px] shadow-sm">
@@ -355,6 +357,7 @@ export const GroupMessaging: React.FC<GroupMessagingProps> = ({
           </div>
         </div>
       )}
+      </SlidingPanel>
     </div>
   );
 };

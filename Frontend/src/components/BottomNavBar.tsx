@@ -1,4 +1,5 @@
 import { ModalDialog } from "./ModalDialog";
+import { SurfacePresence } from "./SurfacePresence";
 import {
   BookOpen,
   Calendar,
@@ -167,7 +168,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   return (
     <>
       {/* Mobile "More" Slide-up Drawer */}
-      {showMoreMenu && (
+      <SurfacePresence>{showMoreMenu && (
         <ModalDialog labelledBy="mobile-tools-title" sheet onClose={() => setShowMoreMenu(false)}>
           {/* Drawer Sheet */}
           <div
@@ -238,7 +239,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
             </div>
           </div>
         </ModalDialog>
-      )}
+      )}</SurfacePresence>
 
       {/* Main Fixed Bottom Navigation Bar with Smooth Slide & Opacity Transition */}
       <nav
@@ -252,7 +253,11 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
             ? "bg-[#061e2c]/95 border-white/10 text-slate-400"
             : "bg-white/95 border-slate-200 text-slate-600"
         }`}>
-        <div className="grid grid-cols-5 h-full max-w-md mx-auto items-center">
+        <div className="relative grid grid-cols-5 h-full max-w-md mx-auto items-center">
+          <span aria-hidden="true" className="mobile-tab-indicator pointer-events-none absolute inset-y-0 left-0 w-1/5"
+            style={{ transform: `translateX(${(showMoreMenu || isMoreTabActive ? 4 : Math.max(0, primaryTabs.findIndex(tab => tab.id === activeTab))) * 100}%)` }}>
+            <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 rounded-b-full bg-teal-500 shadow-sm" />
+          </span>
           {primaryTabs.map((tab) => {
             const Icon = tab.icon;
             const isTabActive =
@@ -270,11 +275,6 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
                     : "hover:text-slate-900 dark:hover:text-white"
                 }`}
                 aria-current={isTabActive ? "page" : undefined}>
-                {/* Active Indicator Top Pill */}
-                {isTabActive && (
-                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 rounded-b-full bg-teal-500 shadow-sm" />
-                )}
-
                 <div className="relative">
                   <Icon
                     className={`w-5 h-5 transition-transform duration-200 ${isTabActive ? "scale-110" : "group-hover:scale-105"}`}

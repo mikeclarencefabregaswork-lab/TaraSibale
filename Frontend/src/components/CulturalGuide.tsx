@@ -1,3 +1,4 @@
+import { SlidingPanel } from "./SlidingPanel";
 import { BookOpen } from "lucide-react";
 import React, { useState } from "react";
 import { CultureItem } from "../types";
@@ -57,6 +58,7 @@ export const CulturalGuide: React.FC<CulturalGuideProps> = ({
         </div>
       </div>
 
+      <SlidingPanel tab={activeTab} order={["phrases", "food", "festivals"]}>
       {/* Phrasebook View */}
       {activeTab === "phrases" && (
         <div className="space-y-4">
@@ -201,6 +203,7 @@ export const CulturalGuide: React.FC<CulturalGuideProps> = ({
       {activeTab === "festivals" && (
         <FiestasAndCustoms cultureItems={cultureItems} />
       )}
+      </SlidingPanel>
     </div>
   );
 };

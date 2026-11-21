@@ -1,3 +1,4 @@
+import { SurfacePresence } from "./SurfacePresence";
 import React from "react";
 import { ModalDialog } from "./ModalDialog";
 import { RefreshCw, Waves, X } from "lucide-react";
@@ -91,8 +92,7 @@ export function WeatherView({ report, loading, failed, now, onRetry }: WeatherSt
 export function WeatherDialog({ open, onClose, children }: {
   open: boolean; onClose: () => void; children: React.ReactNode;
 }) {
-  if (!open) return null;
-  return <ModalDialog labelledBy="weather-dialog-title" maxWidth="48rem" onClose={onClose}>
+  return <SurfacePresence>{open && <ModalDialog labelledBy="weather-dialog-title" maxWidth="48rem" onClose={onClose}>
     <div className="rounded-2xl border border-cyan-200/25 bg-[#0b2d40] text-white">
     <div className="p-4 sm:p-6">
       <div className="mb-4 flex items-center justify-between gap-4">
@@ -104,5 +104,5 @@ export function WeatherDialog({ open, onClose, children }: {
       {children}
     </div>
     </div>
-  </ModalDialog>;
+  </ModalDialog>}</SurfacePresence>;
 }

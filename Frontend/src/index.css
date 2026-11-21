@@ -32,11 +32,11 @@ dialog::backdrop { overflow: hidden; overscroll-behavior: contain; }
 }
 @supports not selector(:popover-open) {
   .native-popover { position: fixed; inset: 1rem; margin: auto; }
-  .native-popover[data-fallback-open="false"] { display: none; }
+  .native-popover:not([data-surface-visible="true"]) { display: none; }
 }
 .native-popover[data-popover-fallback] { position: fixed; inset: 1rem; margin: auto; }
-.native-popover[data-popover-fallback][data-fallback-open="true"] { display: block; }
-.native-popover[data-popover-fallback][data-fallback-open="false"] { display: none; }
+.native-popover[data-popover-fallback][data-surface-visible="true"] { display: block; }
+.native-popover[data-popover-fallback]:not([data-surface-visible="true"]) { display: none; }
 
 .skip-link {
   position: fixed;

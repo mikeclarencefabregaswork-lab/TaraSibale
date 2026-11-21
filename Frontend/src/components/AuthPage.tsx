@@ -1,3 +1,4 @@
+import { SlidingPanel } from "./SlidingPanel";
 import { PORTFOLIO_MODE } from "../portfolio";
 import { PortfolioCollectionNotice } from "./PortfolioNotice";
 import {
@@ -299,6 +300,7 @@ export function AuthPage({
             </div>
           )}
 
+          <SlidingPanel tab={authMode} order={["login", "signup"]}>
           {/* LOGIN FORM */}
           {authMode === "login" ? (
             <form onSubmit={handleLogin} className="space-y-4">
@@ -572,6 +574,7 @@ export function AuthPage({
               </button>
             </form>
           )}
+          </SlidingPanel>
         </div>
       </div>
     </div>

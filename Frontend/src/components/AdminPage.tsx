@@ -1,3 +1,6 @@
+import { useConfirmation } from "./useConfirmation";
+import { SlidingPanel } from "./SlidingPanel";
+import { SurfacePresence } from "./SurfacePresence";
 import { isSubmitKey } from "../keyboard";
 import { ModalDialog } from "./ModalDialog";
 import { toast } from "../toastStore";
@@ -75,6 +78,7 @@ export function AdminPage({
   onUpdateSystemPermissions,
   onLoginAsAdmin,
 }: AdminPageProps) {
+  const { confirm, dialog: confirmationDialog } = useConfirmation();
   const [adminSubTab, setAdminSubTab] = useState<
     | "overview"
     | "landmarks"
@@ -261,7 +265,7 @@ export function AdminPage({
     setAdminError(null);
     try {
       if (
-        window.confirm(
+        await confirm(
           `Are you sure you want to remove "${name}" from Sibale landmarks registry?`,
         )
       ) {
@@ -413,7 +417,7 @@ export function AdminPage({
     setAdminError(null);
     try {
       if (
-        window.confirm(
+        await confirm(
           `Are you sure you want to remove "${name}" from registered accommodations?`,
         )
       ) {
@@ -726,6 +730,7 @@ export function AdminPage({
       {/* ========================================================================= */}
       {/* 1. OVERVIEW DASHBOARD SUB-TAB */}
       {/* ========================================================================= */}
+      <SlidingPanel tab={adminSubTab} order={["overview", "landmarks", "accommodations", "verifications", "permissions"]}>
       {adminSubTab === "overview" && (
         <div className="space-y-8 animate-fade-in">
           {/* Key Metric Stats Cards */}
@@ -1666,9 +1671,11 @@ export function AdminPage({
       )}
 
       {/* ========================================================================= */}
+      </SlidingPanel>
+      {confirmationDialog}
       {/* MODAL: ADD / EDIT LANDMARK */}
       {/* ========================================================================= */}
-      {isLandmarkModalOpen && (
+      <SurfacePresence>{isLandmarkModalOpen && (
         <ModalDialog label={editingLandmarkId ? "Edit Island Landmark" : "Add New Sibale Landmark"} onClose={() => setIsLandmarkModalOpen(false)}>
           <div
             className={`w-full max-w-2xl rounded-3xl border shadow-2xl p-6 sm:p-8 transition-all ${
@@ -2002,12 +2009,12 @@ export function AdminPage({
             </form>
           </div>
         </ModalDialog>
-      )}
+      )}</SurfacePresence>
 
       {/* ========================================================================= */}
       {/* MODAL: ADD / EDIT ACCOMMODATION */}
       {/* ========================================================================= */}
-      {isAccModalOpen && (
+      <SurfacePresence>{isAccModalOpen && (
         <ModalDialog label={editingAccId ? "Edit Accommodation" : "Register New Accommodation"} onClose={() => setIsAccModalOpen(false)}>
           <div
             className={`w-full max-w-2xl rounded-3xl border shadow-2xl p-6 sm:p-8 transition-all ${
@@ -2280,7 +2287,7 @@ export function AdminPage({
             </form>
           </div>
         </ModalDialog>
-      )}
+      )}</SurfacePresence>
     </div>
   );
 }

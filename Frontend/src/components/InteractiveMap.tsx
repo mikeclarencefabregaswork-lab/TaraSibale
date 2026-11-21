@@ -1,3 +1,4 @@
+import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import { PORTFOLIO_MODE } from "../portfolio";
 const escapeHtml = (value: unknown) =>
   String(value ?? "").replace(
@@ -1208,8 +1209,8 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           </div>
 
           {/* Interactive Floating Layer Control Switch Panel */}
-          {isLayerControlOpen && (
-            <div
+          <SurfacePresence>{isLayerControlOpen && (
+            <AnimatedSurface
               ref={layerControlRef}
               className="absolute top-16 right-4 sm:right-14 z-30 w-[calc(100%-2rem)] sm:w-[380px] max-h-[calc(100%-5rem)] overflow-y-auto rounded-3xl p-5 border border-white/20 bg-slate-950/95 backdrop-blur-2xl shadow-2xl space-y-4 animate-fade-in text-white pointer-events-auto custom-scrollbar">
               {/* Header */}
@@ -1509,8 +1510,8 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                   </button>
                 </div>
               </div>
-            </div>
-          )}
+            </AnimatedSurface>
+          )}</SurfacePresence>
 
           {/* Floating Bottom Legend - Compact, Semitransparent Pill */}
           <div
@@ -1541,8 +1542,8 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           </div>
 
           {/* Mobile Collapsible / Swipeable Bottom Sheet for Active Trail Dossier */}
-          {selectedTrail && !isFullscreen && (
-            <div
+          <SurfacePresence>{selectedTrail && !isFullscreen && (
+            <AnimatedSurface
               className={`lg:hidden absolute bottom-0 left-0 right-0 z-30 transition-all duration-300 ease-in-out ${
                 isMobileSheetExpanded
                   ? "h-[76dvh] max-h-[620px] shadow-[0_-16px_40px_rgba(0,0,0,0.8)]"
@@ -1831,8 +1832,9 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                   </div>
                 </div>
               )}
-            </div>
-          )}
+            </AnimatedSurface>
+          )}</SurfacePresence>
+
         </div>
 
         {/* Right Column: Hiking Route Dossier / Pin Details & Distance Desk (Desktop View) */}

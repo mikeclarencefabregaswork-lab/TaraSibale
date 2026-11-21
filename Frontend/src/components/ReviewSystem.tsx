@@ -1,3 +1,4 @@
+import { SurfacePresence } from "./SurfacePresence";
 import { ModalDialog } from "./ModalDialog";
 import { CheckCircle, Filter, Plus, Star, ThumbsUp, X } from "lucide-react";
 import React, { useState } from "react";
@@ -230,7 +231,7 @@ export const ReviewSystem: React.FC<ReviewSystemProps> = ({
       </div>
 
       {/* Write Review Modal */}
-      {showWriteModal && (
+      <SurfacePresence>{showWriteModal && (
         <ModalDialog labelledBy="review-dialog-title" maxWidth="32rem" onClose={() => setShowWriteModal(false)}>
           <div
             className={`relative w-full max-w-lg rounded-3xl border shadow-2xl p-6 space-y-4 backdrop-blur-2xl ${
@@ -392,7 +393,7 @@ export const ReviewSystem: React.FC<ReviewSystemProps> = ({
             </form>
           </div>
         </ModalDialog>
-      )}
+      )}</SurfacePresence>
     </div>
   );
 };

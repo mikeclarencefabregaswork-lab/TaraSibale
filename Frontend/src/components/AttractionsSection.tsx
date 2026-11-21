@@ -1,3 +1,6 @@
+import { SurfacePresence } from "./SurfacePresence";
+import { SlidingFilterHighlight } from "./SlidingFilterHighlight";
+import { SlidingPanel } from "./SlidingPanel";
 import { ModalDialog } from "./ModalDialog";
 import { toast } from "../toastStore";
 import {
@@ -186,7 +189,7 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
         <div className="relative min-w-0 max-w-full">
           <div
             ref={filterRowRef}
-            className="flex items-center gap-2 overflow-x-auto pb-1.5 scrollbar-none sm:flex-wrap max-w-full select-none"
+            className="relative isolate flex items-center gap-2 overflow-x-auto pb-1.5 scrollbar-none sm:flex-wrap max-w-full select-none"
             onPointerDown={handleFilterPointerDown}
             onPointerMove={handleFilterPointerMove}
             onPointerUp={() => {
@@ -209,6 +212,7 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
               }
               didDragFilters.current = false;
             }}>
+            <SlidingFilterHighlight rowRef={filterRowRef} selected={selectedCategory} layoutKey={attractions} />
             {[
               { id: "all", label: "All Places" },
               { id: "beach", label: "White Beaches 🏖️" },
@@ -226,10 +230,11 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
                 <button
                   key={cat.id}
                   aria-pressed={selectedCategory === cat.id}
+                  data-filter-active={selectedCategory === cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`min-h-[40px] px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all cursor-pointer backdrop-blur-md whitespace-nowrap shrink-0 ${
+                  className={`relative z-[1] min-h-[40px] px-3.5 py-1.5 rounded-full border text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     selectedCategory === cat.id
-                      ? "bg-teal-500 text-slate-950 shadow-[0_0_15px_rgba(46,196,182,0.4)]"
+                      ? "text-slate-950 border-transparent"
                       : "bg-slate-200/80 hover:bg-slate-300/80 text-slate-800 border border-slate-300 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white dark:border-white/15"
                   }`}>
                   {cat.label}
@@ -258,6 +263,7 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
       </div>
 
       {/* Grid of Attraction Cards or Skeleton Loading State */}
+      <SlidingPanel tab={selectedCategory} order={["all", "beach", "landmark", "culture", "sanctuary", "viewpoint"]}>
       {isLoading ? (
         <AttractionsGridSkeleton count={6} />
       ) : (
@@ -404,7 +410,8 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
       )}
 
       {/* Attraction Full Detail Modal */}
-      {activeModalAttraction && (
+      </SlidingPanel>
+      <SurfacePresence>{activeModalAttraction && (
         <ModalDialog labelledBy="attraction-details-title" maxWidth="48rem" onClose={closeDetails}>
           <div
             onTouchStart={(event) => event.stopPropagation()}
@@ -658,7 +665,7 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
             </div>
           </div>
         </ModalDialog>
-      )}
+      )}</SurfacePresence>
     </div>
   );
 };

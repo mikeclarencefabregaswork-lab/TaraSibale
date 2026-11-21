@@ -1,3 +1,4 @@
+import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import { ThemeControl } from "./ThemeControl";
 import type { ThemePreference } from "../theme";
 import {
@@ -23,7 +24,7 @@ import {
   Wifi,
   WifiOff,
 } from "lucide-react";
-import React, { useId, useState } from "react";
+import React, { useId, useLayoutEffect, useRef, useState } from "react";
 import { AppNotification, UserProfile } from "../types";
 import { NotificationCenter } from "./NotificationCenter";
 import { Popover } from "./Popover";
@@ -67,6 +68,39 @@ export const Header: React.FC<HeaderProps> = ({
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
+  const navigationRef = useRef<HTMLDivElement>(null);
+  const indicatorRef = useRef<HTMLSpanElement>(null);
+  const indicatorPositioned = useRef(false);
+
+  useLayoutEffect(() => {
+    const navigation = navigationRef.current;
+    const indicator = indicatorRef.current;
+    if (!navigation || !indicator) return;
+
+    const positionIndicator = () => {
+      const selected = navigation.querySelector<HTMLElement>('[data-nav-active="true"]');
+      if (!selected || selected.getBoundingClientRect().width === 0) {
+        indicator.style.opacity = "0";
+        return;
+      }
+      const container = navigation.getBoundingClientRect();
+      const target = selected.getBoundingClientRect();
+      indicator.style.transition = indicatorPositioned.current
+        ? "transform 280ms cubic-bezier(0.22, 1, 0.36, 1), width 280ms ease-out, height 280ms ease-out"
+        : "none";
+      indicator.style.transform = `translate(${target.left - container.left}px, ${target.top - container.top}px)`;
+      indicator.style.width = `${target.width}px`;
+      indicator.style.height = `${target.height}px`;
+      indicator.style.opacity = "1";
+      indicatorPositioned.current = true;
+    };
+
+    positionIndicator();
+    const observer = new ResizeObserver(positionIndicator);
+    observer.observe(navigation);
+    navigation.querySelectorAll("button").forEach(button => observer.observe(button));
+    return () => observer.disconnect();
+  }, [activeTab]);
 
   // Local fallback notifications if not supplied via props
   const [localNotifications, setLocalNotifications] = useState<
@@ -528,8 +562,8 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Mobile Search Expandable Input */}
-          {showMobileSearch && (
-            <div className="md:hidden pb-3 pt-1">
+          <SurfacePresence>{showMobileSearch && (
+            <AnimatedSurface className="md:hidden pb-3 pt-1">
               <div className="relative">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-teal-400/80" />
                 <input
@@ -545,12 +579,13 @@ export const Header: React.FC<HeaderProps> = ({
                   }`}
                 />
               </div>
-            </div>
-          )}
+            </AnimatedSurface>
+          )}</SurfacePresence>
 
           {/* Desktop Navigation Tabs - Sleek Rounded Pills with Active Glow */}
           <nav aria-label="Primary" className="hidden md:flex items-center justify-center py-2 border-t border-slate-200/80 dark:border-white/10 relative select-none">
-            <div className="flex items-center justify-center gap-1.5 lg:gap-2 flex-wrap">
+            <div ref={navigationRef} className="relative isolate flex items-center justify-center gap-1.5 lg:gap-2 flex-wrap">
+              <span ref={indicatorRef} aria-hidden="true" className="pointer-events-none absolute left-0 top-0 rounded-full border border-teal-400 bg-teal-500 shadow-[0_0_15px_rgba(46,196,182,0.4)] ring-1 ring-teal-400/50 opacity-0" />
               {desktopNavItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -558,13 +593,14 @@ export const Header: React.FC<HeaderProps> = ({
                   <button
                     key={item.id}
                     aria-current={isActive ? "page" : undefined}
+                    data-nav-active={isActive}
                     onClick={() => {
                       setActiveTab(item.id);
                       setMoreDropdownOpen(false);
                     }}
-                    className={`flex items-center justify-center gap-2 px-4 py-1.5 rounded-full text-xs lg:text-sm font-bold transition-all duration-200 whitespace-nowrap cursor-pointer shrink-0 border ${
+                    className={`relative z-10 flex items-center justify-center gap-2 px-4 py-1.5 rounded-full text-xs lg:text-sm font-bold transition-all duration-200 whitespace-nowrap cursor-pointer shrink-0 border ${
                       isActive
-                        ? "bg-teal-500 text-slate-950 border-teal-400 font-black shadow-[0_0_15px_rgba(46,196,182,0.4)] ring-1 ring-teal-400/50"
+                        ? "text-slate-950 border-transparent font-black"
                         : isDarkMode
                           ? "border-transparent text-slate-300 hover:bg-white/10 hover:text-white"
                           : "border-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-950"
@@ -586,15 +622,16 @@ export const Header: React.FC<HeaderProps> = ({
               })}
 
               {/* More Dropdown Pill */}
-              <div className="relative">
+              <div className="relative z-10">
                 <button
                   id={toolsTriggerId}
+                  data-nav-active={isMoreActive}
                   onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
                   aria-expanded={moreDropdownOpen}
                   aria-controls={toolsPanelId}
                   className={`flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-full text-xs lg:text-sm font-bold transition-all duration-200 whitespace-nowrap cursor-pointer shrink-0 border select-none ${
                     isMoreActive
-                      ? "bg-teal-500 text-slate-950 border-teal-400 font-black shadow-[0_0_15px_rgba(46,196,182,0.4)] ring-1 ring-teal-400/50"
+                      ? "text-slate-950 border-transparent font-black"
                       : moreDropdownOpen
                         ? isDarkMode
                           ? "bg-white/15 text-white border-white/20"

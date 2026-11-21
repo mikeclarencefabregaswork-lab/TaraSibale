@@ -1,3 +1,6 @@
+import { SurfacePresence } from "./SurfacePresence";
+import { SlidingFilterHighlight } from "./SlidingFilterHighlight";
+import { SlidingPanel } from "./SlidingPanel";
 import { ModalDialog } from "./ModalDialog";
 import {
   Calendar,
@@ -8,7 +11,7 @@ import {
   Star,
   X,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { errorText } from "../api";
 import { Accommodation, BookingRecord } from "../types";
 import { AccommodationsGridSkeleton } from "./Skeletons";
@@ -34,6 +37,7 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [filterType, setFilterType] = useState<string>("all");
+  const filterRowRef = useRef<HTMLDivElement>(null);
   const [activeStayModal, setActiveStayModal] = useState<Accommodation | null>(
     null,
   );
@@ -163,7 +167,8 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1.5 scrollbar-none sm:flex-wrap max-w-full">
+        <div ref={filterRowRef} className="relative isolate flex items-center gap-2 overflow-x-auto pb-1.5 scrollbar-none sm:flex-wrap max-w-full">
+          <SlidingFilterHighlight rowRef={filterRowRef} selected={filterType} />
           {[
             { id: "all", label: "All Stays" },
             { id: "resort", label: "Eco-Resorts 🏝️" },
@@ -173,10 +178,12 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
           ].map((type) => (
             <button
               key={type.id}
+              aria-pressed={filterType === type.id}
+              data-filter-active={filterType === type.id}
               onClick={() => setFilterType(type.id)}
-              className={`min-h-[40px] px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all cursor-pointer backdrop-blur-md whitespace-nowrap shrink-0 ${
+              className={`relative z-[1] min-h-[40px] px-3.5 py-1.5 rounded-full border text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 filterType === type.id
-                  ? "bg-teal-500 text-slate-950 shadow-[0_0_15px_rgba(46,196,182,0.4)]"
+                  ? "text-slate-950 border-transparent"
                   : "bg-slate-200/80 hover:bg-slate-300/80 text-slate-800 border border-slate-300 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white dark:border-white/15"
               }`}>
               {type.label}
@@ -289,6 +296,7 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
       )}
 
       {/* Accommodations Grid or Skeleton Loading State */}
+      <SlidingPanel tab={filterType} order={["all", "resort", "homestay", "cottage", "inn"]}>
       {isLoading ? (
         <AccommodationsGridSkeleton count={4} />
       ) : (
@@ -444,7 +452,8 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
       )}
 
       {/* Booking Form Modal */}
-      {activeStayModal && (
+      </SlidingPanel>
+      <SurfacePresence>{activeStayModal && (
         <ModalDialog labelledBy="booking-dialog-title" maxWidth="36rem" onClose={() => setActiveStayModal(null)}>
           <div
             className={`relative w-full max-w-xl rounded-3xl border shadow-2xl overflow-hidden backdrop-blur-2xl ${
@@ -623,7 +632,7 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
             </form>
           </div>
         </ModalDialog>
-      )}
+      )}</SurfacePresence>
     </div>
   );
 };

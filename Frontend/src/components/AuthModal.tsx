@@ -1,3 +1,4 @@
+import { SlidingPanel } from "./SlidingPanel";
 import { ModalDialog } from "./ModalDialog";
 import { PORTFOLIO_MODE } from "../portfolio";
 import { PortfolioCollectionNotice } from "./PortfolioNotice";
@@ -221,6 +222,7 @@ function AuthModalContent({
             </div>
           )}
 
+          <SlidingPanel tab={mode} order={["login", "signup"]}>
           {/* LOGIN FORM */}
           {mode === "login" && (
             <form onSubmit={handleLogin} className="space-y-3.5">
@@ -539,6 +541,7 @@ function AuthModalContent({
               </div>
             </form>
           )}
+          </SlidingPanel>
         </div>
       </div>
     </div>

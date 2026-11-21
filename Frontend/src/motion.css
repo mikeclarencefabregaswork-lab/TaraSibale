@@ -11,11 +11,11 @@
 @keyframes surface-arrive {
   from {
     opacity: 0;
-    scale: 0.98;
+    translate: 0 24px;
   }
   to {
     opacity: 1;
-    scale: 1;
+    translate: none;
   }
 }
 @keyframes toast-arrive {
@@ -36,11 +36,40 @@
     background-position: -80% 0;
   }
 }
-.page-transition {
-  animation: page-arrive 280ms ease-out backwards;
+@keyframes page-slide {
+  from {
+    opacity: 0.55;
+    translate: var(--page-slide-x, 0px) 0;
+  }
+  to {
+    opacity: 1;
+    translate: none;
+  }
+}
+.page-transition[data-slide-direction="1"],
+.tab-content-slide[data-slide-direction="1"] {
+  --page-slide-x: clamp(24px, 6vw, 72px);
+}
+.page-transition[data-slide-direction="-1"],
+.tab-content-slide[data-slide-direction="-1"] {
+  --page-slide-x: clamp(-72px, -6vw, -24px);
+}
+.page-transition[data-slide-direction] .page-ready,
+.tab-content-slide[data-slide-direction] {
+  animation: page-slide 300ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.page-transition[data-slide-direction="0"] .page-ready,
+.tab-content-slide[data-slide-direction="0"],
+.tab-content-slide > .animate-fade-in {
+  animation: none;
 }
 .toast-card {
   animation: toast-arrive 220ms ease-out both;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sliding-filter-highlight {
+    transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), width 280ms ease-out, height 280ms ease-out;
+  }
 }
 .animate-fade-in {
   animation: page-arrive 240ms ease-out backwards;
@@ -54,6 +83,8 @@
 .animate-scale-in {
   animation: surface-arrive 200ms ease-out both;
 }
+.leaflet-popup-content-wrapper,
+.leaflet-tooltip { animation: surface-arrive 240ms ease-out backwards; }
 .animate-in,
 .animate-fadeIn,
 .page-ready {
@@ -90,6 +121,36 @@
 .app-motion :where([role="dialog"], .fixed.inset-0 > .relative.rounded-3xl) {
   animation: surface-arrive 200ms ease-out both;
 }
+/* Shared top-layer surfaces: menus descend; sheets and the guide rise. */
+.native-popover.native-popover {
+  --surface-offset: -20px;
+  animation: none;
+  opacity: 0;
+  transition-property: opacity, translate, display, overlay;
+  transition-duration: 240ms;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transition-behavior: allow-discrete;
+}
+.native-popover.island-guide-popover { --surface-offset: 32px; }
+.native-popover[data-motion-open="true"]:is(:popover-open, [data-surface-visible="true"]) {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .native-popover.native-popover { translate: 0 var(--surface-offset); }
+  .native-popover[data-motion-open="true"]:is(:popover-open, [data-surface-visible="true"]) { translate: none; }
+  @starting-style {
+    .native-popover[data-motion-open="true"]:is(:popover-open, [data-surface-visible="true"]) {
+      opacity: 0;
+      translate: 0 var(--surface-offset);
+    }
+  }
+  .mobile-tab-indicator { transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1); }
+}
+.native-modal::backdrop {
+  transition: opacity 240ms ease-out, display 240ms, overlay 240ms;
+  transition-behavior: allow-discrete;
+}
+@starting-style { .native-modal[open]::backdrop { opacity: 0; } }
 .skeleton-shimmer {
   background-image: linear-gradient(
     100deg,
@@ -101,6 +162,9 @@
   animation: skeleton-shimmer 1.7s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
+  .tab-content-slide,
+  .page-transition .page-ready { animation: none !important; }
+  .native-popover.native-popover { translate: none; }
   *,
   *::before,
   *::after {

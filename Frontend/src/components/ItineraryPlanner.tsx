@@ -1,3 +1,4 @@
+import { AnimatedSurface, SurfacePresence } from "./SurfacePresence";
 import { toast } from "../toastStore";
 import {
   AlertCircle,
@@ -410,8 +411,8 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
       </div>
 
       {/* Generator & Selection Drawer */}
-      {showConfigDrawer && (
-        <div
+      <SurfacePresence>{showConfigDrawer && (
+        <AnimatedSurface
           className={`print:hidden p-6 rounded-2xl border transition-all animate-fadeIn ${
             isDarkMode
               ? "bg-[#0b2d40] border-white/10"
@@ -591,8 +592,8 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({
               <span>Regenerate {tripDays}-Day Schedule</span>
             </button>
           </div>
-        </div>
-      )}
+        </AnimatedSurface>
+      )}</SurfacePresence>
 
       {/* Reorder instructions badge for users */}
       <div className="print:hidden flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-700 dark:text-teal-300 text-xs">
